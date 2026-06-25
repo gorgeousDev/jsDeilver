@@ -1,0 +1,57 @@
+.fasty_product_card {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+.fasty_product_card > a {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+}
+
+.fasty_product_card_img {
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+}
+
+.fasty_product_card > a > .w-full.text-center {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+}
+
+.fasty_product_card_name {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 3 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.45 !important;
+  min-height: 66px !important;
+  max-height: 66px !important;
+  margin-bottom: 2px !important;
+}
+
+.fasty_product_card_price {
+  margin-top: 0px !important;
+  min-height: 32px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.fasty_product_card_btn_container {
+  margin-top: auto !important;
+}
+
+.fasty_product_card_btn {
+  height: 44px !important;
+}
+
+.fasty_product_card_wishlist_btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

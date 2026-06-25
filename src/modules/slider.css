@@ -1,0 +1,7 @@
+.swiper-pagination {
+  display: none !important;
+}
+
+#__next > div.app_container.flex.flex-1.flex-col.relative.bg-\[\#f8fafc\] > main > div:nth-child(4) > div > div:nth-child(2) > div > div.swiper.swiper-initialized.swiper-horizontal.swiper-pointer-events.swiper-rtl.home_slider_container > div > div.swiper-slide.swiper-slide-active > div > div > a > div.w-full.text-center > h2 {
+  line-clamp: 1 !important;
+}
