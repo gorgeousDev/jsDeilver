@@ -36,9 +36,11 @@
   transform: scale(1.08);
 }
 @media (max-width:768px){
-
+div.swiper-slide:nth-child(2){
+  position: relative !important;
+}
     .product_gallery_btns_container{
-
+        position: absolute !important;
         top: 12px !important;
         left: 12px !important;
         z-index: 9999 !important;
