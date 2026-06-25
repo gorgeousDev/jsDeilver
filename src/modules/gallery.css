@@ -60,5 +60,17 @@ div.swiper-slide:nth-child(2){
 
     }
 
+    .product_gallery_btns_container{
+
+        top: 12px !important;
+        bottom: auto !important;
+
+        left: 12px !important;
+        right: auto !important;
+
+        z-index: 9999 !important;
+
+        align-items: center !important;
+    }
 
 }
