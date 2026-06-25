@@ -79,6 +79,7 @@ div.swiper-slide:nth-child(2){
 
         min-height:84px !important;
         max-height:84px !important;
+        overflow:hidden !important;
 
     }
 
