@@ -72,14 +72,11 @@ div.swiper-slide:nth-child(2){
     }
      #__next > div.app_container.flex.flex-1.flex-col.relative.bg-\[\#f8fafc\] > main > div:nth-child(5) > div > div.grid.sm\:grid-cols-3.lg\:grid-cols-4.grid-cols-2.gap-2.md\:gap-4.lg\:\!grid-cols-5.home_products_grid_container > div:nth-child(1) > div{
 
-        display: flex !important;
-        flex-direction: column !important;
+       min-height: 460px !important;
+
     }
 #__next > div.app_container.flex.flex-1.flex-col.relative.bg-\[\#f8fafc\] > main > div:nth-child(5) > div > div.grid.sm\:grid-cols-3.lg\:grid-cols-4.grid-cols-2.gap-2.md\:gap-4.lg\:\!grid-cols-5.home_products_grid_container > div:nth-child(2) > div > a > div.w-full.text-center > h2{
-   flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-
+    min-height: 90px !important;
 
 }
 
