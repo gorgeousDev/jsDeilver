@@ -1,3 +1,4 @@
+console.log("MAIN LOADED");
 import { initGallery } from "./gallery-thumbnails.js";
 
 let initialized = false;

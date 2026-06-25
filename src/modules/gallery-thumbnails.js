@@ -4,7 +4,7 @@
  */
 
 export function initGallery(containerSelector = ".swiper") {
-
+   console.log("INIT GALLERY");
     const container = document.querySelector(containerSelector);
 
     if (!container) return;
