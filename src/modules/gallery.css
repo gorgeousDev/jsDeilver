@@ -70,17 +70,23 @@ div.swiper-slide:nth-child(2){
         inset: 12px auto auto 12px !important;
 
     }
-
-
-}
-@media (max-width:768px){
-
     .fasty_product_card_name{
 
-        min-height:84px !important;
-        max-height:84px !important;
-        overflow:hidden !important;
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical !important;
+        -webkit-line-clamp: 3 !important;
 
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+
+        line-height: 1.5 !important;
+
+        height: 4.5em !important;
+        max-height: 4.5em !important;
+        min-height: 4.5em !important;
+
+        word-break: break-word !important;
     }
+
 
 }
