@@ -39,12 +39,26 @@
 div.swiper-slide:nth-child(2){
   position: relative !important;
 }
-    .product_gallery_btns_container{
-        position: absolute !important;
-        top: 12px !important;
-        left: 12px !important;
-        z-index: 9999 !important;
+    
+    .product_gallery_wishlist_btn{
+
+        position:absolute !important;
+        top:12px !important;
+        left:12px !important;
+        z-index:9999 !important;
 
     }
+
+    .product_gallery_share_btn{
+
+        position:absolute !important;
+        top:60px !important;
+        left:12px !important;
+        z-index:9999 !important;
+
+        margin:0 !important;
+
+    }
+
 
 }
