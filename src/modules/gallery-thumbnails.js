@@ -3,10 +3,16 @@
  * Creates a clickable thumbnail gallery for Swiper.js sliders.
  */
 
-export function initGallery(containerSelector = '.swiper') {
-  const container = document.querySelector(containerSelector);
-  if (!container) return;
+export function initGallery(containerSelector = ".swiper") {
 
+    const container = document.querySelector(containerSelector);
+
+    if (!container) return;
+
+    if (container.querySelector(".akkad-gallery")) return;
+
+
+}
   const pagination = container.querySelector('.swiper-pagination');
   if (!pagination) return;
 
