@@ -37,8 +37,7 @@
 }
 @media (max-width:768px){
 
-    .product-share,
-    .product-wishlist{
+    .product_gallery_btns_container{
 
         top: 12px !important;
         left: 12px !important;
