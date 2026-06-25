@@ -35,3 +35,15 @@
   border: 2px solid #d4af37 !important;
   transform: scale(1.08);
 }
+@media (max-width:768px){
+
+    .product-share,
+    .product-wishlist{
+
+        top: 12px !important;
+        left: 12px !important;
+        z-index: 9999 !important;
+
+    }
+
+}
