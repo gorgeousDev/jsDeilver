@@ -70,7 +70,7 @@ div.swiper-slide:nth-child(2){
         inset: 12px auto auto 12px !important;
 
     }
-       .fasty_product_card_name{
+     #__next > div.app_container.flex.flex-1.flex-col.relative.bg-\[\#f8fafc\] > main > div:nth-child(5) > div > div.grid.sm\:grid-cols-3.lg\:grid-cols-4.grid-cols-2.gap-2.md\:gap-4.lg\:\!grid-cols-5.home_products_grid_container > div:nth-child(1) > div{
 
         display: -webkit-box !important;
         -webkit-box-orient: vertical !important;
