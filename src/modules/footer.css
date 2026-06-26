@@ -1,0 +1,57 @@
+/* Footer */
+footer{
+    background:#000 !important;
+    color:#fff !important;
+}
+
+/* Container */
+.default_footer{
+    background:#00273d !important;
+    border-top:1px solid #1f2937 !important;
+}
+
+/* جميع الروابط */
+.default_footer a{
+    color:#fff !important;
+    transition:.3s;
+}
+
+.default_footer a:hover{
+    color:#d1d5db !important;
+}
+
+/* النصوص */
+.default_footer p{
+    color:#fff !important;
+}
+
+/* Powered By */
+.default_footer p:last-child{
+    color:#9ca3af !important;
+}
+
+/* EasyOrders */
+.default_footer p:last-child a{
+    color:#00b894 !important;
+}
+
+.default_footer p:last-child a:hover{
+    color:#55efc4 !important;
+}
+
+/* الخط الفاصل */
+.default_footer_links_container{
+    border-bottom:1px solid #1f2937;
+    padding-bottom:20px;
+    margin-bottom:20px;
+}
+
+/* الروابط */
+.default_footer_link a{
+    color:#f3f4f6 !important;
+    font-weight:500;
+}
+
+.default_footer_link a:hover{
+    color:#ffffff !important;
+}
