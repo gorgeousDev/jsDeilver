@@ -1,0 +1,35 @@
+/* Header */
+header,
+.fasty_header_container{
+
+    background:#000 !important;
+    color:#fff !important;
+
+}
+
+/* كل الأيقونات واللينكات */
+.fasty_header_container a,
+.fasty_header_container button,
+.fasty_header_container svg,
+.fasty_header_container span{
+
+    color:#fff !important;
+    fill:#fff !important;
+    stroke:currentColor !important;
+
+}
+
+/* اللوجو */
+.fasty_header_logo{
+
+    background:transparent !important;
+
+}
+
+/* العداد الأحمر في السلة */
+.fasty_header_container .bg-skin-primary{
+
+    background:#e53935 !important;
+    color:#fff !important;
+
+}
