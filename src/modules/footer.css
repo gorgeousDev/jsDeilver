@@ -55,3 +55,6 @@ footer{
 .default_footer_link a:hover{
     color:#ffffff !important;
 }
+.default_footer p:last-child{
+    display:none !important;
+}
