@@ -4,12 +4,9 @@ footer{
     color:#fff !important;
 }
 
-/* Container */
-.default_footer{
+footer.bg-gray-50{
     background:#000 !important;
-    border-top:1px solid #1f2937 !important;
 }
-
 /* جميع الروابط */
 .default_footer a{
     color:#fff !important;
