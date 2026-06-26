@@ -61,6 +61,9 @@
 }
 
 @media (max-width:768px){
+  .products_grid_container {
+    grid-template-columns: 1fr !important;
+  }
 div.swiper-slide:nth-child(2){
   position: relative !important;
 }
