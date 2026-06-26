@@ -58,3 +58,9 @@ footer{
 .default_footer p:last-child{
     display:none !important;
 }
+
+footer,
+.default_footer,
+.default_footer *{
+    background:#000 !important;
+}
