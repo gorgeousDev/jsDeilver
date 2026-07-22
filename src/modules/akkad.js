@@ -239,7 +239,6 @@
   }
 
   try {
-    console.log("INLINE SCRIPT WORKING");
 
     // 2. Google Site Verification Meta Tag Injection
     if (!document.querySelector('meta[name="google-site-verification"]')) {
