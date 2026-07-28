@@ -157,7 +157,7 @@
     var item = document.createElement("div");
     item.className = "flow-root akkad-home";
     item.innerHTML = [
-      '<a href="/" class="-m-2 block cursor-pointer p-2 font-medium text-gray-900">',
+      '<a href="/" class="-m-2 block cursor-pointer p-2 font-medium" style="color:#040b1d">',
       '    الرئيسية',
       '</a>'
     ].join("\n");
@@ -293,7 +293,7 @@
         "  color: #fff !important;",
         "}",
         ".default_footer_links_container {",
-        "  border-bottom: 1px solid #1f2937;",
+        "  border-bottom: 1px solid #040b1d;",
         "  padding-bottom: 20px;",
         "  margin-bottom: 20px;",
         "}",
@@ -332,7 +332,7 @@
         "}",
         ".akkad-categories-inner a {",
         "  text-decoration: none;",
-        "  color: #111;",
+        "  color: #040b1d;",
         "  font-weight: 700;",
         "}",
         ".akkad-categories-inner a:hover {",
