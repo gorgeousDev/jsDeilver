@@ -250,11 +250,11 @@
 
     // 3. CSS Files Loader (CDN)
     var files = [
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/product-card.css",
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/gallery.css",
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/slider.css",
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/header.css",
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/footer.css",
+      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a3eaa41e1fb8996799f0d42cd27da3bdc6dfc7c4/src/modules/product-card.css",
+      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a3eaa41e1fb8996799f0d42cd27da3bdc6dfc7c4/src/modules/gallery.css",
+      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a3eaa41e1fb8996799f0d42cd27da3bdc6dfc7c4/src/modules/slider.css",
+      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a3eaa41e1fb8996799f0d42cd27da3bdc6dfc7c4/src/modules/header.css",
+      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a3eaa41e1fb8996799f0d42cd27da3bdc6dfc7c4/src/modules/footer.css",
       "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     ];
 
