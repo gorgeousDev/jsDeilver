@@ -280,7 +280,7 @@
         "  display: none !important;",
         "}",
         "footer, .default_footer, footer.bg-gray-50 {",
-        "  background: #000 !important;",
+        "  background: #040b1d !important;",
         "  color: #fff !important;",
         "}",
         ".default_footer {",
