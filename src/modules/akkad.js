@@ -147,23 +147,6 @@
     container.appendChild(copy);
   }
 
-  function addHome() {
-    var panel = document.querySelector(
-      'div[id^="headlessui-tabs-panel"][data-headlessui-state="selected"]'
-    );
-    if (!panel) return;
-    if (panel.querySelector(".akkad-home")) return;
-
-    var item = document.createElement("div");
-    item.className = "flow-root akkad-home";
-    item.innerHTML = [
-      '<a href="/" class="-m-2 block cursor-pointer p-2 font-medium" style="color:#040b1d">',
-      '    الرئيسية',
-      '</a>'
-    ].join("\n");
-    panel.insertBefore(item, panel.firstChild);
-  }
-
   function saveCategories() {
     var cards = document.querySelectorAll(".default_category_card");
     if (!cards.length) return;
@@ -408,15 +391,7 @@
       subtree: true
     });
 
-    // 9. addHome Execution
-    document.addEventListener("click", function (e) {
-      var menuBtn = e.target.closest('button');
-      if (!menuBtn) return;
-      if (!menuBtn.querySelector('svg')) return;
-      setTimeout(addHome, 300);
-    });
-
-    // 10. Categories Navbar Execution
+    // 9. Categories Navbar Execution
     var navbarObserver = new MutationObserver(function () {
       setTimeout(initNavbar, 500);
     });
