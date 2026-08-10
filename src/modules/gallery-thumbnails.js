@@ -46,12 +46,21 @@ export function initGallery(containerSelector = ".swiper") {
 
     thumb.addEventListener('click', () => {
       const bullets = container.querySelectorAll('.swiper-pagination-bullet');
+
       if (bullets[index]) {
         bullets[index].click();
-        setTimeout(updateActiveThumb, 100);
+
+        setTimeout(() => {
+          updateActiveThumb();
+
+          thumb.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+          });
+        }, 100);
       }
     });
-
     gallery.appendChild(thumb);
   });
 
