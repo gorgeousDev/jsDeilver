@@ -18,7 +18,7 @@
     var container = document.querySelector(".swiper");
     if (!container) return;
 
-    if (container.querySelector(".akkad-gallery-wrapper")) return;
+    if (container.querySelector(".akkad-gallery")) return;
 
     var pagination = container.querySelector(".swiper-pagination");
     if (!pagination) return;
@@ -29,22 +29,22 @@
 
     if (!slides.length) return;
 
-    /* ===== Wrapper ===== */
+    /* =========================
+       Gallery Wrapper
+    ========================= */
+
     var wrapper = document.createElement("div");
     wrapper.className = "akkad-gallery-wrapper";
 
-    /* ===== Previous Button ===== */
     var prevBtn = document.createElement("button");
     prevBtn.type = "button";
     prevBtn.className = "akkad-gallery-arrow akkad-gallery-prev";
     prevBtn.innerHTML = "&#10094;";
     prevBtn.setAttribute("aria-label", "Previous images");
 
-    /* ===== Gallery ===== */
     var gallery = document.createElement("div");
     gallery.className = "akkad-gallery";
 
-    /* ===== Next Button ===== */
     var nextBtn = document.createElement("button");
     nextBtn.type = "button";
     nextBtn.className = "akkad-gallery-arrow akkad-gallery-next";
@@ -55,18 +55,24 @@
     wrapper.appendChild(gallery);
     wrapper.appendChild(nextBtn);
 
-    /* ===== Create Thumbnails ===== */
+    /* =========================
+       Create Thumbnails
+    ========================= */
+
     for (var i = 0; i < slides.length; i++) {
       (function (index) {
         var img = slides[index];
 
         var thumb = document.createElement("img");
 
-        thumb.src = img.currentSrc || img.src;
+        thumb.src = img.src;
         thumb.className = "akkad-thumb";
         thumb.alt = img.alt || "";
 
-        thumb.addEventListener("click", function () {
+        thumb.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
           var bullets = container.querySelectorAll(
             ".swiper-pagination-bullet"
           );
@@ -84,38 +90,45 @@
       })(i);
     }
 
-    /* ===== Insert Gallery ===== */
+    /* =========================
+       Insert Gallery
+    ========================= */
+
     pagination.insertAdjacentElement("afterend", wrapper);
 
-    /* ===== Scroll Amount ===== */
-    function scrollAmount() {
-      return Math.max(200, gallery.clientWidth * 0.7);
+    /* =========================
+       Scroll Arrows
+    ========================= */
+
+    function getScrollAmount() {
+      return Math.max(180, gallery.clientWidth * 0.7);
     }
 
-    /* ===== Previous ===== */
     prevBtn.addEventListener("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
 
       gallery.scrollBy({
-        left: -scrollAmount(),
+        left: -getScrollAmount(),
         behavior: "smooth"
       });
     });
 
-    /* ===== Next ===== */
     nextBtn.addEventListener("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
 
       gallery.scrollBy({
-        left: scrollAmount(),
+        left: getScrollAmount(),
         behavior: "smooth"
       });
     });
 
-    /* ===== Update Active Thumbnail ===== */
-    function updateActiveThumb(forceScroll) {
+    /* =========================
+       Active Thumbnail
+    ========================= */
+
+    function updateActiveThumb(shouldScroll) {
       var bullets = container.querySelectorAll(
         ".swiper-pagination-bullet"
       );
@@ -138,26 +151,23 @@
 
           activeThumb.classList.add("active");
 
-          /* ===== Auto Scroll ===== */
-          if (forceScroll !== false) {
+          /* Auto scroll to active thumbnail */
+          if (shouldScroll) {
             var galleryLeft = gallery.scrollLeft;
-            var galleryWidth = gallery.clientWidth;
+            var galleryRight =
+              galleryLeft + gallery.clientWidth;
 
             var thumbLeft = activeThumb.offsetLeft;
             var thumbRight =
               thumbLeft + activeThumb.offsetWidth;
 
-            var visibleLeft = galleryLeft;
-            var visibleRight =
-              galleryLeft + galleryWidth;
-
             if (
-              thumbLeft < visibleLeft ||
-              thumbRight > visibleRight
+              thumbLeft < galleryLeft ||
+              thumbRight > galleryRight
             ) {
               var target =
                 thumbLeft -
-                galleryWidth / 2 +
+                gallery.clientWidth / 2 +
                 activeThumb.offsetWidth / 2;
 
               gallery.scrollTo({
@@ -172,7 +182,10 @@
       }
     }
 
-    /* ===== Watch Swiper ===== */
+    /* =========================
+       Watch Swiper
+    ========================= */
+
     var observer = new MutationObserver(function () {
       updateActiveThumb(true);
     });
