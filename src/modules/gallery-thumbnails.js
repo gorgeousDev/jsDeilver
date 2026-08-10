@@ -18,8 +18,27 @@ export function initGallery(containerSelector = ".swiper") {
 
   if (container.querySelector('.akkad-gallery')) return;
 
+  const wrapper = document.createElement('div');
+  wrapper.className = 'akkad-gallery-wrapper';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'akkad-gallery-arrow akkad-gallery-prev';
+  prevBtn.type = 'button';
+  prevBtn.innerHTML = '&#10094;';
+  prevBtn.setAttribute('aria-label', 'Previous images');
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'akkad-gallery-arrow akkad-gallery-next';
+  nextBtn.type = 'button';
+  nextBtn.innerHTML = '&#10095;';
+  nextBtn.setAttribute('aria-label', 'Next images');
+
   const gallery = document.createElement('div');
   gallery.className = 'akkad-gallery';
+
+  wrapper.appendChild(prevBtn);
+  wrapper.appendChild(gallery);
+  wrapper.appendChild(nextBtn);
 
   const slides = container.querySelectorAll(
     '.swiper-slide:not(.swiper-slide-duplicate) img'
@@ -29,11 +48,36 @@ export function initGallery(containerSelector = ".swiper") {
     const bullets = container.querySelectorAll('.swiper-pagination-bullet');
     const thumbs = container.querySelectorAll('.akkad-thumb');
 
-    thumbs.forEach((thumb) => thumb.classList.remove('active'));
+    thumbs.forEach((thumb) => {
+      thumb.classList.remove('active');
+    });
 
     bullets.forEach((bullet, index) => {
       if (bullet.classList.contains('swiper-pagination-bullet-active')) {
-        if (thumbs[index]) thumbs[index].classList.add('active');
+        const thumb = thumbs[index];
+
+        if (thumb) {
+          thumb.classList.add('active');
+
+          // تحريك الشريط تلقائيًا للـ thumbnail النشطة
+          const galleryRect = gallery.getBoundingClientRect();
+          const thumbRect = thumb.getBoundingClientRect();
+
+          if (
+            thumbRect.left < galleryRect.left ||
+            thumbRect.right > galleryRect.right
+          ) {
+            const target =
+              thumb.offsetLeft -
+              (gallery.clientWidth / 2) +
+              (thumb.offsetWidth / 2);
+
+            gallery.scrollTo({
+              left: target,
+              behavior: 'smooth'
+            });
+          }
+        }
       }
     });
   }
@@ -64,7 +108,20 @@ export function initGallery(containerSelector = ".swiper") {
     gallery.appendChild(thumb);
   });
 
-  pagination.insertAdjacentElement('afterend', gallery);
+pagination.insertAdjacentElement('afterend', wrapper);
+prevBtn.addEventListener('click', () => {
+  gallery.scrollBy({
+    left: -240,
+    behavior: 'smooth'
+  });
+});
+
+nextBtn.addEventListener('click', () => {
+  gallery.scrollBy({
+    left: 240,
+    behavior: 'smooth'
+  });
+});
 
   const observer = new MutationObserver(() => updateActiveThumb());
   container.querySelectorAll('.swiper-pagination-bullet').forEach((bullet) => {
