@@ -25,7 +25,7 @@
 
     var slides = container.querySelectorAll(
       ".swiper-slide:not(.swiper-slide-duplicate) img"
-    );
+    );}
 
     if (!slides.length) return;
 
@@ -203,7 +203,18 @@
 
     updateActiveThumb(true);
   }
+    var observer = new MutationObserver(updateActiveThumb);
+    var bullets = container.querySelectorAll(".swiper-pagination-bullet");
+    for (var m = 0; m < bullets.length; m++) {
+      observer.observe(bullets[m], {
+        attributes: true,
+        attributeFilter: ["class"]
+      });
+    }
 
+    updateActiveThumb();
+  }
+)
   function moveButtons() {
     var btns = document.querySelector(".product_gallery_btns_container");
     if (!btns) return;
@@ -385,12 +396,14 @@
       var css = [
 
         ".akkad-gallery-wrapper {",
-        "  display: flex !important;",
-        "  align-items: center !important;",
-        "  gap: 6px !important;",
-        "  width: 100% !important;",
-        "  max-width: 100% !important;",
-        "}",
+              "  display: flex !important;",
+              "  flex-direction: row !important;",
+              "  align-items: center !important;",
+              "  width: 100% !important;",
+              "  max-width: 100% !important;",
+              "  gap: 6px !important;",
+              "  overflow: hidden !important;",
+              "}",
         ".akkad-gallery-arrow {",
         "  flex: 0 0 34px !important;",
         "  width: 34px !important;",
@@ -427,13 +440,31 @@
         ".akkad-gallery::-webkit-scrollbar {",
         "  display: none !important;",
         "}",
-        ".akkad-gallery .akkad-thumb {",
-        "  width: 70px !important;",
-        "  height: 70px !important;",
-        "  min-width: 70px !important;",
-        "  max-width: 70px !important;",
-        "  flex: 0 0 70px !important;",
-        "}",
+        ".akkad-gallery {",
+                "  display: flex !important;",
+                "  flex-direction: row !important;",
+                "  flex-wrap: nowrap !important;",
+                "  align-items: center !important;",
+                "  justify-content: flex-start !important;",
+                "  gap: 10px !important;",
+                "  width: 100% !important;",
+                "  min-width: 0 !important;",
+                "  flex: 1 1 auto !important;",
+                "  overflow-x: auto !important;",
+                "  overflow-y: hidden !important;",
+                "  white-space: nowrap !important;",
+                "  scrollbar-width: none !important;",
+                "  -webkit-overflow-scrolling: touch !important;",
+                "}",
+                ".akkad-gallery > .akkad-thumb {",
+                       "  display: block !important;",
+                       "  width: 70px !important;",
+                       "  height: 70px !important;",
+                       "  min-width: 70px !important;",
+                       "  max-width: 70px !important;",
+                       "  flex: 0 0 70px !important;",
+                       "  object-fit: cover !important;",
+                       "}",
         "header {",
         "  z-index: 1000 !important;",
         "  position: sticky !important;",
