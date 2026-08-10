@@ -25,7 +25,7 @@
 
     var slides = container.querySelectorAll(
       ".swiper-slide:not(.swiper-slide-duplicate) img"
-    );}
+    );
 
     if (!slides.length) return;
 
