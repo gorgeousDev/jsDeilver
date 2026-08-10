@@ -17,53 +17,179 @@
   function initGallery() {
     var container = document.querySelector(".swiper");
     if (!container) return;
-    if (container.querySelector(".akkad-gallery")) return;
+
+    if (container.querySelector(".akkad-gallery-wrapper")) return;
 
     var pagination = container.querySelector(".swiper-pagination");
     if (!pagination) return;
 
-    var slides = container.querySelectorAll(".swiper-slide:not(.swiper-slide-duplicate) img");
+    var slides = container.querySelectorAll(
+      ".swiper-slide:not(.swiper-slide-duplicate) img"
+    );
+
     if (!slides.length) return;
 
+    /* ===== Wrapper ===== */
+    var wrapper = document.createElement("div");
+    wrapper.className = "akkad-gallery-wrapper";
+
+    /* ===== Previous Button ===== */
+    var prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "akkad-gallery-arrow akkad-gallery-prev";
+    prevBtn.innerHTML = "&#10094;";
+    prevBtn.setAttribute("aria-label", "Previous images");
+
+    /* ===== Gallery ===== */
     var gallery = document.createElement("div");
     gallery.className = "akkad-gallery";
 
+    /* ===== Next Button ===== */
+    var nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "akkad-gallery-arrow akkad-gallery-next";
+    nextBtn.innerHTML = "&#10095;";
+    nextBtn.setAttribute("aria-label", "Next images");
+
+    wrapper.appendChild(prevBtn);
+    wrapper.appendChild(gallery);
+    wrapper.appendChild(nextBtn);
+
+    /* ===== Create Thumbnails ===== */
     for (var i = 0; i < slides.length; i++) {
       (function (index) {
         var img = slides[index];
+
         var thumb = document.createElement("img");
-        thumb.src = img.src;
+
+        thumb.src = img.currentSrc || img.src;
         thumb.className = "akkad-thumb";
         thumb.alt = img.alt || "";
 
         thumb.addEventListener("click", function () {
-          var bullets = container.querySelectorAll(".swiper-pagination-bullet");
+          var bullets = container.querySelectorAll(
+            ".swiper-pagination-bullet"
+          );
+
           if (bullets[index]) {
             bullets[index].click();
+
+            setTimeout(function () {
+              updateActiveThumb(true);
+            }, 100);
           }
         });
+
         gallery.appendChild(thumb);
       })(i);
     }
 
-    pagination.insertAdjacentElement("afterend", gallery);
+    /* ===== Insert Gallery ===== */
+    pagination.insertAdjacentElement("afterend", wrapper);
 
-    var updateActiveThumb = function () {
-      var bullets = container.querySelectorAll(".swiper-pagination-bullet");
+    /* ===== Scroll Amount ===== */
+    function scrollAmount() {
+      return Math.max(200, gallery.clientWidth * 0.7);
+    }
+
+    /* ===== Previous ===== */
+    prevBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      gallery.scrollBy({
+        left: -scrollAmount(),
+        behavior: "smooth"
+      });
+    });
+
+    /* ===== Next ===== */
+    nextBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      gallery.scrollBy({
+        left: scrollAmount(),
+        behavior: "smooth"
+      });
+    });
+
+    /* ===== Update Active Thumbnail ===== */
+    function updateActiveThumb(forceScroll) {
+      var bullets = container.querySelectorAll(
+        ".swiper-pagination-bullet"
+      );
+
       var thumbs = container.querySelectorAll(".akkad-thumb");
 
       for (var j = 0; j < thumbs.length; j++) {
         thumbs[j].classList.remove("active");
       }
+
       for (var k = 0; k < bullets.length; k++) {
-        if (bullets[k].classList.contains("swiper-pagination-bullet-active")) {
-          if (thumbs[k]) {
-            thumbs[k].classList.add("active");
+        if (
+          bullets[k].classList.contains(
+            "swiper-pagination-bullet-active"
+          )
+        ) {
+          var activeThumb = thumbs[k];
+
+          if (!activeThumb) return;
+
+          activeThumb.classList.add("active");
+
+          /* ===== Auto Scroll ===== */
+          if (forceScroll !== false) {
+            var galleryLeft = gallery.scrollLeft;
+            var galleryWidth = gallery.clientWidth;
+
+            var thumbLeft = activeThumb.offsetLeft;
+            var thumbRight =
+              thumbLeft + activeThumb.offsetWidth;
+
+            var visibleLeft = galleryLeft;
+            var visibleRight =
+              galleryLeft + galleryWidth;
+
+            if (
+              thumbLeft < visibleLeft ||
+              thumbRight > visibleRight
+            ) {
+              var target =
+                thumbLeft -
+                galleryWidth / 2 +
+                activeThumb.offsetWidth / 2;
+
+              gallery.scrollTo({
+                left: Math.max(0, target),
+                behavior: "smooth"
+              });
+            }
           }
+
+          break;
         }
       }
-    };
+    }
 
+    /* ===== Watch Swiper ===== */
+    var observer = new MutationObserver(function () {
+      updateActiveThumb(true);
+    });
+
+    var bullets = container.querySelectorAll(
+      ".swiper-pagination-bullet"
+    );
+
+    for (var m = 0; m < bullets.length; m++) {
+      observer.observe(bullets[m], {
+        attributes: true,
+        attributeFilter: ["class"]
+      });
+    }
+
+    updateActiveThumb(true);
+  }
     var observer = new MutationObserver(updateActiveThumb);
     var bullets = container.querySelectorAll(".swiper-pagination-bullet");
     for (var m = 0; m < bullets.length; m++) {
@@ -255,6 +381,7 @@
     var styleId = "akkad-custom-styles";
     if (!document.getElementById(styleId)) {
       var css = [
+
         ".akkad-gallery-wrapper {",
         "  display: flex !important;",
         "  align-items: center !important;",
@@ -294,25 +421,7 @@
         "    display: none !important;",
         "  }",
         "}",
-        ".akkad-gallery {",
-        "  display: flex !important;",
-        "  flex-direction: row !important;",
-        "  flex-wrap: nowrap !important;",
-        "  justify-content: flex-start !important;",
-        "  align-items: center !important;",
-        "  gap: 10px !important;",
-        "  margin-top: 15px !important;",
-        "  width: 100% !important;",
-        "  max-width: 100% !important;",
-        "  min-width: 0 !important;",
-        "  overflow-x: auto !important;",
-        "  overflow-y: hidden !important;",
-        "  white-space: nowrap !important;",
-        "  scrollbar-width: none !important;",
-        "  -webkit-overflow-scrolling: touch !important;",
-        "  touch-action: pan-x !important;",
-        "  padding: 4px 2px 8px !important;",
-        "}",
+
         ".akkad-gallery::-webkit-scrollbar {",
         "  display: none !important;",
         "}",
