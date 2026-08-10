@@ -202,8 +202,7 @@
     }
 
     updateActiveThumb(true);
-  }
-  (function () {
+
     var observer = new MutationObserver(updateActiveThumb);
     var bullets = container.querySelectorAll(".swiper-pagination-bullet");
     for (var m = 0; m < bullets.length; m++) {
@@ -214,7 +213,7 @@
     }
 
     updateActiveThumb();
-  })();
+  }
 
   function moveButtons() {
     var btns = document.querySelector(".product_gallery_btns_container");
