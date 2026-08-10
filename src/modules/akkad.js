@@ -214,7 +214,7 @@
 
     updateActiveThumb();
   }
-
+)
   function moveButtons() {
     var btns = document.querySelector(".product_gallery_btns_container");
     if (!btns) return;
