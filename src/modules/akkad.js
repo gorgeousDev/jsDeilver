@@ -108,20 +108,30 @@
       e.preventDefault();
       e.stopPropagation();
 
-      gallery.scrollBy({
-        left: -getScrollAmount(),
-        behavior: "smooth"
-      });
+      var swiperInstance = container.swiper;
+      if (swiperInstance) {
+        swiperInstance.slidePrev();
+      } else {
+        gallery.scrollBy({
+          left: -getScrollAmount(),
+          behavior: "smooth"
+        });
+      }
     });
 
     nextBtn.addEventListener("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
 
-      gallery.scrollBy({
-        left: getScrollAmount(),
-        behavior: "smooth"
-      });
+      var swiperInstance = container.swiper;
+      if (swiperInstance) {
+        swiperInstance.slideNext();
+      } else {
+        gallery.scrollBy({
+          left: getScrollAmount(),
+          behavior: "smooth"
+        });
+      }
     });
 
     /* =========================
@@ -153,28 +163,11 @@
 
           /* Auto scroll to active thumbnail */
           if (shouldScroll) {
-            var galleryLeft = gallery.scrollLeft;
-            var galleryRight =
-              galleryLeft + gallery.clientWidth;
-
-            var thumbLeft = activeThumb.offsetLeft;
-            var thumbRight =
-              thumbLeft + activeThumb.offsetWidth;
-
-            if (
-              thumbLeft < galleryLeft ||
-              thumbRight > galleryRight
-            ) {
-              var target =
-                thumbLeft -
-                gallery.clientWidth / 2 +
-                activeThumb.offsetWidth / 2;
-
-              gallery.scrollTo({
-                left: Math.max(0, target),
-                behavior: "smooth"
-              });
-            }
+            activeThumb.scrollIntoView({
+              behavior: "smooth",
+              inline: "center",
+              block: "nearest"
+            });
           }
 
           break;
@@ -202,17 +195,6 @@
     }
 
     updateActiveThumb(true);
-
-    var observer = new MutationObserver(updateActiveThumb);
-    var bullets = container.querySelectorAll(".swiper-pagination-bullet");
-    for (var m = 0; m < bullets.length; m++) {
-      observer.observe(bullets[m], {
-        attributes: true,
-        attributeFilter: ["class"]
-      });
-    }
-
-    updateActiveThumb();
   }
 
   function moveButtons() {
