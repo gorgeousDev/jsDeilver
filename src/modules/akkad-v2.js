@@ -1460,22 +1460,4 @@
     });
 })();
 
-/* =========================================
-   14. Block Next.js scroll-to-top
-
-   The EasyOrders platform (Next.js) calls
-   window.scrollTo(0,0) on route changes.
-   This blocks it when user is scrolled down.
-   ========================================= */
-(function () {
-    var _scrollTo = window.scrollTo;
-    window.scrollTo = function (x, y) {
-        var cur = window.pageYOffset || document.documentElement.scrollTop || 0;
-        if (cur > 80 && ((y === 0 || y === undefined) && (x === 0 || x === undefined))) {
-            return;
-        }
-        _scrollTo.call(window, x, y);
-    };
-})();
-
 

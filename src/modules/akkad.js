@@ -332,6 +332,14 @@
   }
 
   function goTop() {
+    if (ignoreNextScroll) return;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
+    });
   }
 
   try {
@@ -632,6 +640,14 @@
         }, 3000);
       }
     });
+
+    var lastUrl = location.href;
+    setInterval(function () {
+      if (location.href !== lastUrl) {
+        lastUrl = location.href;
+        goTop();
+      }
+    }, 100);
 
 
 
