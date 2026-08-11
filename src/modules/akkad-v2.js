@@ -1462,133 +1462,160 @@
 
 /* =========================================
    14. Fix Scroll-to-Top Bug
-   akkad.js goTop() is closure-scoped.
-   It fires scrollTo(0,0) + scrollTop=0
-   inside double-rAF on URL changes.
-   We can't block it, so we DETECT and
-   REVERSE it with a scroll watchdog.
+
+   akkad.js goTop() is closure-scoped and
+   fires via double-rAF on URL changes:
+     1) window.scrollTo(0,0)
+     2) document.documentElement.scrollTop = 0
+     3) document.body.scrollTop = 0
+
+   We can't prevent it from being called.
+   We intercept all 3 scroll paths AND
+   detect+reverse any that slip through.
    ========================================= */
 (function () {
 
-    var lastY = 0;
-    var watching = false;
+    /* ============================================
+       Part A: Intercept all 3 scroll paths
+       ============================================ */
 
-    /* --- save scroll position continuously --- */
-    function trackScroll() {
+    /* 1) Override window.scrollTo */
+    var _scrollTo = window.scrollTo.bind
+        ? window.scrollTo.bind(window)
+        : function () { window.scrollTo.apply(window, arguments); };
+
+    window.scrollTo = function (x, y) {
+        /* block scroll-to-top when scrolled down */
+        if ((y === undefined || y === 0) && (x === undefined || x === 0)) {
+            var cur = window.pageYOffset || document.documentElement.scrollTop || 0;
+            if (cur > 80) return; /* <-- goTop blocked */
+        }
+        _scrollTo(x, y);
+    };
+
+    /* 2+3) Override scrollTop setters on documentElement + body.
+       We use a dual approach: defineProperty + a last-resort timer. */
+    var _savedY = 0;
+
+    function captureY() {
         var y = window.pageYOffset || document.documentElement.scrollTop || 0;
-        if (y > 10) lastY = y;
+        if (y > 10) _savedY = y;
     }
 
-    /* --- detect forced jump to 0 and restore --- */
-    function watchdog() {
-        var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    /* Override scrollTop property descriptors */
+    function installSetters() {
+        try {
+            var de = document.documentElement;
+            var bd = document.body;
 
-        /* If we were scrolled down (>100px) and suddenly at 0,
-           and it wasn't a user-initiated scroll, restore position */
-        if (y === 0 && lastY > 100 && !watching) {
-            /* goTop fires via double-rAF, so wait 2 frames then restore */
-            requestAnimationFrame(function () {
-                requestAnimationFrame(function () {
-                    window.scrollTo(0, lastY);
-                    document.documentElement.scrollTop = lastY;
-                    document.body.scrollTop = lastY;
-                });
+            Object.defineProperty(de, "scrollTop", {
+                get: function () { return _savedY; },
+                set: function (v) {
+                    /* allow normal incremental scroll but block forced jump to 0 */
+                    if (v === 0 && _savedY > 80) {
+                        /* goTop trying to force scroll to top — ignore it */
+                        return;
+                    }
+                    _savedY = v;
+                },
+                configurable: true,
+                enumerable: true
             });
+
+            Object.defineProperty(bd, "scrollTop", {
+                get: function () { return _savedY; },
+                set: function (v) {
+                    if (v === 0 && _savedY > 80) {
+                        return;
+                    }
+                    _savedY = v;
+                },
+                configurable: true,
+                enumerable: true
+            });
+        } catch (e) { /* some browsers restrict this */ }
+    }
+
+    /* ============================================
+       Part B: Last-resort watchdog timer
+       If browser native engine bypasses our JS
+       interceptors, this catches the jump.
+       ============================================ */
+
+    var _lastKnownY = 0;
+
+    function watchdog() {
+        /* read the REAL scroll position from the browser */
+        var realY = 0;
+        try {
+            /* Use a fresh div to test actual scroll position */
+            realY = window.pageYOffset;
+        } catch (e) {}
+
+        if (realY === 0 && _lastKnownY > 80) {
+            /* Page was forcibly scrolled to top — restore immediately */
+            try { window.scrollTo(0, _lastKnownY); } catch (e) {}
+            try { document.documentElement.scrollTop = _lastKnownY; } catch (e) {}
+            try { document.body.scrollTop = _lastKnownY; } catch (e) {}
         }
 
-        trackScroll();
+        /* update tracking */
+        if (realY > 10) _lastKnownY = realY;
     }
 
-    /* --- block history methods that trigger goTop --- */
+    /* ============================================
+       Part C: Hook into history to predict URL
+       changes before goTop fires
+       ============================================ */
+
     var _push = history.pushState;
     var _replace = history.replaceState;
 
-    history.pushState = function () {
-        watching = true;
-        trackScroll();
-        _push.apply(this, arguments);
-        /* after URL change, goTop will fire in ~200ms.
-           Keep watching position and restore if it jumps. */
-        var savedY = lastY;
-        var restoreTimer = setInterval(function () {
-            var y = window.pageYOffset || document.documentElement.scrollTop || 0;
-            if (y < savedY * 0.5 && savedY > 100) {
-                window.scrollTo(0, savedY);
-                document.documentElement.scrollTop = savedY;
-                document.body.scrollTop = savedY;
-            }
-        }, 30);
-        setTimeout(function () {
-            clearInterval(restoreTimer);
-            watching = false;
-        }, 1000);
-    };
+    function hookHistory() {
+        history.pushState = function () {
+            captureY();
+            _push.apply(this, arguments);
+            /* goTop will fire in ~100ms via setInterval, then double-rAF ~32ms later.
+               Our interceptors above should block it, but the watchdog is the fallback. */
+        };
 
-    history.replaceState = function () {
-        watching = true;
-        trackScroll();
-        _replace.apply(this, arguments);
-        var savedY = lastY;
-        var restoreTimer = setInterval(function () {
-            var y = window.pageYOffset || document.documentElement.scrollTop || 0;
-            if (y < savedY * 0.5 && savedY > 100) {
-                window.scrollTo(0, savedY);
-                document.documentElement.scrollTop = savedY;
-                document.body.scrollTop = savedY;
-            }
-        }, 30);
-        setTimeout(function () {
-            clearInterval(restoreTimer);
-            watching = false;
-        }, 1000);
-    };
+        history.replaceState = function () {
+            captureY();
+            _replace.apply(this, arguments);
+        };
 
-    window.addEventListener("popstate", function () {
-        watching = true;
-        var savedY = lastY;
-        var restoreTimer = setInterval(function () {
-            var y = window.pageYOffset || document.documentElement.scrollTop || 0;
-            if (y < savedY * 0.5 && savedY > 100) {
-                window.scrollTo(0, savedY);
-                document.documentElement.scrollTop = savedY;
-                document.body.scrollTop = savedY;
-            }
-        }, 30);
-        setTimeout(function () {
-            clearInterval(restoreTimer);
-            watching = false;
-        }, 1000);
-    });
-
-    /* --- Also block the URL polling in akkad.js --- */
-    /* Override location getter comparison by making href immutable after first read */
-    var _location = window.location;
-    var frozenHref = location.href;
-    var freezeTimer = null;
-
-    /* Freeze href comparison for 500ms around URL changes */
-    function freezeHref() {
-        frozenHref = location.href;
-        clearTimeout(freezeTimer);
-        freezeTimer = setTimeout(function () {
-            frozenHref = null;
-        }, 500);
+        window.addEventListener("popstate", function () {
+            captureY();
+        });
     }
 
-    /* Watch for URL changes and freeze comparison */
-    var lastCheckedUrl = location.href;
-    setInterval(function () {
-        if (location.href !== lastCheckedUrl) {
-            lastCheckedUrl = location.href;
-            freezeHref();
-        }
-    }, 50);
+    /* ============================================
+       Part D: Track scroll position always
+       ============================================ */
 
-    /* --- Primary watchdog: runs continuously --- */
-    setInterval(watchdog, 50);
+    function startTracking() {
+        window.addEventListener("scroll", captureY, { passive: true });
+        captureY();
+    }
 
-    /* track scroll on every scroll event */
-    window.addEventListener("scroll", trackScroll, { passive: true });
-    trackScroll();
+    /* ============================================
+       Init
+       ============================================ */
+
+    function init() {
+        installSetters();
+        hookHistory();
+        startTracking();
+
+        /* watchdog runs every 40ms — fast enough to catch
+           the ~132ms window between URL change and goTop */
+        setInterval(watchdog, 40);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
 
 })();
