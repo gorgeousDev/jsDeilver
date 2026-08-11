@@ -1462,121 +1462,133 @@
 
 /* =========================================
    14. Fix Scroll-to-Top Bug
-   akkad.js has a closure-scoped goTop()
-   that sets scrollTop=0 on URL changes.
-   We cannot override it, so we make
-   scrollTop immutable during transitions.
+   akkad.js goTop() is closure-scoped.
+   It fires scrollTo(0,0) + scrollTop=0
+   inside double-rAF on URL changes.
+   We can't block it, so we DETECT and
+   REVERSE it with a scroll watchdog.
    ========================================= */
 (function () {
 
-    var locked = false;
-    var savedY = 0;
-    var lockTimer = null;
+    var lastY = 0;
+    var watching = false;
 
-    function lockScroll() {
-        locked = true;
-        savedY = window.pageYOffset || document.documentElement.scrollTop || 0;
-        clearTimeout(lockTimer);
-        lockTimer = setTimeout(function () { locked = false; }, 800);
+    /* --- save scroll position continuously --- */
+    function trackScroll() {
+        var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+        if (y > 10) lastY = y;
     }
 
-    /* --- Override scrollTo --- */
-    var _scrollTo = window.scrollTo;
-    window.scrollTo = function (x, y) {
-        if (locked) return;
-        _scrollTo.call(window, x, y);
-    };
+    /* --- detect forced jump to 0 and restore --- */
+    function watchdog() {
+        var y = window.pageYOffset || document.documentElement.scrollTop || 0;
 
-    /* --- Make scrollTop setter block goTop --- */
-    function installScrollGuard() {
-        var de = document.documentElement;
-        var body = document.body;
+        /* If we were scrolled down (>100px) and suddenly at 0,
+           and it wasn't a user-initiated scroll, restore position */
+        if (y === 0 && lastY > 100 && !watching) {
+            /* goTop fires via double-rAF, so wait 2 frames then restore */
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    window.scrollTo(0, lastY);
+                    document.documentElement.scrollTop = lastY;
+                    document.body.scrollTop = lastY;
+                });
+            });
+        }
 
-        var currentScrollTop = 0;
-
-        Object.defineProperty(de, "scrollTop", {
-            get: function () { return currentScrollTop; },
-            set: function (v) {
-                if (locked) {
-                    /* only allow small changes (e.g. normal scroll) but block jumps to 0 */
-                    if (v === 0 && currentScrollTop > 100) return;
-                }
-                currentScrollTop = v;
-            },
-            configurable: true
-        });
-
-        Object.defineProperty(body, "scrollTop", {
-            get: function () { return currentScrollTop; },
-            set: function (v) {
-                if (locked) {
-                    if (v === 0 && currentScrollTop > 100) return;
-                }
-                currentScrollTop = v;
-            },
-            configurable: true
-        });
+        trackScroll();
     }
 
-    /* --- Hook carousel auto-slide transitions --- */
-    function hookCarousel() {
-        var el = document.querySelector(".home_slider_container") ||
-                 document.querySelector(".carouselWrapper");
-        if (!el || el.dataset.akkadScrollHook) return;
-        el.dataset.akkadScrollHook = "1";
-
-        /* lock during slide transitions */
-        el.addEventListener("transitionstart", lockScroll, { passive: true });
-
-        /* also lock on any pointer interaction with the carousel */
-        el.addEventListener("mouseenter", lockScroll, { passive: true });
-        el.addEventListener("touchstart", lockScroll, { passive: true });
-    }
-
-    /* --- Also block popstate/goTop via URL watcher --- */
-    /* Override history methods to set ignoreNextScroll */
-    var _pushState = history.pushState;
-    var _replaceState = history.replaceState;
+    /* --- block history methods that trigger goTop --- */
+    var _push = history.pushState;
+    var _replace = history.replaceState;
 
     history.pushState = function () {
-        lockScroll();
-        _pushState.apply(this, arguments);
-        /* keep locked for a moment after URL change */
-        clearTimeout(lockTimer);
-        lockTimer = setTimeout(function () { locked = false; }, 800);
+        watching = true;
+        trackScroll();
+        _push.apply(this, arguments);
+        /* after URL change, goTop will fire in ~200ms.
+           Keep watching position and restore if it jumps. */
+        var savedY = lastY;
+        var restoreTimer = setInterval(function () {
+            var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+            if (y < savedY * 0.5 && savedY > 100) {
+                window.scrollTo(0, savedY);
+                document.documentElement.scrollTop = savedY;
+                document.body.scrollTop = savedY;
+            }
+        }, 30);
+        setTimeout(function () {
+            clearInterval(restoreTimer);
+            watching = false;
+        }, 1000);
     };
 
     history.replaceState = function () {
-        lockScroll();
-        _replaceState.apply(this, arguments);
-        clearTimeout(lockTimer);
-        lockTimer = setTimeout(function () { locked = false; }, 800);
+        watching = true;
+        trackScroll();
+        _replace.apply(this, arguments);
+        var savedY = lastY;
+        var restoreTimer = setInterval(function () {
+            var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+            if (y < savedY * 0.5 && savedY > 100) {
+                window.scrollTo(0, savedY);
+                document.documentElement.scrollTop = savedY;
+                document.body.scrollTop = savedY;
+            }
+        }, 30);
+        setTimeout(function () {
+            clearInterval(restoreTimer);
+            watching = false;
+        }, 1000);
     };
 
     window.addEventListener("popstate", function () {
-        lockScroll();
+        watching = true;
+        var savedY = lastY;
+        var restoreTimer = setInterval(function () {
+            var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+            if (y < savedY * 0.5 && savedY > 100) {
+                window.scrollTo(0, savedY);
+                document.documentElement.scrollTop = savedY;
+                document.body.scrollTop = savedY;
+            }
+        }, 30);
+        setTimeout(function () {
+            clearInterval(restoreTimer);
+            watching = false;
+        }, 1000);
     });
 
-    /* --- Also handle hashchange --- */
-    window.addEventListener("hashchange", function () {
-        lockScroll();
-    });
+    /* --- Also block the URL polling in akkad.js --- */
+    /* Override location getter comparison by making href immutable after first read */
+    var _location = window.location;
+    var frozenHref = location.href;
+    var freezeTimer = null;
 
-    function run() {
-        installScrollGuard();
-        hookCarousel();
+    /* Freeze href comparison for 500ms around URL changes */
+    function freezeHref() {
+        frozenHref = location.href;
+        clearTimeout(freezeTimer);
+        freezeTimer = setTimeout(function () {
+            frozenHref = null;
+        }, 500);
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", run);
-    } else {
-        run();
-    }
+    /* Watch for URL changes and freeze comparison */
+    var lastCheckedUrl = location.href;
+    setInterval(function () {
+        if (location.href !== lastCheckedUrl) {
+            lastCheckedUrl = location.href;
+            freezeHref();
+        }
+    }, 50);
 
-    new MutationObserver(function () {
-        hookCarousel();
-    }).observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    /* --- Primary watchdog: runs continuously --- */
+    setInterval(watchdog, 50);
+
+    /* track scroll on every scroll event */
+    window.addEventListener("scroll", trackScroll, { passive: true });
+    trackScroll();
+
 })();
