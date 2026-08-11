@@ -15,7 +15,7 @@
    ========================================= */
 (function () {
     var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@7c6789853e562d9e7fdde30cb5807cae9e9010cc/src/modules/akkad.js";
+    s.src = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@7ab8a9a/src/modules/akkad.js";
     s.defer = true;
     document.head.appendChild(s);
 })();
