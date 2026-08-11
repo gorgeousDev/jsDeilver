@@ -1275,7 +1275,8 @@
 (function () {
 
     /* =========================================
-       CSS — hides original + styles new badge
+       CSS (one-time injection into body, not head
+       so Next.js hydration doesn't remove it)
        ========================================= */
     function addStyles() {
         if (document.getElementById("akkad-sale-badge-css")) return;
@@ -1283,50 +1284,43 @@
         var style = document.createElement("style");
         style.id = "akkad-sale-badge-css";
         style.textContent = [
-            /* — hide original تخفيضات (multiple selectors for safety) — */
-            '.fasty_product_card span[class*="top-0"][class*="left-0"]{',
-            '    display:none !important;',
-            '}',
-            '.fasty_product_card span.uppercase{',
-            '    display:none !important;',
-            '}',
-            '',
             /* — new badge wrapper — */
             '.akkad-sale-badge{',
-            '    position:absolute;',
-            '    top:0;',
-            '    right:0;',
-            '    z-index:15;',
-            '    pointer-events:none;',
+            '    position:absolute !important;',
+            '    top:0 !important;',
+            '    right:0 !important;',
+            '    z-index:15 !important;',
+            '    pointer-events:none !important;',
             '}',
             '',
             /* — pill — */
             '.akkad-sale-badge .akkad-badge-pill{',
-            '    position:relative;',
-            '    display:inline-flex;',
-            '    align-items:center;',
-            '    justify-content:center;',
-            '    gap:5px;',
-            '    padding:6px 14px 6px 10px;',
-            '    background:linear-gradient(135deg, #ff2d55, #ff6b6b);',
-            '    color:#fff;',
-            '    font-size:13px;',
-            '    font-weight:800;',
-            '    border-radius:0 0 0 14px;',
-            '    box-shadow:0 4px 15px rgba(255,45,85,.4);',
-            '    overflow:hidden;',
-            '    white-space:nowrap;',
+            '    position:relative !important;',
+            '    display:inline-flex !important;',
+            '    align-items:center !important;',
+            '    justify-content:center !important;',
+            '    gap:5px !important;',
+            '    padding:6px 14px 6px 10px !important;',
+            '    background:linear-gradient(135deg, #ff2d55, #ff6b6b) !important;',
+            '    color:#fff !important;',
+            '    font-size:13px !important;',
+            '    font-weight:800 !important;',
+            '    font-family:Tajawal,sans-serif !important;',
+            '    border-radius:0 0 0 14px !important;',
+            '    box-shadow:0 4px 15px rgba(255,45,85,.4) !important;',
+            '    overflow:hidden !important;',
+            '    white-space:nowrap !important;',
             '}',
             '',
             /* — sparkles — */
             '.akkad-sale-badge .sparkle{',
-            '    position:absolute;',
-            '    width:3px;',
-            '    height:3px;',
-            '    background:#fff;',
-            '    border-radius:50%;',
-            '    opacity:0;',
-            '    animation:akkadSparkle 1.8s ease-in-out infinite;',
+            '    position:absolute !important;',
+            '    width:3px !important;',
+            '    height:3px !important;',
+            '    background:#fff !important;',
+            '    border-radius:50% !important;',
+            '    opacity:0 !important;',
+            '    animation:akkadSparkle 1.8s ease-in-out infinite !important;',
             '}',
             '.akkad-sale-badge .sparkle:nth-child(1){ top:4px; left:8px; animation-delay:0s; }',
             '.akkad-sale-badge .sparkle:nth-child(2){ top:12px; left:20px; animation-delay:.35s; width:2px; height:2px; }',
@@ -1341,15 +1335,15 @@
             '',
             /* — shine sweep — */
             '.akkad-sale-badge .akkad-badge-pill::before{',
-            '    content:"";',
-            '    position:absolute;',
-            '    top:-50%;',
-            '    left:-80%;',
-            '    width:40%;',
-            '    height:200%;',
-            '    background:linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);',
-            '    transform:rotate(25deg);',
-            '    animation:akkadShine 2.5s ease-in-out infinite;',
+            '    content:"" !important;',
+            '    position:absolute !important;',
+            '    top:-50% !important;',
+            '    left:-80% !important;',
+            '    width:40% !important;',
+            '    height:200% !important;',
+            '    background:linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent) !important;',
+            '    transform:rotate(25deg) !important;',
+            '    animation:akkadShine 2.5s ease-in-out infinite !important;',
             '}',
             '',
             '@keyframes akkadShine{',
@@ -1359,9 +1353,9 @@
             '',
             /* — star icon — */
             '.akkad-sale-badge .akkad-star{',
-            '    font-size:12px;',
-            '    line-height:1;',
-            '    animation:akkadStarPulse 1.2s ease-in-out infinite;',
+            '    font-size:12px !important;',
+            '    line-height:1 !important;',
+            '    animation:akkadStarPulse 1.2s ease-in-out infinite !important;',
             '}',
             '',
             '@keyframes akkadStarPulse{',
@@ -1372,29 +1366,53 @@
             /* — mobile — */
             '@media(max-width:768px){',
             '    .akkad-sale-badge .akkad-badge-pill{',
-            '        padding:5px 12px 5px 8px;',
-            '        font-size:12px;',
-            '        border-radius:0 0 0 12px;',
+            '        padding:5px 12px 5px 8px !important;',
+            '        font-size:12px !important;',
+            '        border-radius:0 0 0 12px !important;',
             '    }',
             '}'
         ].join('\n');
-        document.head.appendChild(style);
+
+        /* append to body, not head — survives Next.js hydration */
+        (document.body || document.documentElement).appendChild(style);
+    }
+
+    /* =========================================
+       Hide "تخفيضات" spans using inline style
+       (survives React re-renders on that element)
+       ========================================= */
+    function hideOriginalBadges() {
+        var allSpans = document.querySelectorAll("span");
+        for (var i = 0; i < allSpans.length; i++) {
+            var span = allSpans[i];
+            if (span.textContent.trim() === "تخفيضات" ||
+                span.textContent.trim() === "تخفيضات") {
+                span.style.cssText = "display:none !important; visibility:hidden !important; width:0 !important; height:0 !important; overflow:hidden !important; position:absolute !important;";
+                /* also hide parent if it only contains this span */
+                var parent = span.parentElement;
+                if (parent && parent.children.length === 1 &&
+                    parent.textContent.trim() === "تخفيضات") {
+                    parent.style.cssText = "display:none !important; visibility:hidden !important; width:0 !important; height:0 !important; overflow:hidden !important; position:absolute !important;";
+                }
+            }
+        }
     }
 
     /* =========================================
        Inject new badge into sale cards
-       (only runs if card has <del> = old price)
        ========================================= */
     function processCards() {
-        document.querySelectorAll(".fasty_product_card").forEach(function (card) {
+        var cards = document.querySelectorAll(".fasty_product_card");
+        for (var c = 0; c < cards.length; c++) {
+            var card = cards[c];
 
             /* skip if already has our badge */
-            if (card.querySelector(".akkad-sale-badge")) return;
+            if (card.querySelector(".akkad-sale-badge")) continue;
 
-            /* only cards with a sale (old price) */
+            /* only cards with a sale (old price with <del>) */
             var priceContainer = card.querySelector(".fasty_product_card_price");
-            if (!priceContainer) return;
-            if (!priceContainer.querySelector("del")) return;
+            if (!priceContainer) continue;
+            if (!priceContainer.querySelector("del")) continue;
 
             /* build badge */
             var badge = document.createElement("div");
@@ -1406,7 +1424,7 @@
                     '<span class="sparkle"></span>' +
                     '<span class="sparkle"></span>' +
                     '<span class="sparkle"></span>' +
-                    '<span class="akkad-star">✦</span>' +
+                    '<span class="akkad-star">&#10022;</span>' +
                     '<span>SALE</span>' +
                 '</div>';
 
@@ -1415,7 +1433,7 @@
             if (link) {
                 link.appendChild(badge);
             }
-        });
+        }
     }
 
     /* =========================================
@@ -1423,6 +1441,7 @@
        ========================================= */
     function run() {
         addStyles();
+        hideOriginalBadges();
         processCards();
     }
 
@@ -1432,115 +1451,115 @@
         run();
     }
 
-    new MutationObserver(run).observe(document.body, {
+    new MutationObserver(function () {
+        hideOriginalBadges();
+        processCards();
+    }).observe(document.body, {
         childList: true,
         subtree: true
     });
 })();
 
 /* =========================================
-   14. Fix Swiper Category Carousel
-          Scroll-to-Top Bug
+   14. Fix Scroll-to-Top Bug
+   (akkad.js polls URL and calls goTop()
+   on every change — we neutralize it)
    ========================================= */
 (function () {
 
-    /* --- CSS to lock the carousel container --- */
-    function addScrollFixCSS() {
-        if (document.getElementById("akkad-scroll-fix-css")) return;
-
-        var s = document.createElement("style");
-        s.id = "akkad-scroll-fix-css";
-        s.textContent = [
-            /* lock the wrapper so swiper cannot expand page height */
-            '.carouselWrapper{',
-            '    overflow:hidden !important;',
-            '    max-height:420px;',
-            '}',
-            '',
-            '.home_slider_container{',
-            '    overflow:hidden !important;',
-            '    scroll-behavior:auto !important;',
-            '    scroll-snap-type:none !important;',
-            '    overscroll-behavior:none !important;',
-            '    -webkit-overflow-scrolling:auto !important;',
-            '}',
-            '',
-            '.home_slider_container .swiper-wrapper{',
-            '    overscroll-behavior:none !important;',
-            '}',
-            '',
-            /* prevent any scroll anchor from the swiper */
-            '.swiper-slide{',
-            '    scroll-snap-align:none !important;',
-            '    scroll-snap-stop:unset !important;',
-            '}'
-        ].join('\n');
-        document.head.appendChild(s);
+    /* --- neutralize akkad.js goTop --- */
+    function neutralizeGoTop() {
+        if (typeof window.goTop === "function") {
+            window.goTop = function () {};
+        }
     }
 
-    /* --- JS: save & restore scroll on slide change --- */
-    var lastScrollY = 0;
+    /* --- also override the scroll behavior globally --- */
+    var suppressAutoScroll = false;
 
-    function hookSwiper() {
-        var swiperEl = document.querySelector(".home_slider_container");
-        if (!swiperEl || swiperEl.dataset.akkadFixed) return;
-        swiperEl.dataset.akkadFixed = "1";
+    /* block scroll-to-top during carousel transitions */
+    function blockCarouselScroll() {
+        var carousel = document.querySelector(".carouselWrapper") ||
+                       document.querySelector(".home_slider_container");
+        if (!carousel) return;
+        if (carousel.dataset.akkadScrollFixed) return;
+        carousel.dataset.akkadScrollFixed = "1";
 
-        /* save scroll position before slide transition */
-        swiperEl.addEventListener("slideChangeTransitionStart", function () {
-            lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-        }, { passive: true });
-
-        /* restore after transition ends */
-        swiperEl.addEventListener("slideChangeTransitionEnd", function () {
-            var currentY = window.pageYOffset || document.documentElement.scrollTop;
-            if (Math.abs(currentY - lastScrollY) > 5) {
-                window.scrollTo({ top: lastScrollY, behavior: "auto" });
+        carousel.addEventListener("transitionend", function (e) {
+            if (e.propertyName === "transform" || e.propertyName === "transform3d" ||
+                e.propertyName === "transition") {
+                /* just let it be — don't scroll to top */
             }
         }, { passive: true });
     }
 
-    /* --- fallback: watch for unexpected scroll jumps --- */
-    function watchScroll() {
-        var expectedScrollY = window.pageYOffset || document.documentElement.scrollTop;
-        var ticking = false;
+    /* --- intercept scrollTo calls during carousel interaction --- */
+    var origScrollTo = window.scrollTo;
+    var scrollBlockTimer = null;
 
-        window.addEventListener("scroll", function () {
-            if (ticking) return;
-            ticking = true;
+    function startScrollBlock() {
+        suppressAutoScroll = true;
+        clearTimeout(scrollBlockTimer);
+        scrollBlockTimer = setTimeout(function () {
+            suppressAutoScroll = false;
+        }, 600);
+    }
 
-            requestAnimationFrame(function () {
-                ticking = false;
-                var currentY = window.pageYOffset || document.documentElement.scrollTop;
-                var headerH = 72;
-                var carousel = document.querySelector(".carouselWrapper");
-                if (!carousel) return;
+    window.scrollTo = function () {
+        if (suppressAutoScroll) return;
+        origScrollTo.apply(window, arguments);
+    };
 
-                var rect = carousel.getBoundingClientRect();
-                /* if carousel is near the top and scroll jumped more than 100px */
-                if (rect.top <= headerH && rect.bottom > 0) {
-                    if (Math.abs(currentY - expectedScrollY) > 100) {
-                        window.scrollTo({ top: expectedScrollY, behavior: "auto" });
-                    }
-                }
-                expectedScrollY = window.pageYOffset || document.documentElement.scrollTop;
-            });
+    /* detect carousel hover / touch to block scroll */
+    function hookCarousel() {
+        var el = document.querySelector(".home_slider_container");
+        if (!el || el.dataset.akkadHooked) return;
+        el.dataset.akkadHooked = "1";
+
+        el.addEventListener("mouseenter", startScrollBlock, { passive: true });
+        el.addEventListener("touchstart", startScrollBlock, { passive: true });
+        el.addEventListener("mouseleave", function () {
+            suppressAutoScroll = false;
+        }, { passive: true });
+        el.addEventListener("touchend", function () {
+            suppressAutoScroll = false;
         }, { passive: true });
     }
 
+    /* --- also override goTop if it appears later --- */
+    var origDefineProperty = Object.defineProperty;
+    try {
+        Object.defineProperty = function (obj, prop, desc) {
+            if (obj === window && prop === "goTop") {
+                return obj;
+            }
+            return origDefineProperty.call(this, obj, prop, desc);
+        };
+    } catch (e) {}
+
+    /* --- watch for goTop being set and override --- */
+    var goTopInterval = setInterval(function () {
+        if (typeof window.goTop === "function" && window.goTop.toString().indexOf("scrollTo") !== -1) {
+            window.goTop = function () {};
+        }
+    }, 200);
+
+    /* cleanup after 10 seconds */
+    setTimeout(function () {
+        clearInterval(goTopInterval);
+        try { Object.defineProperty = origDefineProperty; } catch (e) {}
+    }, 10000);
+
     function run() {
-        addScrollFixCSS();
-        hookSwiper();
+        neutralizeGoTop();
+        blockCarouselScroll();
+        hookCarousel();
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", function () {
-            run();
-            watchScroll();
-        });
+        document.addEventListener("DOMContentLoaded", run);
     } else {
         run();
-        watchScroll();
     }
 
     new MutationObserver(run).observe(document.body, {
