@@ -332,9 +332,33 @@
   }
 
   function goTop() {
-    window.scrollTo(0, 0);
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant"
+    });
+
+    if (document.scrollingElement) {
+      document.scrollingElement.scrollTop = 0;
+    }
+
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
+  }
+
+  function goTopAfterNavigation() {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        window.scrollTo(0, 0);
+
+        if (document.scrollingElement) {
+          document.scrollingElement.scrollTop = 0;
+        }
+
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
+    });
   }
 
   // عند تحميل الصفحة
@@ -349,7 +373,7 @@
   new MutationObserver(function () {
     if (location.href !== lastUrl) {
       lastUrl = location.href;
-      setTimeout(goTop, 50);
+      goTopAfterNavigation();
     }
   }).observe(document, {
     subtree: true,
@@ -360,17 +384,17 @@
   var originalPushState = history.pushState;
   history.pushState = function () {
     originalPushState.apply(this, arguments);
-    setTimeout(goTop, 50);
+    goTopAfterNavigation();
   };
 
   var originalReplaceState = history.replaceState;
   history.replaceState = function () {
     originalReplaceState.apply(this, arguments);
-    setTimeout(goTop, 50);
+    goTopAfterNavigation();
   };
 
   window.addEventListener("popstate", function () {
-    setTimeout(goTop, 50);
+    goTopAfterNavigation();
   });
 
   try {
