@@ -641,10 +641,10 @@
       }
     });
 
-    var lastUrl = location.href;
+    var lastPath = location.pathname;
     setInterval(function () {
-      if (location.href !== lastUrl) {
-        lastUrl = location.href;
+      if (location.pathname !== lastPath) {
+        lastPath = location.pathname;
         goTop();
       }
     }, 100);
