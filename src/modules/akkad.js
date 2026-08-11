@@ -670,20 +670,10 @@
     });
 
     // 9. Categories Navbar Execution
-    var navbarObserver = new MutationObserver(function () {
-      setTimeout(initNavbar, 500);
-    });
-    navbarObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-
     if (document.readyState === "complete") {
-      setTimeout(initNavbar, 1000);
+      initNavbar();
     } else {
-      window.addEventListener("load", function () {
-        setTimeout(initNavbar, 1000);
-      });
+      window.addEventListener("load", initNavbar);
     }
 
   } catch (error) {
