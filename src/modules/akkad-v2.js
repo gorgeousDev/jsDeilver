@@ -1268,3 +1268,182 @@
         subtree: true
     });
 })();
+
+/* =========================================
+   13. Modern Sparkled Sale Badge
+   ========================================= */
+(function () {
+
+    var BADGE_ID = "akkad-sale-badge";
+
+    /* =========================================
+       CSS
+       ========================================= */
+    function addStyles() {
+        if (document.getElementById("akkad-sale-badge-css")) return;
+
+        var style = document.createElement("style");
+        style.id = "akkad-sale-badge-css";
+        style.textContent = "\n\
+/* ===== Hide original تخفيضات badge ===== */\n\
+.fasty_product_card span.absolute.top-0{\n\
+    display:none !important;\n\
+}\n\
+.fasty_product_card .fasty_product_card_price span.absolute{\n\
+    display:none !important;\n\
+}\n\
+\n\
+/* ===== New sale badge wrapper ===== */\n\
+.akkad-sale-badge{\n\
+    position:absolute;\n\
+    top:0;\n\
+    right:0;\n\
+    z-index:15;\n\
+    pointer-events:none;\n\
+}\n\
+\n\
+/* ===== The badge pill ===== */\n\
+.akkad-sale-badge .akkad-badge-pill{\n\
+    position:relative;\n\
+    display:inline-flex;\n\
+    align-items:center;\n\
+    justify-content:center;\n\
+    gap:5px;\n\
+    padding:6px 14px 6px 10px;\n\
+    background:linear-gradient(135deg, #ff2d55, #ff6b6b);\n\
+    color:#fff;\n\
+    font-size:13px;\n\
+    font-weight:800;\n\
+    border-radius:0 0 0 14px;\n\
+    box-shadow:0 4px 15px rgba(255,45,85,.4);\n\
+    overflow:hidden;\n\
+    white-space:nowrap;\n\
+}\n\
+\n\
+/* ===== Sparkle dots ===== */\n\
+.akkad-sale-badge .sparkle{\n\
+    position:absolute;\n\
+    width:3px;\n\
+    height:3px;\n\
+    background:#fff;\n\
+    border-radius:50%;\n\
+    opacity:0;\n\
+    animation:akkadSparkle 1.8s ease-in-out infinite;\n\
+}\n\
+.akkad-sale-badge .sparkle:nth-child(1){ top:4px; left:8px; animation-delay:0s; }\n\
+.akkad-sale-badge .sparkle:nth-child(2){ top:12px; left:20px; animation-delay:.35s; width:2px; height:2px; }\n\
+.akkad-sale-badge .sparkle:nth-child(3){ top:6px; right:10px; animation-delay:.7s; }\n\
+.akkad-sale-badge .sparkle:nth-child(4){ bottom:4px; left:14px; animation-delay:1.05s; width:2px; height:2px; }\n\
+.akkad-sale-badge .sparkle:nth-child(5){ bottom:6px; right:8px; animation-delay:1.4s; }\n\
+\n\
+@keyframes akkadSparkle{\n\
+    0%,100%{ opacity:0; transform:scale(0) rotate(0deg); }\n\
+    50%{ opacity:1; transform:scale(1) rotate(180deg); }\n\
+}\n\
+\n\
+/* ===== Shine sweep ===== */\n\
+.akkad-sale-badge .akkad-badge-pill::before{\n\
+    content:\"\";\n\
+    position:absolute;\n\
+    top:-50%;\n\
+    left:-80%;\n\
+    width:40%;\n\
+    height:200%;\n\
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);\n\
+    transform:rotate(25deg);\n\
+    animation:akkadShine 2.5s ease-in-out infinite;\n\
+}\n\
+\n\
+@keyframes akkadShine{\n\
+    0%{ left:-80%; }\n\
+    45%,100%{ left:140%; }\n\
+}\n\
+\n\
+/* ===== Star icon ===== */\n\
+.akkad-sale-badge .akkad-star{\n\
+    font-size:12px;\n\
+    line-height:1;\n\
+    animation:akkadStarPulse 1.2s ease-in-out infinite;\n\
+}\n\
+\n\
+@keyframes akkadStarPulse{\n\
+    0%,100%{ transform:scale(1) rotate(0deg); }\n\
+    50%{ transform:scale(1.3) rotate(15deg); }\n\
+}\n\
+\n\
+/* ===== Mobile ===== */\n\
+@media(max-width:768px){\n\
+    .akkad-sale-badge .akkad-badge-pill{\n\
+        padding:5px 12px 5px 8px;\n\
+        font-size:12px;\n\
+        border-radius:0 0 0 12px;\n\
+    }\n\
+}\n\
+";
+        document.head.appendChild(style);
+    }
+
+    /* =========================================
+       Hide original & inject new badge
+       ========================================= */
+    function processCards() {
+        document.querySelectorAll(".fasty_product_card").forEach(function (card) {
+
+            /* --- hide original تخفيضات span --- */
+            card.querySelectorAll("span").forEach(function (span) {
+                if (span.textContent.trim() === "تخفيضات") {
+                    span.style.display = "none";
+                }
+            });
+
+            /* --- skip if already processed --- */
+            if (card.querySelector("." + BADGE_ID)) return;
+
+            /* --- only for cards that have a sale (old price with <del>) --- */
+            var priceContainer = card.querySelector(".fasty_product_card_price");
+            if (!priceContainer) return;
+            var del = priceContainer.querySelector("del");
+            if (!del) return;
+
+            /* --- build badge --- */
+            var badge = document.createElement("div");
+            badge.className = BADGE_ID;
+
+            badge.innerHTML = '\
+                <div class="akkad-badge-pill">\
+                    <span class="sparkle"></span>\
+                    <span class="sparkle"></span>\
+                    <span class="sparkle"></span>\
+                    <span class="sparkle"></span>\
+                    <span class="sparkle"></span>\
+                    <span class="akkad-star">✦</span>\
+                    <span>SALE</span>\
+                </div>';
+
+            /* --- inject into the card's link wrapper (has position:relative) --- */
+            var link = card.querySelector("a");
+            if (link) {
+                link.appendChild(badge);
+            }
+        });
+    }
+
+    /* =========================================
+       Run
+       ========================================= */
+    function run() {
+        addStyles();
+        processCards();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", run);
+    } else {
+        run();
+    }
+
+    new MutationObserver(run).observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+})();
