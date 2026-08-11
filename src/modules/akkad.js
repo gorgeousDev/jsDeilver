@@ -332,15 +332,46 @@
   }
 
   function goTop() {
-    if (ignoreNextScroll) return;
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-      });
-    });
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }
+
+  // عند تحميل الصفحة
+  window.addEventListener("load", goTop);
+
+  // عند الرجوع/التنقل
+  window.addEventListener("pageshow", goTop);
+
+  // راقب تغيّر الـ URL في React/Next
+  var lastUrl = location.href;
+
+  new MutationObserver(function () {
+    if (location.href !== lastUrl) {
+      lastUrl = location.href;
+      setTimeout(goTop, 50);
+    }
+  }).observe(document, {
+    subtree: true,
+    childList: true
+  });
+
+  // احتياطي للـ SPA navigation
+  var originalPushState = history.pushState;
+  history.pushState = function () {
+    originalPushState.apply(this, arguments);
+    setTimeout(goTop, 50);
+  };
+
+  var originalReplaceState = history.replaceState;
+  history.replaceState = function () {
+    originalReplaceState.apply(this, arguments);
+    setTimeout(goTop, 50);
+  };
+
+  window.addEventListener("popstate", function () {
+    setTimeout(goTop, 50);
+  });
 
   try {
 
@@ -630,26 +661,6 @@
         setTimeout(initNavbar, 1000);
       });
     }
-
-    // 11. URL change automatic scroll to top Execution
-    document.addEventListener("click", function (e) {
-      if (e.target.closest('button[data-variant="slim"]')) {
-        ignoreNextScroll = true;
-        setTimeout(function () {
-          ignoreNextScroll = false;
-        }, 3000);
-      }
-    });
-
-    var lastPath = location.pathname;
-    setInterval(function () {
-      if (location.pathname !== lastPath) {
-        lastPath = location.pathname;
-        goTop();
-      }
-    }, 100);
-
-
 
   } catch (error) {
     console.error("Error in GTM akkad.js execution:", error);
