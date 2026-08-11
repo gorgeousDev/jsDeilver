@@ -1462,97 +1462,108 @@
 
 /* =========================================
    14. Fix Scroll-to-Top Bug
-   (akkad.js polls URL and calls goTop()
-   on every change — we neutralize it)
+   akkad.js has a closure-scoped goTop()
+   that sets scrollTop=0 on URL changes.
+   We cannot override it, so we make
+   scrollTop immutable during transitions.
    ========================================= */
 (function () {
 
-    /* --- neutralize akkad.js goTop --- */
-    function neutralizeGoTop() {
-        if (typeof window.goTop === "function") {
-            window.goTop = function () {};
-        }
+    var locked = false;
+    var savedY = 0;
+    var lockTimer = null;
+
+    function lockScroll() {
+        locked = true;
+        savedY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        clearTimeout(lockTimer);
+        lockTimer = setTimeout(function () { locked = false; }, 800);
     }
 
-    /* --- also override the scroll behavior globally --- */
-    var suppressAutoScroll = false;
-
-    /* block scroll-to-top during carousel transitions */
-    function blockCarouselScroll() {
-        var carousel = document.querySelector(".carouselWrapper") ||
-                       document.querySelector(".home_slider_container");
-        if (!carousel) return;
-        if (carousel.dataset.akkadScrollFixed) return;
-        carousel.dataset.akkadScrollFixed = "1";
-
-        carousel.addEventListener("transitionend", function (e) {
-            if (e.propertyName === "transform" || e.propertyName === "transform3d" ||
-                e.propertyName === "transition") {
-                /* just let it be — don't scroll to top */
-            }
-        }, { passive: true });
-    }
-
-    /* --- intercept scrollTo calls during carousel interaction --- */
-    var origScrollTo = window.scrollTo;
-    var scrollBlockTimer = null;
-
-    function startScrollBlock() {
-        suppressAutoScroll = true;
-        clearTimeout(scrollBlockTimer);
-        scrollBlockTimer = setTimeout(function () {
-            suppressAutoScroll = false;
-        }, 600);
-    }
-
-    window.scrollTo = function () {
-        if (suppressAutoScroll) return;
-        origScrollTo.apply(window, arguments);
+    /* --- Override scrollTo --- */
+    var _scrollTo = window.scrollTo;
+    window.scrollTo = function (x, y) {
+        if (locked) return;
+        _scrollTo.call(window, x, y);
     };
 
-    /* detect carousel hover / touch to block scroll */
-    function hookCarousel() {
-        var el = document.querySelector(".home_slider_container");
-        if (!el || el.dataset.akkadHooked) return;
-        el.dataset.akkadHooked = "1";
+    /* --- Make scrollTop setter block goTop --- */
+    function installScrollGuard() {
+        var de = document.documentElement;
+        var body = document.body;
 
-        el.addEventListener("mouseenter", startScrollBlock, { passive: true });
-        el.addEventListener("touchstart", startScrollBlock, { passive: true });
-        el.addEventListener("mouseleave", function () {
-            suppressAutoScroll = false;
-        }, { passive: true });
-        el.addEventListener("touchend", function () {
-            suppressAutoScroll = false;
-        }, { passive: true });
+        var currentScrollTop = 0;
+
+        Object.defineProperty(de, "scrollTop", {
+            get: function () { return currentScrollTop; },
+            set: function (v) {
+                if (locked) {
+                    /* only allow small changes (e.g. normal scroll) but block jumps to 0 */
+                    if (v === 0 && currentScrollTop > 100) return;
+                }
+                currentScrollTop = v;
+            },
+            configurable: true
+        });
+
+        Object.defineProperty(body, "scrollTop", {
+            get: function () { return currentScrollTop; },
+            set: function (v) {
+                if (locked) {
+                    if (v === 0 && currentScrollTop > 100) return;
+                }
+                currentScrollTop = v;
+            },
+            configurable: true
+        });
     }
 
-    /* --- also override goTop if it appears later --- */
-    var origDefineProperty = Object.defineProperty;
-    try {
-        Object.defineProperty = function (obj, prop, desc) {
-            if (obj === window && prop === "goTop") {
-                return obj;
-            }
-            return origDefineProperty.call(this, obj, prop, desc);
-        };
-    } catch (e) {}
+    /* --- Hook carousel auto-slide transitions --- */
+    function hookCarousel() {
+        var el = document.querySelector(".home_slider_container") ||
+                 document.querySelector(".carouselWrapper");
+        if (!el || el.dataset.akkadScrollHook) return;
+        el.dataset.akkadScrollHook = "1";
 
-    /* --- watch for goTop being set and override --- */
-    var goTopInterval = setInterval(function () {
-        if (typeof window.goTop === "function" && window.goTop.toString().indexOf("scrollTo") !== -1) {
-            window.goTop = function () {};
-        }
-    }, 200);
+        /* lock during slide transitions */
+        el.addEventListener("transitionstart", lockScroll, { passive: true });
 
-    /* cleanup after 10 seconds */
-    setTimeout(function () {
-        clearInterval(goTopInterval);
-        try { Object.defineProperty = origDefineProperty; } catch (e) {}
-    }, 10000);
+        /* also lock on any pointer interaction with the carousel */
+        el.addEventListener("mouseenter", lockScroll, { passive: true });
+        el.addEventListener("touchstart", lockScroll, { passive: true });
+    }
+
+    /* --- Also block popstate/goTop via URL watcher --- */
+    /* Override history methods to set ignoreNextScroll */
+    var _pushState = history.pushState;
+    var _replaceState = history.replaceState;
+
+    history.pushState = function () {
+        lockScroll();
+        _pushState.apply(this, arguments);
+        /* keep locked for a moment after URL change */
+        clearTimeout(lockTimer);
+        lockTimer = setTimeout(function () { locked = false; }, 800);
+    };
+
+    history.replaceState = function () {
+        lockScroll();
+        _replaceState.apply(this, arguments);
+        clearTimeout(lockTimer);
+        lockTimer = setTimeout(function () { locked = false; }, 800);
+    };
+
+    window.addEventListener("popstate", function () {
+        lockScroll();
+    });
+
+    /* --- Also handle hashchange --- */
+    window.addEventListener("hashchange", function () {
+        lockScroll();
+    });
 
     function run() {
-        neutralizeGoTop();
-        blockCarouselScroll();
+        installScrollGuard();
         hookCarousel();
     }
 
@@ -1562,7 +1573,9 @@
         run();
     }
 
-    new MutationObserver(run).observe(document.body, {
+    new MutationObserver(function () {
+        hookCarousel();
+    }).observe(document.body, {
         childList: true,
         subtree: true
     });
