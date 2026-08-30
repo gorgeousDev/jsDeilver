@@ -1,6 +1,6 @@
 (function () {
     function disableVideoAutoplay() {
-        var videos = document.querySelectorAll('video');
+        var videos = document.querySelectorAll('video[autoplay]');
         for (var i = 0; i < videos.length; i++) {
             var video = videos[i];
             video.autoplay = false;
