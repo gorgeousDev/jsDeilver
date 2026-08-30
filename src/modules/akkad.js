@@ -23,11 +23,11 @@
     var pagination = container.querySelector(".swiper-pagination");
     if (!pagination) return;
 
-    var slides = container.querySelectorAll(
-      ".swiper-slide:not(.swiper-slide-duplicate) img"
+    var mediaEls = container.querySelectorAll(
+      ".swiper-slide:not(.swiper-slide-duplicate) img, .swiper-slide:not(.swiper-slide-duplicate) video"
     );
 
-    if (!slides.length) return;
+    if (!mediaEls.length) return;
 
     /* =========================
        Gallery Wrapper
@@ -59,33 +59,67 @@
        Create Thumbnails
     ========================= */
 
-    for (var i = 0; i < slides.length; i++) {
+    for (var i = 0; i < mediaEls.length; i++) {
       (function (index) {
-        var img = slides[index];
+        var el = mediaEls[index];
+        var isVideo = el.tagName === "VIDEO";
 
-        var thumb = document.createElement("img");
-
-        thumb.src = img.src;
-        thumb.className = "akkad-thumb";
-        thumb.alt = img.alt || "";
-
-        thumb.addEventListener("click", function (e) {
+        var clickHandler = function (e) {
           e.preventDefault();
           e.stopPropagation();
-
-          var bullets = container.querySelectorAll(
-            ".swiper-pagination-bullet"
-          );
-
+          var bullets = container.querySelectorAll(".swiper-pagination-bullet");
           if (bullets[index]) {
             bullets[index].click();
-
-            setTimeout(function () {
-              updateActiveThumb(true);
-            }, 100);
+            setTimeout(function () { updateActiveThumb(true); }, 100);
           }
-        });
+        };
 
+        if (isVideo) {
+          var thumbDiv = document.createElement("div");
+          thumbDiv.className = "akkad-thumb";
+          thumbDiv.style.position = "relative";
+          thumbDiv.style.padding = "0";
+
+          var frameImg = document.createElement("img");
+          frameImg.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;";
+          thumbDiv.appendChild(frameImg);
+
+          var playIcon = document.createElement("span");
+          playIcon.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;background:rgba(0,0,0,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;";
+          playIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="#fff" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>';
+          thumbDiv.appendChild(playIcon);
+
+          function captureFrame() {
+            try {
+              var canvas = document.createElement("canvas");
+              var w = el.videoWidth || 320;
+              var h = el.videoHeight || 240;
+              canvas.width = w;
+              canvas.height = h;
+              canvas.getContext("2d").drawImage(el, 0, 0, w, h);
+              frameImg.src = canvas.toDataURL("image/jpeg", 0.6);
+            } catch (e) {
+              thumbDiv.style.background = "#1a1a2e";
+            }
+          }
+
+          if (el.readyState >= 2) {
+            captureFrame();
+          } else {
+            el.addEventListener("loadeddata", captureFrame, { once: true });
+          }
+
+          thumbDiv.addEventListener("click", clickHandler);
+          gallery.appendChild(thumbDiv);
+          return;
+        }
+
+        var thumb = document.createElement("img");
+        thumb.src = el.src;
+        thumb.className = "akkad-thumb";
+        thumb.alt = el.alt || "";
+
+        thumb.addEventListener("click", clickHandler);
         gallery.appendChild(thumb);
       })(i);
     }
