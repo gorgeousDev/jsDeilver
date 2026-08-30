@@ -63,6 +63,13 @@
     '.akkad-elec-box .akkad-num span { font-size: 16px; font-weight: 700; color: #1d4ed8; direction: ltr; }',
     '.akkad-elec-box .akkad-num button { border: none; background: #2563eb; color: #fff; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }',
 
+    '.mt-2.flex.items-end.justify-between { display: flex !important; gap: 10px !important; align-items: center !important; background: #f9fafb !important; border: 1px solid #A8DDD4 !important; border-radius: 10px !important; padding: 12px !important; margin-top: 12px !important; }',
+    '.mt-2.flex.items-end.justify-between > div { flex: 1 !important; }',
+    '.mt-2.flex.items-end.justify-between label { font-weight: 700 !important; font-size: 13px !important; color: #0F5E55 !important; margin-bottom: 4px !important; }',
+    '.mt-2.flex.items-end.justify-between input { height: 40px !important; font-size: 14px !important; text-transform: uppercase !important; letter-spacing: 1px !important; }',
+    '.mt-2.flex.items-end.justify-between button { background: #0F8478 !important; color: #fff !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; font-weight: 700 !important; font-size: 14px !important; white-space: nowrap !important; transition: opacity 0.2s !important; }',
+    '.mt-2.flex.items-end.justify-between button:hover { opacity: 0.9 !important; }',
+
     '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }'
   ].join('\n');
 
