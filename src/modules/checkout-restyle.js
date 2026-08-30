@@ -169,6 +169,29 @@
   }
 
 
+  function getInvoiceNumber() {
+    var now = new Date();
+    var yy = String(now.getFullYear()).slice(-2);
+    var mm = String(now.getMonth() + 1).padStart(2, '0');
+    var dd = String(now.getDate()).padStart(2, '0');
+    var dateKey = yy + mm + dd;
+
+    var stored = localStorage.getItem('akkad_invoice_counter');
+    var lastDate = localStorage.getItem('akkad_invoice_date');
+    var counter;
+
+    if (lastDate === dateKey && stored) {
+      counter = parseInt(stored) + 1;
+    } else {
+      counter = 1197;
+    }
+
+    localStorage.setItem('akkad_invoice_counter', counter);
+    localStorage.setItem('akkad_invoice_date', dateKey);
+
+    return 'akd-' + dateKey + '-' + String(counter).padStart(4, '0');
+  }
+
   function injectInvoice() {
     var summary = document.querySelector('.checkout_order_summary');
     if (!summary || document.querySelector('.akkad-invoice')) return;
@@ -185,7 +208,7 @@
           '<p class="akkad-invoice-meta-label">نموذج طلب</p>' +
           '<div class="akkad-invoice-meta-details">' +
             '<p><span>التاريخ:</span> ' + new Date().toLocaleDateString('ar-EG', {day:'2-digit',month:'2-digit',year:'numeric'}) + '</p>' +
-            '<p><span>رقم الطلب:</span> #' + Math.floor(100000 + Math.random() * 900000) + '</p>' +
+            '<p><span>رقم الطلب:</span> ' + getInvoiceNumber() + '</p>' +
           '</div>' +
         '</div>' +
       '</div>' +
