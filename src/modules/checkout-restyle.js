@@ -59,19 +59,48 @@
     '.akkad-elec-box { display: none; margin-top: 10px; }',
     '.akkad-elec-box.show { display: flex !important; flex-direction: column !important; gap: 10px; }',
     '.akkad-elec-box a { display: block; padding: 10px 14px; background: #6d28d9; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; text-align: center; }',
-    '.akkad-elec-box .akkad-num { display: flex; align-items: center; justify-content: space-between; background: #f0f4ff; border: 1px dashed #93c5fd; border-radius: 8px; padding: 10px 12px; }',
     '.akkad-elec-box .akkad-num-wrap { background: #f0f4ff; border: 1px dashed #93c5fd; border-radius: 8px; padding: 12px; }',
     '.akkad-elec-box .akkad-num-label { font-size: 13px; font-weight: 700; color: #1d4ed8; margin-bottom: 8px; }',
     '.akkad-elec-box .akkad-num { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #93c5fd; border-radius: 6px; padding: 10px 12px; }',
     '.akkad-elec-box .akkad-num span { font-size: 16px; font-weight: 700; color: #1d4ed8; direction: ltr; }',
     '.akkad-elec-box .akkad-num button { border: none; background: #2563eb; color: #fff; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }',
 
-    '.mt-2.flex.items-end.justify-between { display: flex !important; gap: 10px !important; align-items: center !important; background: #f9fafb !important; border: 1px solid #A8DDD4 !important; border-radius: 10px !important; padding: 12px !important; margin-top: 12px !important; }',
-    '.mt-2.flex.items-end.justify-between > div { flex: 1 !important; }',
-    '.mt-2.flex.items-end.justify-between label { font-weight: 700 !important; font-size: 13px !important; color: #0F5E55 !important; margin-bottom: 4px !important; }',
-    '.mt-2.flex.items-end.justify-between input { height: 40px !important; font-size: 14px !important; text-transform: uppercase !important; letter-spacing: 1px !important; }',
-    '.mt-2.flex.items-end.justify-between button { background: #0F8478 !important; color: #fff !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; font-weight: 700 !important; font-size: 14px !important; white-space: nowrap !important; transition: opacity 0.2s !important; }',
-    '.mt-2.flex.items-end.justify-between button:hover { opacity: 0.9 !important; }',
+    '.akkad-invoice { direction: rtl; width: 100%; background: linear-gradient(to bottom right, #EAF7F5, #DCF1EE, white); border: 2px solid #A8DDD4; border-radius: 12px; padding: 14px; font-family: Tajawal, sans-serif; color: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 16px; }',
+    '.akkad-invoice-header { border-bottom: 2px solid #5EBFB1; padding-bottom: 14px; margin-bottom: 14px; }',
+    '.akkad-invoice-brand { text-align: center; margin-bottom: 10px; }',
+    '.akkad-invoice-brand h2 { font-size: 18px; font-weight: 900; color: #0F5E55; margin: 0; }',
+    '.akkad-invoice-brand h2 span { color: #0E8478; }',
+    '.akkad-invoice-brand p { font-size: 11px; font-weight: 600; color: #3F8C81; margin: 4px 0 0 0; }',
+    '.akkad-invoice-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }',
+    '.akkad-invoice-meta-label { font-weight: 700; font-size: 14px; }',
+    '.akkad-invoice-meta-details { text-align: left; }',
+    '.akkad-invoice-meta-details p { margin: 2px 0; direction: ltr; text-align: right; }',
+    '.akkad-invoice-meta-details span { font-weight: 700; }',
+    '.akkad-invoice-customer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; font-size: 11px; }',
+    '.akkad-invoice-customer-info { display: flex; flex-direction: column; gap: 3px; }',
+    '.akkad-invoice-customer-info span { font-weight: 700; }',
+    '.akkad-invoice-customer-count { text-align: left; }',
+    '.akkad-invoice-table-wrapper { border-radius: 10px; overflow: hidden; border: 1px solid #A8DDD4; }',
+    '.akkad-invoice-table { width: 100%; border-collapse: collapse; font-size: 12px; }',
+    '.akkad-invoice-table thead tr { background: #0F8478; color: #fff; }',
+    '.akkad-invoice-table th { border: 1px solid #0F8478; padding: 10px 4px; text-align: center; font-weight: 700; }',
+    '.akkad-invoice-table td { border: 1px solid #A8DDD4; padding: 10px 6px; text-align: center; }',
+    '.akkad-invoice-table td:nth-child(2) { text-align: right; font-weight: 600; font-size: 11px; }',
+    '.akkad-invoice-table tbody tr:nth-child(odd) { background: #EFFAF8; }',
+    '.akkad-invoice-table tfoot tr { background: #0F8478; color: #fff; }',
+    '.akkad-invoice-table tfoot td { border: 1px solid #0F8478; padding: 10px 6px; font-weight: 900; }',
+    '.akkad-invoice-table tfoot td:last-child { font-size: 13px; color: #FFD98A; }',
+    '.akkad-invoice-table .item-total { font-weight: 700; color: #0F5E55; }',
+    '.akkad-invoice-footer-msg { margin-top: 14px; border-radius: 10px; overflow: hidden; border: 1px solid #A8DDD4; }',
+    '.akkad-invoice-footer-msg-top { background: linear-gradient(to left, #0F8478, #14A090); color: #fff; text-align: center; padding: 10px 14px; }',
+    '.akkad-invoice-footer-msg-top p { font-weight: 900; font-size: 12px; margin: 0; }',
+    '.akkad-invoice-footer-msg-top span { color: #FFD98A; }',
+
+    '.akkad-coupon-wrap { display: flex; gap: 10px; align-items: center; background: #f9fafb; border: 1px solid #A8DDD4; border-radius: 10px; padding: 12px; margin-top: 12px; }',
+    '.akkad-coupon-wrap > div { flex: 1; }',
+    '.akkad-coupon-wrap label { font-weight: 700; font-size: 13px; color: #0F5E55; margin-bottom: 4px; display: block; }',
+    '.akkad-coupon-wrap input { height: 40px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }',
+    '.akkad-coupon-wrap button { background: #0F8478; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 14px; white-space: nowrap; }',
 
     '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }'
   ].join('\n');
@@ -80,6 +109,9 @@
 
   function run() {
     fixPayments();
+    moveCoupon();
+    injectInvoice();
+    fixInputs();
   }
 
   function fixPayments() {
@@ -91,7 +123,6 @@
     var content = electronic.querySelector('.payment_card_content');
     if (!content) return;
 
-    // Create the box
     var box = document.createElement('div');
     box.className = 'akkad-elec-box';
     box.id = 'akkad-elec-box';
@@ -105,7 +136,6 @@
         '</div>' +
       '</div>';
 
-    // Insert box AFTER the image, BEFORE the fields
     var imgContainer = content.querySelector('.payment_card_img_container');
     if (imgContainer && imgContainer.nextSibling) {
       content.insertBefore(box, imgContainer.nextSibling);
@@ -113,16 +143,151 @@
       content.appendChild(box);
     }
 
-    // Show/hide on click
     electronic.addEventListener('click', function(e) {
       if (e.target.closest('.akkad-elec-box')) return;
       box.classList.add('show');
     }, true);
 
-    var cod = cards[0];
-    cod.addEventListener('click', function() {
+    cards[0].addEventListener('click', function() {
       box.classList.remove('show');
     }, true);
+  }
+
+  function moveCoupon() {
+    if (document.querySelector('.akkad-coupon-wrap')) return;
+    var couponBtn = document.querySelector('.mt-2.flex.justify-between');
+    if (!couponBtn) return;
+
+    var nameInput = document.querySelector('[name="full_name"]');
+    if (!nameInput) return;
+
+    var nameField = nameInput.closest('.mt-3');
+    if (!nameField) return;
+
+    var wrapper = document.createElement('div');
+    wrapper.className = 'akkad-coupon-wrap';
+    wrapper.innerHTML =
+      '<div>' +
+        '<label>كود الخصم</label>' +
+        '<input type="text" class="global_input block w-full" placeholder="أدخل الكود">' +
+      '</div>' +
+      '<button type="button">تطبيق</button>';
+
+    nameField.parentNode.insertBefore(wrapper, nameField.nextSibling.nextSibling);
+
+    // Copy coupon functionality from original
+    var origInput = couponBtn.querySelector('input');
+    var origBtn = couponBtn.querySelector('button');
+    if (origInput && origBtn) {
+      var newInput = wrapper.querySelector('input');
+      var newBtn = wrapper.querySelector('button');
+      newBtn.addEventListener('click', function() {
+        origInput.value = newInput.value;
+        origBtn.click();
+      });
+      couponBtn.style.display = 'none';
+    }
+  }
+
+  function injectInvoice() {
+    var summary = document.querySelector('.checkout_order_summary');
+    if (!summary || document.querySelector('.akkad-invoice')) return;
+
+    var invoice = document.createElement('div');
+    invoice.className = 'akkad-invoice';
+    invoice.innerHTML =
+      '<div class="akkad-invoice-header">' +
+        '<div class="akkad-invoice-brand">' +
+          '<h2><span>أكاد</span></h2>' +
+          '<p>أفضل عروض الأدوات المنزلية والعطور والأجهزة</p>' +
+        '</div>' +
+        '<div class="akkad-invoice-meta">' +
+          '<p class="akkad-invoice-meta-label">نموذج طلب</p>' +
+          '<div class="akkad-invoice-meta-details">' +
+            '<p><span>التاريخ:</span> ' + new Date().toLocaleDateString('ar-EG', {day:'2-digit',month:'2-digit',year:'numeric'}) + '</p>' +
+            '<p><span>رقم الطلب:</span> #' + Math.floor(100000 + Math.random() * 900000) + '</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="akkad-invoice-customer">' +
+        '<div class="akkad-invoice-customer-info">' +
+          '<div><span>العميل: </span><span class="inv-name">— غير محدد —</span></div>' +
+          '<div><span>رقم العميل: </span><span class="inv-phone" dir="ltr">— غير محدد —</span></div>' +
+        '</div>' +
+        '<div class="akkad-invoice-customer-count">' +
+          '<span>إجمالي القطع: </span><span class="inv-count">0</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="akkad-invoice-table-wrapper">' +
+        '<table class="akkad-invoice-table">' +
+          '<thead><tr><th>م</th><th>الصنف</th><th>العدد</th><th>السعر</th><th>الإجمالي</th></tr></thead>' +
+          '<tbody class="inv-tbody"></tbody>' +
+          '<tfoot><tr><td colspan="4">الإجمالي الكلي</td><td class="inv-total">0 ج</td></tr></tfoot>' +
+        '</table>' +
+      '</div>' +
+      '<div class="akkad-invoice-footer-msg">' +
+        '<div class="akkad-invoice-footer-msg-top">' +
+          '<p>شكرًا لثقتكم في <span>أكاد</span> — نتشرف بخدمتكم دائمًا</p>' +
+        '</div>' +
+      '</div>';
+
+    summary.prepend(invoice);
+
+    function update() {
+      var nameInput = document.querySelector('[name="full_name"]');
+      var phoneInput = document.querySelector('[name="phone"]');
+      var items = document.querySelectorAll('.cart-item');
+      var tbody = invoice.querySelector('.inv-tbody');
+      var currency = document.querySelector('[data-invoice="invoice-subtotal-value"] span');
+
+      invoice.querySelector('.inv-name').textContent = (nameInput && nameInput.value) || '— غير محدد —';
+      invoice.querySelector('.inv-phone').textContent = (phoneInput && phoneInput.value) || '— غير محدد —';
+
+      var totalCount = 0, grandTotal = 0;
+      tbody.innerHTML = '';
+
+      items.forEach(function(item, i) {
+        var name = item.querySelector('[data-cart="item-name"]');
+        var priceEl = item.querySelector('[data-cart="item-price"]');
+        var qtyEl = item.querySelector('[data-cart="item-quantity"]');
+        var price = parseInt((priceEl ? priceEl.textContent : '0').replace(/[^0-9]/g, '')) || 0;
+        var qty = parseInt(qtyEl ? qtyEl.textContent : '1') || 1;
+        var total = price * qty;
+        totalCount += qty;
+        grandTotal += total;
+
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + (i+1) + '</td><td><div style="font-weight:600;font-size:11px;">' + (name ? name.textContent : '') + '</div></td><td style="font-weight:700;">' + qty + '</td><td>' + price.toLocaleString() + ' ج</td><td class="item-total">' + total.toLocaleString() + ' ج</td>';
+        tbody.appendChild(tr);
+      });
+
+      invoice.querySelector('.inv-count').textContent = totalCount;
+      invoice.querySelector('.inv-total').textContent = grandTotal.toLocaleString() + ' ج';
+    }
+
+    update();
+    setInterval(update, 1000);
+  }
+
+  function fixInputs() {
+    var nameInput = document.querySelector('[name="full_name"]');
+    var phoneInput = document.querySelector('[name="phone"]');
+
+    if (nameInput && !nameInput._akkadFixed) {
+      nameInput._akkadFixed = true;
+      nameInput.addEventListener('input', function() {
+        var evt = new Event('input', { bubbles: true });
+        nameInput.dispatchEvent(evt);
+      });
+    }
+
+    if (phoneInput && !phoneInput._akkadFixed) {
+      phoneInput._akkadFixed = true;
+      phoneInput.addEventListener('input', function() {
+        var evt = new Event('input', { bubbles: true });
+        phoneInput.dispatchEvent(evt);
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
@@ -139,5 +304,6 @@
 
   new MutationObserver(function() {
     if (!document.querySelector('.akkad-elec-box')) run();
+    if (!document.querySelector('.akkad-invoice')) run();
   }).observe(document.body, { childList: true, subtree: true });
 })();
