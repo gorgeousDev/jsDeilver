@@ -827,18 +827,8 @@
             container.insertBefore(cod, transfer);
         }
 
-        if (!initialized) {
-            initialized = true;
-
-            setTimeout(function () {
-                cod.dispatchEvent(new MouseEvent("click", {
-                    bubbles: true,
-                    cancelable: true
-                }));
-            }, 300);
-
-            clearInterval(timer);
-        }
+        // Auto-click disabled to fix payment toggle bug
+        // Users can now click payment options freely
     }, 200);
 })();
 

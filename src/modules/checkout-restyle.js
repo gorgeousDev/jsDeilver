@@ -20,6 +20,28 @@
       display: none !important;
     }
 
+    /* --- Product title: 2 lines max with ellipsis --- */
+    [data-cart="item-name"] {
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      max-height: 2.8em !important;
+      line-height: 1.4 !important;
+    }
+
+    /* --- Hide "رقم او حساب المرسل" --- */
+    .payments_container button:has(.payment_card_name[style]),
+    .payment_card:has(.payment_card_img_container) {
+      position: relative;
+    }
+
+    /* Hide sender number field */
+    [data-cart="item-actions"] .font-medium.ms-2 {
+      display: none !important;
+    }
+
     /* --- Main container: single column --- */
     .checkout_container {
       grid-template-columns: 1fr !important;
@@ -546,8 +568,238 @@
       font-weight: 700;
       margin: 2px 0;
     }
+
+    /* --- Payment content section (InstaPay/Wallet) --- */
+    .akkad-payment-content {
+      margin-top: 12px;
+      border-top: 1px dashed #A8DDD4;
+      padding-top: 12px;
+    }
+
+    .akkad-payment-content-box {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .akkad-payment-content-box.active {
+      display: flex;
+    }
+
+    .akkad-payment-option {
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid;
+    }
+
+    .akkad-payment-option-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .akkad-instapay {
+      border-color: #ede9fe;
+      background: #faf7ff;
+    }
+
+    .akkad-instapay .akkad-payment-option-title {
+      color: #4c1d95;
+    }
+
+    .akkad-wallet {
+      border-color: #dbeafe;
+      background: #f8fbff;
+    }
+
+    .akkad-wallet .akkad-payment-option-title {
+      color: #1d4ed8;
+    }
+
+    .akkad-instapay-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      background: #6d28d9;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      transition: opacity 0.2s;
+    }
+
+    .akkad-instapay-btn:hover {
+      opacity: 0.9;
+    }
+
+    .akkad-wallet-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .akkad-wallet-number {
+      background: #fff;
+      border: 1px dashed #93c5fd;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #111;
+    }
+
+    .akkad-wallet-copy {
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .akkad-wallet-copy:hover {
+      opacity: 0.9;
+    }
+
+    /* --- Mobile responsive for payment content --- */
+    @media (max-width: 480px) {
+      .akkad-payment-option {
+        padding: 12px;
+      }
+
+      .akkad-payment-option-title {
+        font-size: 14px;
+      }
+
+      .akkad-instapay-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+        font-size: 16px;
+      }
+
+      .akkad-wallet-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .akkad-wallet-number {
+        text-align: center;
+        font-size: 18px;
+      }
+
+      .akkad-wallet-copy {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+        font-size: 16px;
+      }
+    }
   `;
   document.head.appendChild(style);
+
+  // === PAYMENT BUG FIX ===
+  function fixPaymentBug() {
+    const paymentCards = document.querySelectorAll('.payment_card');
+    if (paymentCards.length < 2) return;
+
+    // Remove the auto-click from akkad-v2.js by preventing it
+    const electronicCard = paymentCards[1]; // "دفع الكتروني"
+    const codCard = paymentCards[0]; // "دفع عند الاستلام"
+
+    // Track which one should be active
+    let activePayment = 'cod'; // default
+
+    // Override the click handlers
+    electronicCard.addEventListener('click', function(e) {
+      e.stopPropagation();
+      activePayment = 'electronic';
+
+      // Update visual state
+      codCard.classList.remove('border-blue-600');
+      codCard.querySelector('.radio_circle')?.classList.remove('bg-blue-500');
+      electronicCard.classList.add('border-blue-600');
+      electronicCard.querySelector('.radio_circle')?.classList.add('bg-blue-500');
+
+      // Show payment content
+      showPaymentContent('electronic');
+    });
+
+    codCard.addEventListener('click', function(e) {
+      e.stopPropagation();
+      activePayment = 'cod';
+
+      // Update visual state
+      electronicCard.classList.remove('border-blue-600');
+      electronicCard.querySelector('.radio_circle')?.classList.remove('bg-blue-500');
+      codCard.classList.add('border-blue-600');
+      codCard.querySelector('.radio_circle')?.classList.add('bg-blue-500');
+
+      // Hide payment content
+      showPaymentContent('cod');
+    });
+  }
+
+  // === PAYMENT CONTENT INJECTION ===
+  function createPaymentContent() {
+    const content = document.createElement('div');
+    content.className = 'akkad-payment-content';
+    content.innerHTML = `
+      <div class="akkad-payment-content-box" id="akkad-electronic-content">
+        <div class="akkad-payment-option akkad-instapay">
+          <div class="akkad-payment-option-title">
+            💜 الدفع عبر InstaPay
+          </div>
+          <a href="https://ipn.eg/S/akkad.one/instapay/3yzMRQ"
+             target="_blank"
+             class="akkad-instapay-btn">
+            فتح رابط الدفع
+          </a>
+        </div>
+        <div class="akkad-payment-option akkad-wallet">
+          <div class="akkad-payment-option-title">
+            📱 الدفع عبر محفظة الكاش
+          </div>
+          <div class="akkad-wallet-row">
+            <div class="akkad-wallet-number">01508331823</div>
+            <button class="akkad-wallet-copy"
+                    onclick="navigator.clipboard.writeText('01508331823');this.innerHTML='✔ تم النسخ';setTimeout(()=>this.innerHTML='نسخ الرقم',2000)">
+              نسخ الرقم
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    return content;
+  }
+
+  function showPaymentContent(type) {
+    const box = document.getElementById('akkad-electronic-content');
+    if (box) {
+      box.classList.toggle('active', type === 'electronic');
+    }
+  }
+
+  function injectPaymentContent() {
+    const paymentCards = document.querySelectorAll('.payment_card');
+    if (paymentCards.length < 2) return;
+    if (document.querySelector('.akkad-payment-content')) return;
+
+    const electronicCard = paymentCards[1];
+    const content = createPaymentContent();
+    electronicCard.appendChild(content);
+
+    // Fix the bug
+    fixPaymentBug();
+  }
 
   // === INVOICE INJECTION ===
   function buildInvoice() {
@@ -675,10 +927,15 @@
     });
   }
 
-  // Wait for DOM ready
+  // === INITIALIZE ===
+  function init() {
+    injectInvoice();
+    injectPaymentContent();
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(injectInvoice, 500));
+    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
   } else {
-    setTimeout(injectInvoice, 500);
+    setTimeout(init, 500);
   }
 })();
