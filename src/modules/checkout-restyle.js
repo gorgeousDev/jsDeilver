@@ -92,8 +92,13 @@
         '<button onclick="navigator.clipboard.writeText(\'01508331823\');this.textContent=\'✔ تم\';var b=this;setTimeout(function(){b.textContent=\'نسخ\';},2000)">نسخ</button>' +
       '</div>';
 
-    // Insert box at the TOP of payment_card_content (before image, before fields)
-    content.insertBefore(box, content.firstChild);
+    // Insert box AFTER the image, BEFORE the fields
+    var imgContainer = content.querySelector('.payment_card_img_container');
+    if (imgContainer && imgContainer.nextSibling) {
+      content.insertBefore(box, imgContainer.nextSibling);
+    } else {
+      content.appendChild(box);
+    }
 
     // Show/hide on click
     electronic.addEventListener('click', function(e) {
