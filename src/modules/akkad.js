@@ -1,5 +1,6 @@
 (function () {
   var ignoreNextScroll = false;
+  var galleryDone = false;
 
   // 1. Function declarations at IIFE function scope (Valid ES5)
   function fixAlt() {
@@ -15,11 +16,17 @@
   }
 
   function initGallery() {
+    if (galleryDone) return;
     var container = document.querySelector(".swiper");
     if (!container) return;
 
     var galleryHost = container.parentElement || container;
     var existingGallery = galleryHost.querySelector(".akkad-gallery");
+
+    if (existingGallery) {
+      galleryDone = true;
+      return;
+    }
 
     var mediaEls = container.querySelectorAll(
       ".swiper-slide:not(.swiper-slide-duplicate) img, .swiper-slide:not(.swiper-slide-duplicate) video"
@@ -143,6 +150,7 @@
     ========================= */
 
     pagination.insertAdjacentElement("afterend", wrapper);
+    galleryDone = true;
 
     /* =========================
        Scroll Arrows
@@ -676,21 +684,11 @@
     });
 
     // 6. initGallery Execution
-    var galleryTimer;
-    var galleryObserver = new MutationObserver(function () {
-      clearTimeout(galleryTimer);
-      galleryTimer = setTimeout(initGallery, 300);
-    });
-    galleryObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-
     if (document.readyState === "complete") {
-      setTimeout(initGallery, 500);
+      setTimeout(initGallery, 800);
     } else {
       window.addEventListener("load", function () {
-        setTimeout(initGallery, 500);
+        setTimeout(initGallery, 800);
       });
     }
 
