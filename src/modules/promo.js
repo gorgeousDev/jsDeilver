@@ -127,6 +127,16 @@
                 return ps[i];
             }
         }
+        /* fallback: look for any element containing discount text */
+        var all = invoice.querySelectorAll('*');
+        for (var j = 0; j < all.length; j++) {
+            var txt = (all[j].textContent || '').trim();
+            if ((txt.indexOf('\u062E\u0635\u0645') === 0 || txt.indexOf('\u0627\u0644\u062E\u0635\u0645') === 0) && all[j].children.length === 0) {
+                console.log('[PROMO] discount found via fallback:', all[j].tagName, txt);
+                return all[j];
+            }
+        }
+        console.log('[PROMO] no discount element found');
         return null;
     }
 
@@ -155,7 +165,7 @@
         if (!activeCode) return;
 
         var invoice = document.querySelector('[data-invoice="invoice"]');
-        if (!invoice) return;
+        if (!invoice) { console.log('[PROMO] no invoice found'); return; }
 
         var subtotalEl = invoice.querySelector('[data-invoice="invoice-subtotal-value"]');
         var originalTotalEl = invoice.querySelector('[data-invoice="invoice-total-value"]');
@@ -163,16 +173,22 @@
         var discountedTotalEl = invoice.querySelector('[data-invoice="invoice-discounted-total-value"]');
         var discountEl = findDiscountElement(invoice);
 
+        console.log('[PROMO] subtotalEl:', !!subtotalEl, 'originalTotalEl:', !!originalTotalEl, 'discountedRow:', !!discountedRow, 'discountedTotalEl:', !!discountedTotalEl, 'discountEl:', !!discountEl);
+
         if (!subtotalEl || !originalTotalEl || !discountedRow || !discountedTotalEl || !discountEl) return;
 
         var subtotal = getMoney(subtotalEl);
         var originalTotal = getMoney(originalTotalEl);
+
+        console.log('[PROMO] subtotal:', subtotal, 'originalTotal:', originalTotal);
 
         if (!Number.isFinite(subtotal) || !Number.isFinite(originalTotal)) return;
 
         var calculatedDiscount = subtotal * (PROMO_PERCENT / 100);
         var finalDiscount = Math.min(calculatedDiscount, MAX_DISCOUNT);
         var visualTotal = Math.max(0, originalTotal - finalDiscount);
+
+        console.log('[PROMO] calculated:', calculatedDiscount, 'capped:', finalDiscount, 'visualTotal:', visualTotal);
 
         setDiscountText(discountEl, finalDiscount);
         setMoney(discountedTotalEl, visualTotal);
