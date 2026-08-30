@@ -253,11 +253,14 @@
         }
       }
 
-      // Read discount from EasyOrders original invoice
-      var discountEl = document.querySelector('[data-invoice="invoice-discount-value"] span');
+      // Read discount from coupon container
       var discount = 0;
-      if (discountEl) {
-        discount = parseInt(discountEl.textContent.replace(/[^0-9]/g, '')) || 0;
+      var discountContainer = document.querySelector('.mt-2.flex.items-center.justify-between');
+      if (discountContainer) {
+        var discountP = discountContainer.querySelector('p');
+        if (discountP && discountP.textContent.includes('خصم')) {
+          discount = parseInt(discountP.textContent.replace(/[^0-9]/g, '')) || 0;
+        }
       }
 
       var discountBox = invoice.querySelector('.akkad-invoice-discount');
