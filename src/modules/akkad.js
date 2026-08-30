@@ -89,25 +89,46 @@
           playIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="#fff" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>';
           thumbDiv.appendChild(playIcon);
 
-          function captureFrame() {
+          function captureFromVideo(videoEl) {
             try {
+              var w = videoEl.videoWidth;
+              var h = videoEl.videoHeight;
+              if (!w || !h) return false;
               var canvas = document.createElement("canvas");
-              var w = el.videoWidth || 320;
-              var h = el.videoHeight || 240;
               canvas.width = w;
               canvas.height = h;
-              canvas.getContext("2d").drawImage(el, 0, 0, w, h);
-              frameImg.src = canvas.toDataURL("image/jpeg", 0.6);
-            } catch (e) {
-              thumbDiv.style.background = "#1a1a2e";
-            }
+              canvas.getContext("2d").drawImage(videoEl, 0, 0, w, h);
+              var url = canvas.toDataURL("image/jpeg", 0.7);
+              if (url && url.length > 200) {
+                frameImg.src = url;
+                return true;
+              }
+            } catch (e) {}
+            return false;
           }
 
-          if (el.readyState >= 2) {
-            captureFrame();
-          } else {
-            el.addEventListener("loadeddata", captureFrame, { once: true });
-          }
+          (function () {
+            var src = el.querySelector("source") ? el.querySelector("source").src : el.src;
+            if (!src) return;
+
+            var loader = document.createElement("video");
+            loader.src = src;
+            loader.muted = true;
+            loader.preload = "auto";
+            loader.playsInline = true;
+
+            loader.addEventListener("loadeddata", function () {
+              loader.currentTime = 1;
+            });
+            loader.addEventListener("seeked", function () {
+              captureFromVideo(loader);
+              loader.src = "";
+            });
+
+            setTimeout(function () {
+              captureFromVideo(loader);
+            }, 4000);
+          })();
 
           thumbDiv.addEventListener("click", clickHandler);
           gallery.appendChild(thumbDiv);
