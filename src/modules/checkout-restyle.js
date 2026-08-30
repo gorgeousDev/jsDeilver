@@ -95,6 +95,13 @@
     '.akkad-invoice-footer-msg-top { background: linear-gradient(to left, #0F8478, #14A090); color: #fff; text-align: center; padding: 10px 14px; }',
     '.akkad-invoice-footer-msg-top p { font-weight: 900; font-size: 12px; margin: 0; }',
     '.akkad-invoice-footer-msg-top span { color: #FFD98A; }',
+    '.akkad-invoice-row { display: flex !important; justify-content: space-between !important; padding: 6px 0 !important; font-size: 12px !important; }',
+    '.akkad-invoice-row span:first-child { font-weight: 700 !important; color: #3F8C81 !important; }',
+    '.akkad-invoice-discount span:last-child { color: #dc2626 !important; font-weight: 800 !important; }',
+    '.akkad-invoice-shipping span:last-child { color: #0F5E55 !important; font-weight: 700 !important; }',
+    '.akkad-invoice-total-row { display: flex !important; justify-content: space-between !important; padding: 10px 0 0 0 !important; margin-top: 6px !important; border-top: 2px solid #0F8478 !important; }',
+    '.akkad-invoice-total-row span:first-child { font-weight: 800 !important; font-size: 14px !important; color: #0F5E55 !important; }',
+    '.akkad-invoice-total-row span:last-child { font-weight: 900 !important; font-size: 16px !important; color: #0F5E55 !important; }',
 
     '.akkad-coupon-wrap { display: flex; gap: 10px; align-items: center; background: #f9fafb; border: 1px solid #A8DDD4; border-radius: 10px; padding: 12px; margin-top: 12px; }',
     '.akkad-coupon-wrap > div { flex: 1; }',
@@ -186,8 +193,17 @@
         '<table class="akkad-invoice-table">' +
           '<thead><tr><th>م</th><th>الصنف</th><th>العدد</th><th>السعر</th><th>الإجمالي</th></tr></thead>' +
           '<tbody class="inv-tbody"></tbody>' +
-          '<tfoot><tr><td colspan="4">الإجمالي الكلي</td><td class="inv-total">0 ج</td></tr></tfoot>' +
+          '<tfoot><tr><td colspan="5">الإجمالي الكلي</td></tr></tfoot>' +
         '</table>' +
+      '</div>' +
+      '<div class="akkad-invoice-discount" style="display:none">' +
+        '<div class="akkad-invoice-row"><span>خصم الكوبون</span><span class="inv-discount-val">0 ج</span></div>' +
+      '</div>' +
+      '<div class="akkad-invoice-shipping">' +
+        '<div class="akkad-invoice-row"><span>الشحن</span><span class="inv-shipping-val">0 ج</span></div>' +
+      '</div>' +
+      '<div class="akkad-invoice-total-row">' +
+        '<span>الإجمالي النهائي</span><span class="inv-grand">0 ج</span>' +
       '</div>' +
       '<div class="akkad-invoice-footer-msg">' +
         '<div class="akkad-invoice-footer-msg-top">' +
@@ -202,7 +218,6 @@
       var phoneInput = document.querySelector('[name="phone"]');
       var items = document.querySelectorAll('.cart-item');
       var tbody = invoice.querySelector('.inv-tbody');
-      var currency = document.querySelector('[data-invoice="invoice-subtotal-value"] span');
 
       invoice.querySelector('.inv-name').textContent = (nameInput && nameInput.value) || '— غير محدد —';
       invoice.querySelector('.inv-phone').textContent = (phoneInput && phoneInput.value) || '— غير محدد —';
@@ -226,7 +241,31 @@
       });
 
       invoice.querySelector('.inv-count').textContent = totalCount;
-      invoice.querySelector('.inv-total').textContent = grandTotal.toLocaleString() + ' ج';
+
+      // Read shipping from EasyOrders original invoice
+      var shippingEl = document.querySelector('[data-invoice="invoice-shipping-value"] span');
+      var shipping = 0;
+      if (shippingEl) {
+        shipping = parseInt(shippingEl.textContent.replace(/[^0-9]/g, '')) || 0;
+      }
+
+      // Read discount from EasyOrders original invoice
+      var discountEl = document.querySelector('[data-invoice="invoice-discount-value"] span');
+      var discount = 0;
+      if (discountEl) {
+        discount = parseInt(discountEl.textContent.replace(/[^0-9]/g, '')) || 0;
+      }
+
+      var discountBox = invoice.querySelector('.akkad-invoice-discount');
+      if (discount > 0) {
+        discountBox.style.display = 'block';
+        discountBox.querySelector('.inv-discount-val').textContent = '-' + discount.toLocaleString() + ' ج';
+      } else {
+        discountBox.style.display = 'none';
+      }
+
+      invoice.querySelector('.inv-shipping-val').textContent = shipping > 0 ? shipping.toLocaleString() + ' ج' : 'مجاني';
+      invoice.querySelector('.inv-grand').textContent = (grandTotal - discount + shipping).toLocaleString() + ' ج';
     }
 
     update();
