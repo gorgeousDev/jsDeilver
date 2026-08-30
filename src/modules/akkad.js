@@ -18,7 +18,8 @@
     var container = document.querySelector(".swiper");
     if (!container) return;
 
-    if (container.querySelector(".akkad-gallery")) return;
+    var galleryHost = container.parentElement || container;
+    if (galleryHost.querySelector(".akkad-gallery")) return;
 
     var pagination = container.querySelector(".swiper-pagination");
     if (!pagination) return;
