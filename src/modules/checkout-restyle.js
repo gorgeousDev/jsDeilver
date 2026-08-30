@@ -10,8 +10,8 @@
   style.textContent = [
     '.akkad-sale-badge { display: none !important; }',
     '[data-cart="item-name"] { display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; text-overflow: ellipsis !important; max-height: 2.8em !important; line-height: 1.4 !important; }',
-    '.checkout_container { grid-template-columns: 1fr !important; max-width: 640px !important; padding: 0 16px !important; }',
-    '.checkout_order_summary { order: 2 !important; background: #fff !important; border: 2px solid #A8DDD4 !important; border-radius: 16px !important; padding: 16px !important; margin-top: 16px !important; margin-bottom: 120px !important; }',
+    '.checkout_container { grid-template-columns: 1fr !important; padding: 0 16px !important; }',
+    '.checkout_order_summary { order: 2 !important; background: #fff !important; border: 2px solid #A8DDD4 !important; border-radius: 16px !important; padding: 24px !important; margin-top: 16px !important; margin-bottom: 120px !important; }',
     '.checkout_form { order: 1 !important; padding-top: 20px !important; }',
     '.checkout_bg_right, .checkout_bg_left { display: none !important; }',
     '.bg-white { background: #f8fafc !important; }',
@@ -114,6 +114,7 @@
     '.mt-2.flex.items-center.justify-between button:hover { background: #dc2626 !important; border-color: #dc2626 !important; color: #fff !important; transform: scale(1.02) !important; }',
 
     '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }',
+    '@media (min-width: 1024px) { .checkout_container { grid-template-columns: 1fr 1fr !important; gap: 40px !important; max-width: 1100px !important; padding: 0 40px !important; } .checkout_form { order: 1 !important; padding-top: 30px !important; } .checkout_order_summary { order: 2 !important; position: sticky !important; top: 90px !important; align-self: start !important; padding: 28px !important; margin-bottom: 0 !important; } .akkad-invoice { padding: 20px !important; } .akkad-invoice-brand h2 { font-size: 22px !important; } .akkad-invoice-table { font-size: 13px !important; } .akkad-invoice-table th { padding: 12px 8px !important; } .akkad-invoice-table td { padding: 12px 10px !important; } .akkad-invoice-customer { font-size: 12px !important; } .akkad-invoice-total-row span:first-child { font-size: 16px !important; } .akkad-invoice-total-row span:last-child { font-size: 20px !important; } }',
     '@media (max-width: 480px) { .akkad-invoice-table { font-size: 10px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 2px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }'
   ].join('\n');
 
