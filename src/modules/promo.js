@@ -3,43 +3,15 @@
 
     /* ==========================================
        PROMO SYSTEM — 10% discount, max 200 EGP
-       Paste this entire block in your <head>
+       Auto-detects EasyOrders discount and caps it
     ========================================== */
 
-    var PROMO_PERCENT = 10;
     var MAX_DISCOUNT = 200;
-    var STORAGE_KEY = 'akkad_active_promo';
-
-    /* ==========================================
-       PROMO CODES — edit this array to add/remove
-    ========================================== */
-    var PROMO_CODES = [
-        'ZD@UQ3Q','T-9XT1N','3&XF0T@','%S#9H1$','1#%M83N',
-        'LC@G_2D','4$EVQ&F','$22BE0Z','&9&1RA7','24A#F*0',
-        'HHY&-N0','0J78QJ&','5AQ-TLT','G-_RJ35','H1SGOC&',
-        'S9$Y76K','Z5#Q$JM','GQ*#8GD','7RT@WA-','@C08@2K',
-        '_G$QJ52','13@$_OR','55TC%46','WZH&3D5','D502$MU',
-        'IOD#S7K','1GS*2IR','JG8#-_W','33QN_22','Y19D%F2',
-        'COOBRA10'
-    ];
-
-    /* build Set once for O(1) lookup */
-    var CODES_SET = {};
-    for (var i = 0; i < PROMO_CODES.length; i++) {
-        CODES_SET[PROMO_CODES[i].toUpperCase()] = true;
-    }
-
-    /* ==========================================
-       Helpers
-    ========================================== */
+    var PROMO_PERCENT = 10;
 
     function isCheckout() {
         var p = location.pathname;
         return p === '/checkout' || p.indexOf('/checkout/') === 0;
-    }
-
-    function normalizeCode(v) {
-        return String(v || '').trim().toUpperCase();
     }
 
     function normalizeDigits(v) {
@@ -72,86 +44,33 @@
     }
 
     /* ==========================================
-       Promo Storage
+       Find discount line — searches all elements
     ========================================== */
 
-    function savePromoCode(code) {
-        var normalized = normalizeCode(code);
-        if (!CODES_SET[normalized]) return false;
-        try { sessionStorage.setItem(STORAGE_KEY, normalized); } catch (e) {}
-        return true;
-    }
-
-    function getActivePromo() {
-        try {
-            var code = normalizeCode(sessionStorage.getItem(STORAGE_KEY));
-            return CODES_SET[code] ? code : null;
-        } catch (e) { return null; }
-    }
-
-    function clearPromo() {
-        try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    }
-
-    /* ==========================================
-       Input Monitoring
-    ========================================== */
-
-    function inspectInput(target) {
-        if (!target) return;
-        if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') return;
-        var value = normalizeCode(target.value);
-        if (CODES_SET[value]) {
-            savePromoCode(value);
-            scheduleUpdate();
-        }
-    }
-
-    document.addEventListener('input', function (e) { inspectInput(e.target); }, true);
-    document.addEventListener('change', function (e) { inspectInput(e.target); }, true);
-    document.addEventListener('paste', function (e) {
-        var t = e.target;
-        setTimeout(function () { inspectInput(t); }, 0);
-    }, true);
-
-    /* ==========================================
-       DOM Helpers
-    ========================================== */
-
-    function findDiscountElement(invoice) {
+    function findDiscountRow(invoice) {
         if (!invoice) return null;
-        var ps = invoice.querySelectorAll('p');
-        for (var i = 0; i < ps.length; i++) {
-            var t = (ps[i].textContent || '').trim();
+
+        /* look inside the invoice's direct children divs */
+        var divs = invoice.querySelectorAll('div');
+        for (var i = 0; i < divs.length; i++) {
+            var p = divs[i].querySelector('p');
+            if (!p) continue;
+            var t = (p.textContent || '').trim();
             if (t.indexOf('\u062E\u0635\u0645') === 0 || t.indexOf('\u0627\u0644\u062E\u0635\u0645') === 0) {
-                return ps[i];
+                return { row: divs[i], textEl: p };
             }
         }
-        /* fallback: look for any element containing discount text */
-        var all = invoice.querySelectorAll('*');
-        for (var j = 0; j < all.length; j++) {
-            var txt = (all[j].textContent || '').trim();
-            if ((txt.indexOf('\u062E\u0635\u0645') === 0 || txt.indexOf('\u0627\u0644\u062E\u0635\u0645') === 0) && all[j].children.length === 0) {
-                console.log('[PROMO] discount found via fallback:', all[j].tagName, txt);
-                return all[j];
+
+        /* fallback: any <p> starting with خصم */
+        var ps = invoice.querySelectorAll('p');
+        for (var j = 0; j < ps.length; j++) {
+            var txt = (ps[j].textContent || '').trim();
+            if (txt.indexOf('\u062E\u0635\u0645') === 0 || txt.indexOf('\u0627\u0644\u062E\u0635\u0645') === 0) {
+                return { row: ps[j].parentElement, textEl: ps[j] };
             }
         }
-        console.log('[PROMO] no discount element found');
+
         return null;
-    }
-
-    function setMoney(el, amount) {
-        if (!el) return;
-        var current = getMoney(el);
-        if (Number.isFinite(current) && Math.abs(current - amount) < 0.001 && el.textContent.indexOf('\u062C.\u0645') !== -1) return;
-        el.replaceChildren(document.createTextNode(formatMoney(amount)), createCurrency());
-    }
-
-    function setDiscountText(el, amount) {
-        if (!el) return;
-        var current = getMoney(el);
-        if (Number.isFinite(current) && Math.abs(current - amount) < 0.001 && el.textContent.indexOf('\u062C.\u0645') !== -1) return;
-        el.replaceChildren(document.createTextNode('\u062E\u0635\u0645: ' + formatMoney(amount) + ' '), createCurrency());
     }
 
     /* ==========================================
@@ -161,57 +80,53 @@
     function updatePromoDisplay() {
         if (!isCheckout()) return;
 
-        var activeCode = getActivePromo();
-        if (!activeCode) return;
-
         var invoice = document.querySelector('[data-invoice="invoice"]');
-        if (!invoice) { console.log('[PROMO] no invoice found'); return; }
+        if (!invoice) return;
 
         var subtotalEl = invoice.querySelector('[data-invoice="invoice-subtotal-value"]');
         var originalTotalEl = invoice.querySelector('[data-invoice="invoice-total-value"]');
         var discountedRow = invoice.querySelector('[data-invoice="invoice-discounted-total"]');
         var discountedTotalEl = invoice.querySelector('[data-invoice="invoice-discounted-total-value"]');
-        var discountEl = findDiscountElement(invoice);
 
-        console.log('[PROMO] subtotalEl:', !!subtotalEl, 'originalTotalEl:', !!originalTotalEl, 'discountedRow:', !!discountedRow, 'discountedTotalEl:', !!discountedTotalEl, 'discountEl:', !!discountEl);
-
-        if (!subtotalEl || !originalTotalEl || !discountedRow || !discountedTotalEl || !discountEl) return;
+        if (!subtotalEl || !originalTotalEl || !discountedRow || !discountedTotalEl) return;
 
         var subtotal = getMoney(subtotalEl);
         var originalTotal = getMoney(originalTotalEl);
-
-        console.log('[PROMO] subtotal:', subtotal, 'originalTotal:', originalTotal);
+        var currentDiscountedTotal = getMoney(discountedTotalEl);
 
         if (!Number.isFinite(subtotal) || !Number.isFinite(originalTotal)) return;
 
-        var calculatedDiscount = subtotal * (PROMO_PERCENT / 100);
-        var finalDiscount = Math.min(calculatedDiscount, MAX_DISCOUNT);
-        var visualTotal = Math.max(0, originalTotal - finalDiscount);
+        /* find the discount line */
+        var discount = findDiscountRow(invoice);
+        if (!discount) return;
 
-        console.log('[PROMO] calculated:', calculatedDiscount, 'capped:', finalDiscount, 'visualTotal:', visualTotal);
+        var currentDiscount = getMoney(discount.textEl);
 
-        setDiscountText(discountEl, finalDiscount);
-        setMoney(discountedTotalEl, visualTotal);
+        /* calculate what the discount SHOULD be (capped) */
+        var expectedDiscount = Math.min(subtotal * (PROMO_PERCENT / 100), MAX_DISCOUNT);
 
-        invoice.dataset.akkadPromo = activeCode;
-        invoice.dataset.akkadDiscount = String(finalDiscount);
-        invoice.dataset.akkadVisualTotal = String(visualTotal);
-    }
-
-    /* ==========================================
-       Cancel Button
-    ========================================== */
-
-    document.addEventListener('click', function (e) {
-        var btn = e.target.closest('button');
-        if (!btn) return;
-        var invoice = btn.closest('[data-invoice="invoice"]');
-        if (!invoice) return;
-        if ((btn.textContent || '').trim() === '\u0625\u0644\u063A\u0627\u0621') {
-            clearPromo();
-            setTimeout(scheduleUpdate, 100);
+        /* if current discount is already correct, skip */
+        if (Number.isFinite(currentDiscount) && Math.abs(currentDiscount - expectedDiscount) < 0.001) {
+            return;
         }
-    }, true);
+
+        /* override discount text */
+        discount.textEl.replaceChildren(
+            document.createTextNode('\u062E\u0635\u0645: ' + formatMoney(expectedDiscount) + ' '),
+            createCurrency()
+        );
+
+        /* override discounted total */
+        var visualTotal = Math.max(0, originalTotal - expectedDiscount);
+        discountedTotalEl.replaceChildren(
+            document.createTextNode(formatMoney(visualTotal)),
+            createCurrency()
+        );
+
+        /* debug info */
+        invoice.dataset.promoOriginal = String(currentDiscount);
+        invoice.dataset.promoCapped = String(expectedDiscount);
+    }
 
     /* ==========================================
        Scheduler
@@ -229,7 +144,7 @@
     }
 
     /* ==========================================
-       MutationObserver + Route Watcher
+       MutationObserver
     ========================================== */
 
     if (document.body) {
@@ -277,9 +192,8 @@
     ========================================== */
 
     function start() {
-        document.querySelectorAll('input, textarea').forEach(inspectInput);
         scheduleUpdate();
-        setInterval(function () { if (isCheckout()) scheduleUpdate(); }, 750);
+        setInterval(function () { if (isCheckout()) scheduleUpdate(); }, 500);
     }
 
     if (document.readyState === 'loading') {
