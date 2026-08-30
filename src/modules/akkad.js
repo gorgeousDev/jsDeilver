@@ -684,11 +684,22 @@
     });
 
     // 6. initGallery Execution
+    var galleryTimer;
+    var galleryObserver = new MutationObserver(function () {
+      if (galleryDone) { galleryObserver.disconnect(); return; }
+      clearTimeout(galleryTimer);
+      galleryTimer = setTimeout(initGallery, 300);
+    });
+    galleryObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
     if (document.readyState === "complete") {
-      setTimeout(initGallery, 800);
+      setTimeout(initGallery, 500);
     } else {
       window.addEventListener("load", function () {
-        setTimeout(initGallery, 800);
+        setTimeout(initGallery, 500);
       });
     }
 
