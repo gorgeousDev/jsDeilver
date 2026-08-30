@@ -125,6 +125,16 @@
     fixPayments();
     injectInvoice();
     fixInputs();
+    listenSubmit();
+  }
+
+  function listenSubmit() {
+    var btn = document.querySelector('.checkout_buy_now');
+    if (!btn || btn._akkadListen) return;
+    btn._akkadListen = true;
+    btn.addEventListener('click', function() {
+      saveInvoiceCounter();
+    });
   }
 
   function fixPayments() {
@@ -167,6 +177,8 @@
   }
 
 
+  var currentCounter = null;
+
   function getInvoiceNumber() {
     var now = new Date();
     var yy = String(now.getFullYear()).slice(-2);
@@ -175,10 +187,15 @@
     var dateKey = yy + mm + dd;
 
     var counter = parseInt(localStorage.getItem('akkad_invoice_counter')) || 1197;
-    counter += 1;
-    localStorage.setItem('akkad_invoice_counter', counter);
+    currentCounter = counter;
 
     return 'akd-' + dateKey + '-' + String(counter).padStart(4, '0');
+  }
+
+  function saveInvoiceCounter() {
+    if (currentCounter !== null) {
+      localStorage.setItem('akkad_invoice_counter', currentCounter + 1);
+    }
   }
 
   function injectInvoice() {
