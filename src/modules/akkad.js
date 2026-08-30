@@ -77,58 +77,16 @@
         if (isVideo) {
           var thumbDiv = document.createElement("div");
           thumbDiv.className = "akkad-thumb";
-          thumbDiv.style.position = "relative";
           thumbDiv.style.padding = "0";
-
-          var frameImg = document.createElement("img");
-          frameImg.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;";
-          thumbDiv.appendChild(frameImg);
+          thumbDiv.style.background = "#111";
+          thumbDiv.style.display = "flex";
+          thumbDiv.style.alignItems = "center";
+          thumbDiv.style.justifyContent = "center";
 
           var playIcon = document.createElement("span");
-          playIcon.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;background:rgba(0,0,0,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;";
-          playIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="#fff" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>';
+          playIcon.style.cssText = "width:30px;height:30px;background:rgba(255,255,255,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;";
+          playIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="#111" width="16" height="16" style="margin-left:2px;"><path d="M8 5v14l11-7z"/></svg>';
           thumbDiv.appendChild(playIcon);
-
-          function captureFromVideo(videoEl) {
-            try {
-              var w = videoEl.videoWidth;
-              var h = videoEl.videoHeight;
-              if (!w || !h) return false;
-              var canvas = document.createElement("canvas");
-              canvas.width = w;
-              canvas.height = h;
-              canvas.getContext("2d").drawImage(videoEl, 0, 0, w, h);
-              var url = canvas.toDataURL("image/jpeg", 0.7);
-              if (url && url.length > 200) {
-                frameImg.src = url;
-                return true;
-              }
-            } catch (e) {}
-            return false;
-          }
-
-          (function () {
-            var src = el.querySelector("source") ? el.querySelector("source").src : el.src;
-            if (!src) return;
-
-            var loader = document.createElement("video");
-            loader.src = src;
-            loader.muted = true;
-            loader.preload = "auto";
-            loader.playsInline = true;
-
-            loader.addEventListener("loadeddata", function () {
-              loader.currentTime = 1;
-            });
-            loader.addEventListener("seeked", function () {
-              captureFromVideo(loader);
-              loader.src = "";
-            });
-
-            setTimeout(function () {
-              captureFromVideo(loader);
-            }, 4000);
-          })();
 
           thumbDiv.addEventListener("click", clickHandler);
           gallery.appendChild(thumbDiv);
