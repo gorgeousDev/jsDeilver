@@ -244,10 +244,13 @@
       invoice.querySelector('.inv-count').textContent = totalCount;
 
       // Read shipping from EasyOrders original invoice
-      var shippingEl = document.querySelector('[data-invoice="invoice-shipping-value"] span');
+      var shippingContainer = document.querySelector('[data-invoice="invoice-shipping"]');
       var shipping = 0;
-      if (shippingEl) {
-        shipping = parseInt(shippingEl.textContent.replace(/[^0-9]/g, '')) || 0;
+      if (shippingContainer) {
+        var shippingDd = shippingContainer.querySelector('dd');
+        if (shippingDd) {
+          shipping = parseInt(shippingDd.textContent.replace(/[^0-9]/g, '')) || 0;
+        }
       }
 
       // Read discount from EasyOrders original invoice
