@@ -109,6 +109,11 @@
     '.akkad-coupon-wrap input { height: 40px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }',
     '.akkad-coupon-wrap button { background: #0F8478; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 14px; white-space: nowrap; }',
 
+    '.mt-2.flex.items-center.justify-between { background: #fff3f3 !important; border: 1px solid #fca5a5 !important; border-radius: 10px !important; padding: 12px 16px !important; margin-top: 12px !important; }',
+    '.mt-2.flex.items-center.justify-between p { font-weight: 700 !important; font-size: 14px !important; color: #dc2626 !important; margin: 0 !important; }',
+    '.mt-2.flex.items-center.justify-between button { background: transparent !important; border: 1px solid #dc2626 !important; color: #dc2626 !important; border-radius: 8px !important; padding: 6px 14px !important; font-weight: 700 !important; font-size: 13px !important; }',
+    '.mt-2.flex.items-center.justify-between button:hover { background: #dc2626 !important; color: #fff !important; }',
+
     '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }',
     '@media (max-width: 480px) { .akkad-invoice-table { font-size: 10px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 2px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }'
   ].join('\n');
