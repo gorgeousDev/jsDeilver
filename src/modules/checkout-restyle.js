@@ -109,7 +109,8 @@
     '.akkad-coupon-wrap input { height: 40px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }',
     '.akkad-coupon-wrap button { background: #0F8478; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 14px; white-space: nowrap; }',
 
-    '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }'
+    '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }',
+    '@media (max-width: 480px) { .akkad-invoice-table { font-size: 10px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 2px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }'
   ].join('\n');
 
   document.head.appendChild(style);
