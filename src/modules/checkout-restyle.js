@@ -36,9 +36,6 @@
     '.radio_circle[class*="bg-blue"] { background: #0F8478 !important; }',
     '.payment_card[class*="border-blue-600"] { border-color: #0F8478 !important; }',
 
-    '#transfer-receipt-upload { display: none !important; }',
-    '.payment_card_img_container { display: none !important; }',
-
     '.checkout_cart_items_container { border: 1px solid #A8DDD4 !important; border-radius: 12px !important; overflow: hidden !important; margin: 16px 0 !important; }',
     '.cart-item { padding: 16px !important; border-bottom: 1px solid #EFFAF8 !important; }',
     '.cart-item:last-child { border-bottom: none !important; }',
@@ -57,25 +54,15 @@
     '.fixed.bottom-0 { background: #fff !important; border-top: 1px solid #A8DDD4 !important; padding: 12px 16px !important; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important; box-shadow: 0 -4px 12px rgba(0,0,0,0.08) !important; }',
     '.select__control { border: 2px solid #A8DDD4 !important; border-radius: 12px !important; }',
 
-    '.akkad-elec-box { display: none; flex-direction: column; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed #A8DDD4; }',
-    '.akkad-elec-box.show { display: flex; }',
-    '.akkad-elec-option { border-radius: 14px; padding: 18px; border: 1px solid; display: flex; flex-direction: column; align-items: center; text-align: center; }',
-    '.akkad-elec-title { font-size: 16px; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; }',
-    '.akkad-elec-desc { font-size: 12px; opacity: 0.7; margin-bottom: 14px; line-height: 1.4; }',
-    '.akkad-elec-instapay { border-color: #ede9fe; background: linear-gradient(135deg, #faf7ff, #fff); }',
-    '.akkad-elec-instapay .akkad-elec-title { color: #4c1d95; }',
-    '.akkad-elec-instapay .akkad-elec-desc { color: #6d28d9; }',
-    '.akkad-elec-wallet { border-color: #dbeafe; background: linear-gradient(135deg, #f8fbff, #fff); }',
-    '.akkad-elec-wallet .akkad-elec-title { color: #1d4ed8; }',
-    '.akkad-elec-wallet .akkad-elec-desc { color: #2563eb; }',
-    '.akkad-elec-btn { display: flex; align-items: center; justify-content: center; padding: 14px 28px; background: linear-gradient(135deg, #6d28d9, #7c3aed); color: #fff; text-decoration: none; border-radius: 12px; font-weight: 800; font-size: 16px; width: 100%; box-shadow: 0 4px 12px rgba(109,40,217,0.3); transition: transform 0.15s; }',
-    '.akkad-elec-btn:active { transform: scale(0.97); }',
-    '.akkad-elec-num-box { width: 100%; background: #fff; border: 2px dashed #93c5fd; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 10px; }',
-    '.akkad-elec-num { font-size: 24px; font-weight: 800; color: #1d4ed8; letter-spacing: 1px; direction: ltr; display: block; }',
-    '.akkad-elec-copy { border: none; background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; box-shadow: 0 4px 12px rgba(37,99,235,0.3); transition: transform 0.15s; }',
-    '.akkad-elec-copy:active { transform: scale(0.97); }',
+    '.payment_card_img_container { display: none !important; }',
 
-    '@media (max-width: 480px) { .akkad-elec-option { padding: 14px; } .akkad-elec-title { font-size: 14px; } .akkad-elec-btn, .akkad-elec-copy { padding: 16px; font-size: 17px; } .akkad-elec-num { font-size: 22px; } }',
+    '.akkad-elec-box { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #A8DDD4; }',
+    '.akkad-elec-box.show { display: block; }',
+    '.akkad-elec-box a { display: block; margin-bottom: 10px; padding: 10px 14px; background: #6d28d9; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; text-align: center; }',
+    '.akkad-elec-box .akkad-num { display: flex; align-items: center; justify-content: space-between; background: #f0f4ff; border: 1px dashed #93c5fd; border-radius: 8px; padding: 10px 12px; }',
+    '.akkad-elec-box .akkad-num span { font-size: 16px; font-weight: 700; color: #1d4ed8; direction: ltr; }',
+    '.akkad-elec-box .akkad-num button { border: none; background: #2563eb; color: #fff; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }',
+
     '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }'
   ].join('\n');
 
@@ -83,7 +70,6 @@
 
   function run() {
     fixPayments();
-    hideSenderNumber();
   }
 
   function fixPayments() {
@@ -96,16 +82,11 @@
     var box = document.createElement('div');
     box.className = 'akkad-elec-box';
     box.id = 'akkad-elec-box';
-    box.innerHTML = '<div class="akkad-elec-option akkad-elec-instapay">' +
-      '<div class="akkad-elec-title">💜 الدفع عبر InstaPay</div>' +
-      '<div class="akkad-elec-desc">حوّل من أي بنك أو محفظة عبر تطبيق InstaPay</div>' +
-      '<a href="https://ipn.eg/S/akkad.one/instapay/3yzMRQ" target="_blank" class="akkad-elec-btn">فتح رابط الدفع</a>' +
-      '</div>' +
-      '<div class="akkad-elec-option akkad-elec-wallet">' +
-      '<div class="akkad-elec-title">📱 الدفع عبر محفظة الكاش</div>' +
-      '<div class="akkad-elec-desc">أرسل المبلغ على هذا الرقم</div>' +
-      '<div class="akkad-elec-num-box"><span class="akkad-elec-num">01508331823</span></div>' +
-      '<button class="akkad-elec-copy" onclick="navigator.clipboard.writeText(\'01508331823\');this.textContent=\'✔ تم النسخ\';var b=this;setTimeout(function(){b.textContent=\'نسخ الرقم\';},2000)">نسخ الرقم</button>' +
+    box.innerHTML =
+      '<a href="https://ipn.eg/S/akkad.one/instapay/3yzMRQ" target="_blank">💜 فتح رابط InstaPay</a>' +
+      '<div class="akkad-num">' +
+        '<span>01508331823</span>' +
+        '<button onclick="navigator.clipboard.writeText(\'01508331823\');this.textContent=\'✔ تم\';var b=this;setTimeout(function(){b.textContent=\'نسخ\';},2000)">نسخ</button>' +
       '</div>';
     electronic.appendChild(box);
 
@@ -118,11 +99,6 @@
     cod.addEventListener('click', function() {
       box.classList.remove('show');
     }, true);
-  }
-
-  function hideSenderNumber() {
-    var el = document.getElementById('transfer-receipt-upload');
-    if (el) el.style.display = 'none';
   }
 
   if (document.readyState === 'loading') {
