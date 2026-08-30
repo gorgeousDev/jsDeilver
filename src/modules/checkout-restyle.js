@@ -176,7 +176,7 @@
     var dd = String(now.getDate()).padStart(2, '0');
     var dateKey = yy + mm + dd;
 
-    var counter = parseInt(localStorage.getItem('akkad_invoice_counter')) || 1196;
+    var counter = parseInt(localStorage.getItem('akkad_invoice_counter')) || 1197;
     counter += 1;
     localStorage.setItem('akkad_invoice_counter', counter);
 
