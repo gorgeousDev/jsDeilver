@@ -60,6 +60,9 @@
     '.akkad-elec-box.show { display: flex !important; flex-direction: column !important; gap: 10px; }',
     '.akkad-elec-box a { display: block; padding: 10px 14px; background: #6d28d9; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; text-align: center; }',
     '.akkad-elec-box .akkad-num { display: flex; align-items: center; justify-content: space-between; background: #f0f4ff; border: 1px dashed #93c5fd; border-radius: 8px; padding: 10px 12px; }',
+    '.akkad-elec-box .akkad-num-wrap { background: #f0f4ff; border: 1px dashed #93c5fd; border-radius: 8px; padding: 12px; }',
+    '.akkad-elec-box .akkad-num-label { font-size: 13px; font-weight: 700; color: #1d4ed8; margin-bottom: 8px; }',
+    '.akkad-elec-box .akkad-num { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #93c5fd; border-radius: 6px; padding: 10px 12px; }',
     '.akkad-elec-box .akkad-num span { font-size: 16px; font-weight: 700; color: #1d4ed8; direction: ltr; }',
     '.akkad-elec-box .akkad-num button { border: none; background: #2563eb; color: #fff; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }',
 
@@ -94,9 +97,12 @@
     box.id = 'akkad-elec-box';
     box.innerHTML =
       '<a href="https://ipn.eg/S/akkad.one/instapay/3yzMRQ" target="_blank">💜 فتح رابط InstaPay</a>' +
-      '<div class="akkad-num">' +
-        '<span>01508331823</span>' +
-        '<button onclick="navigator.clipboard.writeText(\'01508331823\');this.textContent=\'✔ تم\';var b=this;setTimeout(function(){b.textContent=\'نسخ\';},2000)">نسخ</button>' +
+      '<div class="akkad-num-wrap">' +
+        '<div class="akkad-num-label">📱 محفظة الكاش</div>' +
+        '<div class="akkad-num">' +
+          '<span>01508331823</span>' +
+          '<button onclick="navigator.clipboard.writeText(\'01508331823\');this.textContent=\'✔ تم\';var b=this;setTimeout(function(){b.textContent=\'نسخ\';},2000)">نسخ</button>' +
+        '</div>' +
       '</div>';
 
     // Insert box AFTER the image, BEFORE the fields
