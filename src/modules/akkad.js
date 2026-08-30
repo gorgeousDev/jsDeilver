@@ -19,16 +19,50 @@
     if (!container) return;
 
     var galleryHost = container.parentElement || container;
-    if (galleryHost.querySelector(".akkad-gallery")) return;
-
-    var pagination = container.querySelector(".swiper-pagination");
-    if (!pagination) return;
+    var existingGallery = galleryHost.querySelector(".akkad-gallery");
 
     var mediaEls = container.querySelectorAll(
       ".swiper-slide:not(.swiper-slide-duplicate) img, .swiper-slide:not(.swiper-slide-duplicate) video"
     );
 
     if (!mediaEls.length) return;
+
+    var pagination = container.querySelector(".swiper-pagination");
+    if (!pagination) return;
+
+    if (existingGallery) {
+      var hasVideoThumb = existingGallery.querySelector("div.akkad-thumb");
+      if (hasVideoThumb) return;
+
+      for (var v = 0; v < mediaEls.length; v++) {
+        if (mediaEls[v].tagName === "VIDEO") {
+          var videoDiv = document.createElement("div");
+          videoDiv.className = "akkad-thumb";
+          videoDiv.style.padding = "0";
+          videoDiv.style.background = "#111";
+          videoDiv.style.display = "flex";
+          videoDiv.style.alignItems = "center";
+          videoDiv.style.justifyContent = "center";
+          var pIcon = document.createElement("span");
+          pIcon.style.cssText = "width:30px;height:30px;background:rgba(255,255,255,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;";
+          pIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="#111" width="16" height="16" style="margin-left:2px;"><path d="M8 5v14l11-7z"/></svg>';
+          videoDiv.appendChild(pIcon);
+          (function (idx) {
+            videoDiv.addEventListener("click", function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              var bullets = container.querySelectorAll(".swiper-pagination-bullet");
+              if (bullets[idx]) {
+                bullets[idx].click();
+                setTimeout(function () { updateActiveThumb(true); }, 100);
+              }
+            });
+          })(v);
+          existingGallery.appendChild(videoDiv);
+        }
+      }
+      return;
+    }
 
     /* =========================
        Gallery Wrapper
