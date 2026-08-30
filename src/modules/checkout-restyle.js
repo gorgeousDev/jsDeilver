@@ -54,11 +54,11 @@
     '.fixed.bottom-0 { background: #fff !important; border-top: 1px solid #A8DDD4 !important; padding: 12px 16px !important; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important; box-shadow: 0 -4px 12px rgba(0,0,0,0.08) !important; }',
     '.select__control { border: 2px solid #A8DDD4 !important; border-radius: 12px !important; }',
 
-    '.payment_card_img_container { display: none !important; }',
+    '.payment_card_content { display: flex !important; flex-direction: column !important; }',
 
-    '.akkad-elec-box { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #A8DDD4; }',
-    '.akkad-elec-box.show { display: block; }',
-    '.akkad-elec-box a { display: block; margin-bottom: 10px; padding: 10px 14px; background: #6d28d9; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; text-align: center; }',
+    '.akkad-elec-box { display: none; margin-top: 10px; }',
+    '.akkad-elec-box.show { display: flex !important; flex-direction: column !important; gap: 10px; }',
+    '.akkad-elec-box a { display: block; padding: 10px 14px; background: #6d28d9; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; text-align: center; }',
     '.akkad-elec-box .akkad-num { display: flex; align-items: center; justify-content: space-between; background: #f0f4ff; border: 1px dashed #93c5fd; border-radius: 8px; padding: 10px 12px; }',
     '.akkad-elec-box .akkad-num span { font-size: 16px; font-weight: 700; color: #1d4ed8; direction: ltr; }',
     '.akkad-elec-box .akkad-num button { border: none; background: #2563eb; color: #fff; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }',
@@ -78,7 +78,10 @@
     if (document.querySelector('.akkad-elec-box')) return;
 
     var electronic = cards[1];
+    var content = electronic.querySelector('.payment_card_content');
+    if (!content) return;
 
+    // Create the box
     var box = document.createElement('div');
     box.className = 'akkad-elec-box';
     box.id = 'akkad-elec-box';
@@ -88,8 +91,11 @@
         '<span>01508331823</span>' +
         '<button onclick="navigator.clipboard.writeText(\'01508331823\');this.textContent=\'✔ تم\';var b=this;setTimeout(function(){b.textContent=\'نسخ\';},2000)">نسخ</button>' +
       '</div>';
-    electronic.appendChild(box);
 
+    // Insert box at the TOP of payment_card_content (before image, before fields)
+    content.insertBefore(box, content.firstChild);
+
+    // Show/hide on click
     electronic.addEventListener('click', function(e) {
       if (e.target.closest('.akkad-elec-box')) return;
       box.classList.add('show');
