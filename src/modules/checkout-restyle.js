@@ -196,11 +196,10 @@
           '<p>أفضل عروض الأدوات المنزلية والعطور والأجهزة</p>' +
         '</div>' +
         '<div class="akkad-invoice-meta">' +
-          '<p class="akkad-invoice-meta-label">نموذج طلب</p>' +
           '<div class="akkad-invoice-meta-details">' +
             '<p><span>التاريخ:</span> ' + new Date().toLocaleDateString('ar-EG', {day:'2-digit',month:'2-digit',year:'numeric'}) + '</p>' +
-            '<p><span>رقم الطلب:</span> ' + getInvoiceNumber() + '</p>' +
           '</div>' +
+          '<p class="akkad-invoice-meta-label">رقم الطلب: ' + getInvoiceNumber() + '</p>' +
         '</div>' +
       '</div>' +
       '<div class="akkad-invoice-customer">' +
