@@ -71,7 +71,7 @@
     '.akkad-invoice-brand h2 { font-size: 18px; font-weight: 900; color: #0F5E55; margin: 0; }',
     '.akkad-invoice-brand h2 span { color: #0E8478; }',
     '.akkad-invoice-brand p { font-size: 11px; font-weight: 600; color: #3F8C81; margin: 4px 0 0 0; }',
-    '.akkad-invoice-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }',
+    '.akkad-invoice-meta { display: flex !important; flex-direction: column !important; align-items: flex-start !important; font-size: 12px !important; gap: 4px !important; }',
     '.akkad-invoice-meta-label { font-weight: 700; font-size: 14px; }',
     '.akkad-invoice-meta-details { text-align: left; }',
     '.akkad-invoice-meta-details p { margin: 2px 0; direction: ltr; text-align: right; }',
@@ -196,10 +196,8 @@
           '<p>أفضل عروض الأدوات المنزلية والعطور والأجهزة</p>' +
         '</div>' +
         '<div class="akkad-invoice-meta">' +
-          '<div class="akkad-invoice-meta-details">' +
-            '<p><span>التاريخ:</span> ' + new Date().toLocaleDateString('ar-EG', {day:'2-digit',month:'2-digit',year:'numeric'}) + '</p>' +
-          '</div>' +
           '<p class="akkad-invoice-meta-label">رقم الطلب: ' + getInvoiceNumber() + '</p>' +
+          '<p class="akkad-invoice-meta-label">التاريخ: ' + new Date().toLocaleDateString('ar-EG', {day:'2-digit',month:'2-digit',year:'numeric'}) + '</p>' +
         '</div>' +
       '</div>' +
       '<div class="akkad-invoice-customer">' +
