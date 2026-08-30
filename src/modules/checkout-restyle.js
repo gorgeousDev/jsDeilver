@@ -176,18 +176,9 @@
     var dd = String(now.getDate()).padStart(2, '0');
     var dateKey = yy + mm + dd;
 
-    var stored = localStorage.getItem('akkad_invoice_counter');
-    var lastDate = localStorage.getItem('akkad_invoice_date');
-    var counter;
-
-    if (lastDate === dateKey && stored) {
-      counter = parseInt(stored) + 1;
-    } else {
-      counter = 1197;
-    }
-
+    var counter = parseInt(localStorage.getItem('akkad_invoice_counter')) || 1196;
+    counter += 1;
     localStorage.setItem('akkad_invoice_counter', counter);
-    localStorage.setItem('akkad_invoice_date', dateKey);
 
     return 'akd-' + dateKey + '-' + String(counter).padStart(4, '0');
   }
