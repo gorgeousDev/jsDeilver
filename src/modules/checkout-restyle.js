@@ -4,24 +4,6 @@
 (function() {
   'use strict';
 
-  if (!window.location.pathname.includes('checkout')) {
-    var checkoutCheck = setInterval(function() {
-      if (window.location.pathname.includes('checkout')) {
-        clearInterval(checkoutCheck);
-        setTimeout(run, 100);
-        setTimeout(run, 500);
-        setTimeout(run, 1500);
-      }
-    }, 500);
-    new MutationObserver(function() {
-      if (window.location.pathname.includes('checkout')) {
-        if (!document.querySelector('.akkad-elec-box')) run();
-        if (!document.querySelector('.akkad-invoice')) run();
-      }
-    }).observe(document.body, { childList: true, subtree: true });
-    return;
-  }
-
   var style = document.createElement('style');
   style.id = 'akkad-checkout-style';
 
@@ -136,6 +118,24 @@
   ].join('\n');
 
   document.head.appendChild(style);
+
+  if (!window.location.pathname.includes('checkout')) {
+    var checkoutCheck = setInterval(function() {
+      if (window.location.pathname.includes('checkout')) {
+        clearInterval(checkoutCheck);
+        setTimeout(run, 100);
+        setTimeout(run, 500);
+        setTimeout(run, 1500);
+      }
+    }, 500);
+    new MutationObserver(function() {
+      if (window.location.pathname.includes('checkout')) {
+        if (!document.querySelector('.akkad-elec-box')) run();
+        if (!document.querySelector('.akkad-invoice')) run();
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+    return;
+  }
 
   function run() {
     fixPayments();
