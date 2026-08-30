@@ -10,7 +10,7 @@
   style.id = 'akkad-checkout-style';
 
   style.textContent = [
-    '.fasty_header, #akkad-nav, .akkad-social-section, footer, .default_footer, .akkad-sale-badge { display: none !important; }',
+    '.akkad-sale-badge { display: none !important; }',
     '[data-cart="item-name"] { display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; text-overflow: ellipsis !important; max-height: 2.8em !important; line-height: 1.4 !important; }',
     '.checkout_container { grid-template-columns: 1fr !important; max-width: 640px !important; padding: 0 16px !important; }',
     '.checkout_order_summary { order: 2 !important; background: #fff !important; border: 2px solid #A8DDD4 !important; border-radius: 16px !important; padding: 16px !important; margin-top: 16px !important; margin-bottom: 120px !important; }',
