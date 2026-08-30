@@ -109,7 +109,6 @@
 
   function run() {
     fixPayments();
-    moveCoupon();
     injectInvoice();
     fixInputs();
   }
@@ -153,41 +152,6 @@
     }, true);
   }
 
-  function moveCoupon() {
-    if (document.querySelector('.akkad-coupon-wrap')) return;
-    var couponBtn = document.querySelector('.mt-2.flex.justify-between');
-    if (!couponBtn) return;
-
-    var nameInput = document.querySelector('[name="full_name"]');
-    if (!nameInput) return;
-
-    var nameField = nameInput.closest('.mt-3');
-    if (!nameField) return;
-
-    var wrapper = document.createElement('div');
-    wrapper.className = 'akkad-coupon-wrap';
-    wrapper.innerHTML =
-      '<div>' +
-        '<label>كود الخصم</label>' +
-        '<input type="text" class="global_input block w-full" placeholder="أدخل الكود">' +
-      '</div>' +
-      '<button type="button">تطبيق</button>';
-
-    nameField.parentNode.insertBefore(wrapper, nameField.nextSibling.nextSibling);
-
-    // Copy coupon functionality from original
-    var origInput = couponBtn.querySelector('input');
-    var origBtn = couponBtn.querySelector('button');
-    if (origInput && origBtn) {
-      var newInput = wrapper.querySelector('input');
-      var newBtn = wrapper.querySelector('button');
-      newBtn.addEventListener('click', function() {
-        origInput.value = newInput.value;
-        origBtn.click();
-      });
-      couponBtn.style.display = 'none';
-    }
-  }
 
   function injectInvoice() {
     var summary = document.querySelector('.checkout_order_summary');
