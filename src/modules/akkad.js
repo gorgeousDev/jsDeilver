@@ -1,6 +1,18 @@
 (function () {
   var ignoreNextScroll = false;
   var galleryDone = false;
+  var skipGoTop = false;
+
+  document.addEventListener("click", function (e) {
+    var el = e.target;
+    while (el && el !== document) {
+      if (el.textContent && el.textContent.indexOf("تحميل المزيد") !== -1) {
+        skipGoTop = true;
+        break;
+      }
+      el = el.parentElement;
+    }
+  }, true);
 
   // 1. Function declarations at IIFE function scope (Valid ES5)
   function fixAlt() {
@@ -417,6 +429,10 @@
   }
 
   function goTopAfterNavigation() {
+    if (skipGoTop) {
+      skipGoTop = false;
+      return;
+    }
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         window.scrollTo(0, 0);
