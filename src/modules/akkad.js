@@ -1,13 +1,13 @@
 (function () {
   var ignoreNextScroll = false;
   var galleryDone = false;
-  var skipGoTop = false;
+  var skipGoTopUntil = 0;
 
   document.addEventListener("click", function (e) {
     var el = e.target;
     while (el && el !== document) {
-      if (el.textContent && el.textContent.indexOf("تحميل المزيد") !== -1) {
-        skipGoTop = true;
+      if (el.textContent && el.textContent.trim() === "تحميل المزيد") {
+        skipGoTopUntil = Date.now() + 1000;
         break;
       }
       el = el.parentElement;
@@ -429,8 +429,7 @@
   }
 
   function goTopAfterNavigation() {
-    if (skipGoTop) {
-      skipGoTop = false;
+    if (Date.now() < skipGoTopUntil) {
       return;
     }
     requestAnimationFrame(function () {
