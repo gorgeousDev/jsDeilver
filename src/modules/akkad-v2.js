@@ -1,4 +1,28 @@
 /* =========================================
+   0. Block unwanted scroll-to-top
+   ========================================= */
+(function () {
+    var hasScrolledDown = false;
+
+    window.addEventListener("scroll", function () {
+        if (window.pageYOffset > 100) {
+            hasScrolledDown = true;
+        }
+    }, { passive: true });
+
+    var origScrollTo = window.scrollTo;
+    window.scrollTo = function () {
+        if (hasScrolledDown && arguments.length > 0) {
+            var args = Array.prototype.slice.call(arguments);
+            var x = typeof args[0] === "object" ? args[0].left || 0 : args[0] || 0;
+            var y = typeof args[0] === "object" ? args[0].top || 0 : (args.length > 1 ? args[1] : 0);
+            if (y === 0 && x === 0) return;
+        }
+        return origScrollTo.apply(window, arguments);
+    };
+})();
+
+/* =========================================
    Meta tag (Google Site Verification)
    ========================================= */
 (function () {
