@@ -401,30 +401,10 @@
     buildNavbar();
   }
 
-  function goTop() {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "instant"
-    });
-
-    if (document.scrollingElement) {
-      document.scrollingElement.scrollTop = 0;
-    }
-
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }
-
-  // عند تحميل الصفحة
-  window.addEventListener("load", goTop);
-
-  // عند الرجوع/التنقل
-  window.addEventListener("pageshow", goTop);
-
-  // Next.js handles scroll restoration natively via its router.
-  // The previous MutationObserver + history.pushState/replaceState monkey-patching
-  // caused scroll-to-top on every client-side navigation, breaking normal scrolling.
+  // Removed goTop, load, and pageshow listeners.
+  // The load event fires AFTER all resources finish loading — if the user scrolls
+  // before that, goTop() scrolls them back to top. Next.js handles scroll
+  // restoration natively via its router.
 
   try {
 

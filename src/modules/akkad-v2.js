@@ -160,7 +160,11 @@
     }
 
     disableCartImageLinks();
-    new MutationObserver(disableCartImageLinks).observe(document.body, {
+    var cartTimer;
+    new MutationObserver(function () {
+        clearTimeout(cartTimer);
+        cartTimer = setTimeout(disableCartImageLinks, 500);
+    }).observe(document.body, {
         childList: true,
         subtree: true
     });
@@ -196,7 +200,11 @@
     }
 
     styleViewer();
-    new MutationObserver(styleViewer).observe(document.body, {
+    var viewerTimer;
+    new MutationObserver(function () {
+        clearTimeout(viewerTimer);
+        viewerTimer = setTimeout(styleViewer, 500);
+    }).observe(document.body, {
         childList: true,
         subtree: true
     });
@@ -218,7 +226,11 @@
     }
 
     moveProductDetails();
-    new MutationObserver(moveProductDetails).observe(document.body, {
+    var moveTimer;
+    new MutationObserver(function () {
+        clearTimeout(moveTimer);
+        moveTimer = setTimeout(moveProductDetails, 500);
+    }).observe(document.body, {
         childList: true,
         subtree: true
     });
@@ -522,8 +534,10 @@
 
     window.addEventListener("popstate", checkAndInit);
 
+    var checkTimer;
     var observer = new MutationObserver(function () {
-        checkAndInit();
+        clearTimeout(checkTimer);
+        checkTimer = setTimeout(checkAndInit, 500);
     });
     observer.observe(document.documentElement, {
         childList: true,
@@ -544,7 +558,11 @@
     }
 
     hideOKKA();
-    new MutationObserver(hideOKKA).observe(document.body, {
+    var okkaTimer;
+    new MutationObserver(function () {
+        clearTimeout(okkaTimer);
+        okkaTimer = setTimeout(hideOKKA, 500);
+    }).observe(document.body, {
         childList: true,
         subtree: true
     });
@@ -703,7 +721,11 @@
         setTimeout(initCounter, 500);
     });
 
-    new MutationObserver(initCounter).observe(document.body, {
+    var counterTimer;
+    new MutationObserver(function () {
+        clearTimeout(counterTimer);
+        counterTimer = setTimeout(initCounter, 500);
+    }).observe(document.body, {
         childList: true,
         subtree: true
     });
@@ -796,8 +818,10 @@
 
     setTimeout(swapPayments, 1000);
 
+    var swapTimer;
     new MutationObserver(function () {
-        setTimeout(swapPayments, 50);
+        clearTimeout(swapTimer);
+        swapTimer = setTimeout(swapPayments, 500);
     }).observe(document.body, {
         childList: true,
         subtree: true
@@ -1441,9 +1465,13 @@
         run();
     }
 
+    var badgeTimer;
     new MutationObserver(function () {
-        hideOriginalBadges();
-        processCards();
+        clearTimeout(badgeTimer);
+        badgeTimer = setTimeout(function () {
+            hideOriginalBadges();
+            processCards();
+        }, 500);
     }).observe(document.body, {
         childList: true,
         subtree: true
