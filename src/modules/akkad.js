@@ -1,18 +1,6 @@
 (function () {
   var ignoreNextScroll = false;
   var galleryDone = false;
-  var skipGoTopUntil = 0;
-
-  document.addEventListener("click", function (e) {
-    var el = e.target;
-    while (el && el !== document) {
-      if (el.textContent && el.textContent.trim() === "تحميل المزيد") {
-        skipGoTopUntil = Date.now() + 1000;
-        break;
-      }
-      el = el.parentElement;
-    }
-  }, true);
 
   // 1. Function declarations at IIFE function scope (Valid ES5)
   function fixAlt() {
@@ -428,59 +416,15 @@
     document.body.scrollTop = 0;
   }
 
-  function goTopAfterNavigation() {
-    if (Date.now() < skipGoTopUntil) {
-      return;
-    }
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        window.scrollTo(0, 0);
-
-        if (document.scrollingElement) {
-          document.scrollingElement.scrollTop = 0;
-        }
-
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-      });
-    });
-  }
-
   // عند تحميل الصفحة
   window.addEventListener("load", goTop);
 
   // عند الرجوع/التنقل
   window.addEventListener("pageshow", goTop);
 
-  // راقب تغيّر الـ URL في React/Next
-  var lastUrl = location.href;
-
-  new MutationObserver(function () {
-    if (location.href !== lastUrl) {
-      lastUrl = location.href;
-      goTopAfterNavigation();
-    }
-  }).observe(document, {
-    subtree: true,
-    childList: true
-  });
-
-  // احتياطي للـ SPA navigation
-  var originalPushState = history.pushState;
-  history.pushState = function () {
-    originalPushState.apply(this, arguments);
-    goTopAfterNavigation();
-  };
-
-  var originalReplaceState = history.replaceState;
-  history.replaceState = function () {
-    originalReplaceState.apply(this, arguments);
-    goTopAfterNavigation();
-  };
-
-  window.addEventListener("popstate", function () {
-    goTopAfterNavigation();
-  });
+  // Next.js handles scroll restoration natively via its router.
+  // The previous MutationObserver + history.pushState/replaceState monkey-patching
+  // caused scroll-to-top on every client-side navigation, breaking normal scrolling.
 
   try {
 
