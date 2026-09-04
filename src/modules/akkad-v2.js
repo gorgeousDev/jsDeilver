@@ -1,26 +1,10 @@
 /* =========================================
-   0. Block unwanted scroll-to-top
+   0. Global Helpers
    ========================================= */
-(function () {
-    var hasScrolledDown = false;
-
-    window.addEventListener("scroll", function () {
-        if (window.pageYOffset > 100) {
-            hasScrolledDown = true;
-        }
-    }, { passive: true });
-
-    var origScrollTo = window.scrollTo;
-    window.scrollTo = function () {
-        if (hasScrolledDown && arguments.length > 0) {
-            var args = Array.prototype.slice.call(arguments);
-            var x = typeof args[0] === "object" ? args[0].left || 0 : args[0] || 0;
-            var y = typeof args[0] === "object" ? args[0].top || 0 : (args.length > 1 ? args[1] : 0);
-            if (y === 0 && x === 0) return;
-        }
-        return origScrollTo.apply(window, arguments);
-    };
-})();
+function __akkad_isHomePage() {
+    var p = window.location.pathname.replace(/\/+$/, "") || "/";
+    return p === "/";
+}
 
 /* =========================================
    Meta tag (Google Site Verification)
@@ -39,7 +23,7 @@
    ========================================= */
 (function () {
     var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@760abcb/src/modules/akkad.js";
+    s.src = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@c04b88a/src/modules/akkad.js";
     s.defer = true;
     document.head.appendChild(s);
 })();
@@ -171,6 +155,7 @@
    4. Disable Cart Image Links
    ========================================= */
 (function () {
+    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
     function disableCartImageLinks() {
         document.querySelectorAll('[data-cart="item-image-wrapper"]').forEach(function (link) {
             link.removeAttribute("href");
@@ -198,6 +183,7 @@
    5. Style Viewer Badge
    ========================================= */
 (function () {
+    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
     function styleViewer() {
         document.querySelectorAll("span").forEach(function (badge) {
             if (!/^\d+$/.test(badge.textContent.trim())) return;
@@ -238,6 +224,7 @@
    6. Move Product Details
    ========================================= */
 (function () {
+    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
     function moveProductDetails() {
         var policies = document.querySelector(".flex.flex-col.mt-4.rounded-xl.border");
         var details = document.querySelector(".product_tabs_container");
@@ -560,6 +547,7 @@
 
     var checkTimer;
     var observer = new MutationObserver(function () {
+        if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
         clearTimeout(checkTimer);
         checkTimer = setTimeout(checkAndInit, 500);
     });
@@ -573,6 +561,7 @@
    8. Hide OKKA
    ========================================= */
 (function () {
+    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
     function hideOKKA() {
         document.querySelectorAll("h3").forEach(function (h3) {
             if (h3.textContent.toUpperCase().includes("OKKA")) {
@@ -819,6 +808,7 @@
    11. Swap Payment Methods
    ========================================= */
 (function () {
+    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
     function swapPayments() {
         var container = document.querySelector(".payments_container");
         if (!container) return;
@@ -853,6 +843,7 @@
 })();
 
 (function () {
+    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
     var initialized = false;
 
     var timer = setInterval(function () {
@@ -1477,9 +1468,11 @@
     /* =========================================
        Run
        ========================================= */
+    var isHome = typeof __akkad_isHomePage === "function" && __akkad_isHomePage();
+
     function run() {
         addStyles();
-        hideOriginalBadges();
+        if (!isHome) hideOriginalBadges();
         processCards();
     }
 
@@ -1493,7 +1486,7 @@
     new MutationObserver(function () {
         clearTimeout(badgeTimer);
         badgeTimer = setTimeout(function () {
-            hideOriginalBadges();
+            if (!isHome) hideOriginalBadges();
             processCards();
         }, 500);
     }).observe(document.body, {
