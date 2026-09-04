@@ -231,12 +231,12 @@
 
           activeThumb.classList.add("active");
 
-          /* Auto scroll to active thumbnail */
+          /* Auto scroll to active thumbnail (horizontal only, no page scroll) */
           if (shouldScroll) {
-            activeThumb.scrollIntoView({
-              behavior: "smooth",
-              inline: "center",
-              block: "nearest"
+            var target = activeThumb.offsetLeft - (gallery.clientWidth / 2) + (activeThumb.offsetWidth / 2);
+            gallery.scrollTo({
+              left: target,
+              behavior: "smooth"
             });
           }
 
