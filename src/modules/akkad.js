@@ -639,7 +639,9 @@
     // 6. initGallery Execution
     var galleryTimer;
     var galleryObserver = new MutationObserver(function () {
-      if (galleryDone) { galleryObserver.disconnect(); return; }
+      if (galleryDone || (typeof __akkad_isHomePage === "function" && __akkad_isHomePage())) {
+        galleryObserver.disconnect(); return;
+      }
       clearTimeout(galleryTimer);
       galleryTimer = setTimeout(initGallery, 300);
     });
@@ -658,6 +660,7 @@
 
     // 7. moveButtons Execution
     var moveBtnsObserver = new MutationObserver(function () {
+      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
       setTimeout(moveButtons, 100);
     });
     moveBtnsObserver.observe(document.body, {
@@ -673,7 +676,10 @@
     window.addEventListener("resize", moveButtons);
 
     // 8. addCopyButton Execution
-    var copyBtnObserver = new MutationObserver(addCopyButton);
+    var copyBtnObserver = new MutationObserver(function () {
+      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
+      addCopyButton();
+    });
     copyBtnObserver.observe(document.body, {
       childList: true,
       subtree: true
