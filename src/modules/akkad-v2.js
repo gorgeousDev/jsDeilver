@@ -1848,19 +1848,46 @@ if (!document.getElementById(styleId)) {
     /* =========================================
        Page / DOM helpers
        ========================================= */
-    function isOfficePage() {
-        var p = (window.location.pathname || "").replace(/\/+$/, "") || "/";
-        if (p.toLowerCase() === ("/collections/" + CFG.slug).toLowerCase()) return true;
+/* The store has used /collections/office-supplies, /category/office-supplies
+       and a bare /office-supplies over time, and __NEXT_DATA__ is not always
+       present. Accept any of them rather than silently rendering nothing. */
+    var PATH_PREFIXES = ["collections", "category", "categories", "c", "shop", "store"];
 
+    function pathMatchesSlug() {
+        var p = (window.location.pathname || "").replace(/\/+$/, "").toLowerCase();
+        if (!p) return false;
+
+        var slug = CFG.slug.toLowerCase();
+        var segs = p.split("/").filter(Boolean);
+
+        if (segs.length === 1) return segs[0] === slug;
+        if (segs.length !== 2) return false;
+
+        return segs[1] === slug && PATH_PREFIXES.indexOf(segs[0]) !== -1;
+    }
+
+    function nextDataMatchesSlug() {
         var el = document.getElementById("__NEXT_DATA__");
         if (!el) return false;
+
         try {
             var nd = JSON.parse(el.textContent);
-            var id = nd && nd.query && nd.query.id;
-            return typeof id === "string" && id.toLowerCase() === CFG.slug.toLowerCase();
-        } catch (e) {
-            return false;
-        }
+            var q = nd && nd.query;
+            if (!q) return false;
+
+            var slug = CFG.slug.toLowerCase();
+            var candidates = [q.id, q.slug, q.handle];
+            for (var i = 0; i < candidates.length; i++) {
+                if (typeof candidates[i] === "string"
+                    && candidates[i].toLowerCase() === slug) return true;
+            }
+        } catch (e) {}
+
+        return false;
+    }
+
+    function isOfficePage() {
+        return pathMatchesSlug() || nextDataMatchesSlug();
     }
 
     function getGrid() {
