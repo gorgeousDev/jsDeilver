@@ -16,6 +16,7 @@
     var CFG = {
         viewportSelector: ".akkad-slider-viewport",
         threshold: 6,          /* px before a press becomes a drag */
+        engageRatio: 0.8,   /* |dx| must reach this * |dy| to take over */
         friction: 0.94,        /* momentum decay per frame */
         minVelocity: 0.02,     /* px/ms - below this momentum stops */
         maxVelocity: 55,       /* px/ms clamp */
@@ -56,8 +57,9 @@
         if (document.getElementById(CFG.styleId)) return;
 
         var css = "\
-.akkad-slider-viewport{cursor:grab;touch-action:pan-y}\n\
-.akkad-slider-viewport." + CFG.draggingClass + "{cursor:grabbing;scroll-behavior:auto!important;user-select:none;-webkit-user-select:none}\n\
+.akkad-slider-viewport{cursor:grab}\n\
+.akkad-slider-viewport{overscroll-behavior-x:contain!important;touch-action:pan-y!important;-webkit-overflow-scrolling:touch}\n\
+.akkad-slider-viewport." + CFG.draggingClass + "{cursor:grabbing;scroll-behavior:auto!important;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}\n\
 .akkad-slider-viewport img,.akkad-slider-viewport a{-webkit-user-drag:none}\n\
 .akkad-slider-viewport." + CFG.draggingClass + " a{pointer-events:none}\n";
 
@@ -144,10 +146,17 @@
         var dy = event.clientY - drag.startY;
 
         if (!drag.active) {
-            if (Math.abs(dx) < CFG.threshold && Math.abs(dy) < CFG.threshold) return;
+            var adx = Math.abs(dx);
+            var ady = Math.abs(dy);
+            if (adx < CFG.threshold && ady < CFG.threshold) return;
 
-            /* Vertical intent belongs to the page, not to us. */
-            if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
+            /* A thumb never travels perfectly sideways. Wait for a horizontal
+               sample instead of abandoning the gesture on the first diagonal
+               one - abandoning it was why diagonal swipes did nothing on a
+               phone while horizontal test swipes worked. A mostly-vertical
+               gesture still ends via pointercancel, which the browser sends
+               once it starts panning the page. */
+            if (adx < ady * CFG.engageRatio) return;
 
             drag.active = true;
             beginDrag(drag.viewport);
