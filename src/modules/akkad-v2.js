@@ -1528,3 +1528,267 @@ function __akkad_isHomePage() {
         subtree: true
     });
 })();
+
+var styleId = "akkad-v2-styles";
+
+if (!document.getElementById(styleId)) {
+
+  var css = [
+
+    /* =========================================================
+       AKKAD GALLERY
+       ========================================================= */
+
+    ".akkad-gallery-wrapper {",
+    "  display: flex !important;",
+    "  flex-direction: row !important;",
+    "  align-items: center !important;",
+    "  width: 100% !important;",
+    "  max-width: 100% !important;",
+    "  gap: 6px !important;",
+    "}",
+
+    ".akkad-gallery {",
+    "  display: flex !important;",
+    "  flex-direction: row !important;",
+    "  flex-wrap: nowrap !important;",
+    "  justify-content: flex-start !important;",
+    "  align-items: center !important;",
+    "  gap: 10px !important;",
+    "  margin-top: 15px !important;",
+    "  width: 100% !important;",
+    "  min-width: 0 !important;",
+    "  flex: 1 1 auto !important;",
+    "  overflow-x: auto !important;",
+    "  overflow-y: hidden !important;",
+    "  white-space: nowrap !important;",
+    "  scrollbar-width: none !important;",
+    "  -webkit-overflow-scrolling: touch !important;",
+    "  touch-action: pan-x !important;",
+    "  padding: 4px 2px 8px !important;",
+    "}",
+
+    ".akkad-gallery::-webkit-scrollbar {",
+    "  display: none !important;",
+    "}",
+
+    ".akkad-gallery .akkad-thumb {",
+    "  display: block !important;",
+    "  width: 70px !important;",
+    "  height: 70px !important;",
+    "  min-width: 70px !important;",
+    "  max-width: 70px !important;",
+    "  flex: 0 0 70px !important;",
+    "  object-fit: cover !important;",
+    "  border-radius: 12px !important;",
+    "  cursor: pointer !important;",
+    "}",
+
+    ".akkad-gallery .akkad-thumb.active {",
+    "  border: 2px solid #d4af37 !important;",
+    "  transform: scale(1.05);",
+    "}",
+
+    ".akkad-gallery-arrow {",
+    "  display: flex !important;",
+    "  align-items: center !important;",
+    "  justify-content: center !important;",
+    "  flex: 0 0 34px !important;",
+    "  width: 34px !important;",
+    "  height: 34px !important;",
+    "  padding: 0 !important;",
+    "  border: 1px solid #ddd !important;",
+    "  border-radius: 50% !important;",
+    "  background: #fff !important;",
+    "  color: #040b1d !important;",
+    "  font-size: 20px !important;",
+    "  line-height: 1 !important;",
+    "  cursor: pointer !important;",
+    "  z-index: 20 !important;",
+    "}",
+
+    ".akkad-gallery-arrow:hover {",
+    "  background: #040b1d !important;",
+    "  color: #fff !important;",
+    "}",
+
+    ".swiper-pagination {",
+    "  display: none !important;",
+    "}",
+
+    "@media (max-width: 768px) {",
+    "  .akkad-gallery-arrow {",
+    "    display: none !important;",
+    "  }",
+    "}",
+
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    "header {",
+    "  z-index: 1000 !important;",
+    "  position: sticky !important;",
+    "}",
+
+
+    /* =========================================================
+       SECTION TITLE
+       ========================================================= */
+
+    "div[sectionid='f73b18e7-79ff-457c-9cc5-ad151b4412c9'] > h3 {",
+    "  display: none !important;",
+    "}",
+
+
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    "footer,",
+    ".default_footer,",
+    "footer.bg-gray-50 {",
+    "  background: #040b1d !important;",
+    "  color: #fff !important;",
+    "}",
+
+    ".default_footer {",
+    "  padding-bottom: 0 !important;",
+    "}",
+
+    ".default_footer > div:nth-child(3) {",
+    "  display: none !important;",
+    "}",
+
+    ".default_footer a,",
+    ".default_footer p {",
+    "  color: #fff !important;",
+    "}",
+
+    ".default_footer_links_container {",
+    "  border-bottom: 1px solid #040b1d;",
+    "  padding-bottom: 20px;",
+    "  margin-bottom: 20px;",
+    "}",
+
+
+    /* =========================================================
+       PAGE
+       ========================================================= */
+
+    "html, body {",
+    "  overflow-x: hidden !important;",
+    "}",
+
+
+    /* =========================================================
+       FEATURED PRODUCT IMAGE
+       ========================================================= */
+
+    ".fasty_product_featured_container > div:first-child .fasty_product_card_img {",
+    "  height: 100% !important;",
+    "  overflow: hidden !important;",
+    "}",
+
+    ".fasty_product_featured_container > div:first-child .fasty_product_card_img img {",
+    "  width: 100% !important;",
+    "  height: 100% !important;",
+    "  object-fit: contain !important;",
+    "  object-position: top center !important;",
+    "}",
+
+
+    /* =========================================================
+       CATEGORIES NAV
+       ========================================================= */
+
+    ".akkad-categories-nav {",
+    "  position: sticky;",
+    "  top: 72px;",
+    "  z-index: 29;",
+    "  background: #fff;",
+    "  border-top: 1px solid #eee;",
+    "  border-bottom: 1px solid #eee;",
+    "  overflow-x: auto;",
+    "  white-space: nowrap;",
+    "  scrollbar-width: none;",
+    "}",
+
+    ".akkad-categories-nav::-webkit-scrollbar {",
+    "  display: none;",
+    "}",
+
+    ".akkad-categories-inner {",
+    "  display: flex;",
+    "  gap: 20px;",
+    "  padding: 12px 16px;",
+    "  width: max-content;",
+    "}",
+
+    ".akkad-categories-inner a {",
+    "  text-decoration: none;",
+    "  color: #040b1d;",
+    "  font-weight: 700;",
+    "}",
+
+    ".akkad-categories-inner a:hover {",
+    "  color: #004956;",
+    "}",
+
+
+    /* =========================================================
+       MOBILE PRODUCT GRID
+       ========================================================= */
+
+    "@media (max-width: 639px) {",
+
+    "  .category_products_grid_container {",
+    "    display: grid !important;",
+    "    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;",
+    "    gap: 12px !important;",
+    "    width: 100% !important;",
+    "  }",
+
+    "  .category_products_grid_container > div {",
+    "    width: 100% !important;",
+    "    min-width: 0 !important;",
+    "  }",
+
+    "  .category_products_grid_container .fasty_product_card {",
+    "    width: 100% !important;",
+    "    max-width: 100% !important;",
+    "    min-width: 0 !important;",
+    "  }",
+
+    "}",
+
+
+    /* =========================================================
+       FEATURED PRODUCTS GRID
+       ========================================================= */
+
+    "@media (max-width: 767px) {",
+
+    "  .fasty_product_featured_container {",
+    "    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;",
+    "  }",
+
+    "  .fasty_product_featured_container > .animate-slideIn {",
+    "    grid-column: 1 / -1 !important;",
+    "  }",
+
+    "}"
+
+  ].join("\n");
+
+
+  var style = document.createElement("style");
+
+  style.id = styleId;
+
+  style.textContent = css;
+
+  (document.head || document.documentElement).appendChild(style);
+
+}
