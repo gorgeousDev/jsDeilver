@@ -1,0 +1,2152 @@
+<meta name="google-site-verification" content="fiujJPBUim9VxPM1vTiUF3AKYv0jng7fKCoMS0oULME" />
+
+<script src="https://cdn.pickyassist.com/WhatsApp/embed.js" async></script>
+<script>
+let c = {"t":"Icon-Only-Black","s":"","i":"WhatsApp Us","a":"animation-Floating","n":"201508331823","m":"مرحبًا، لدي بعض الأسئلة قبل إتمام عملية الشراء.","w":3,"b":"#040b1d","c":"#ffffff","mr":"0","ml":"0","mb":"0","z":"9999","p":"position-right"};
+window.onload = () => {
+    _waBtn(c);
+};
+</script>
+<script>
+(function () {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@7c6789853e562d9e7fdde30cb5807cae9e9010cc/src/modules/akkad.js';
+  s.defer = true;
+  document.head.appendChild(s);
+})();
+</script>
+<style>
+/* مربعات العداد */
+.mt-3.flex.justify-center.gap-5 > div{
+    background:#fff5f5 !important;
+    border:1px solid #ef4444 !important;
+    border-radius:12px !important;
+}
+
+/* الأرقام */
+.mt-3.flex.justify-center.gap-5 > div span:first-child{
+    color:#dc2626 !important;
+    font-size:24px !important;
+    font-weight:800 !important;
+}
+
+/* النص (أيام - ساعات...) */
+.mt-3.flex.justify-center.gap-5 > div span:last-child{
+    color:#7f1d1d !important;
+    font-weight:700 !important;
+}
+
+/* عنوان العداد */
+.mt-4.flex.flex-col.justify-center p{
+    color:#b91c1c !important;
+    font-weight:700 !important;
+}
+@media (max-width:768px){
+    [id^="headlessui-popover-panel"]{
+        position: absolute !important;
+        left: 0 !important;
+        right: auto !important;
+        top: calc(100% + 4px) !important;
+        bottom: auto !important;
+        transform: none !important;
+    }
+}
+@media (max-width:768px){
+
+/* إزالة أي مسافات خارجية */
+.content_container{
+    padding-left:8px !important;
+    padding-right:8px !important;
+}
+
+.carouselWrapper{
+    margin:10 !important;
+    padding:10 !important;
+}
+
+.home_slider_container{
+    padding:10 !important;
+}
+
+/* إزالة الحواف من الكارد */
+.home_slider_card{
+    margin:0 !important;
+}
+
+.home_slider_card > a > div{
+    border-radius:0 !important;
+    overflow:hidden !important;
+}
+
+/* زووم بسيط للصورة */
+.home_slider_card img{
+    transform:scale(1.08);
+    transition:transform .3s ease;
+}
+
+}
+
+</style>
+<script>
+
+
+
+
+</script>
+
+<script>
+(function () {
+
+    function disableCartImageLinks() {
+        document.querySelectorAll('[data-cart="item-image-wrapper"]').forEach(link => {
+
+            // منع الانتقال للمنتج
+            link.removeAttribute("href");
+
+            // شكل المؤشر
+            link.style.cursor = "default";
+
+            // منع الضغط
+            link.onclick = function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            };
+        });
+    }
+
+    disableCartImageLinks();
+
+    new MutationObserver(disableCartImageLinks).observe(document.body,{
+        childList:true,
+        subtree:true
+    });
+
+})();
+</script>
+
+<script>(function () {
+
+    function styleViewer() {
+
+        document.querySelectorAll("span").forEach(function (badge) {
+
+            if (!/^\d+$/.test(badge.textContent.trim())) return;
+
+            const parent = badge.parentElement;
+            if (!parent) return;
+
+            if (!parent.textContent.includes("يشاهد هذا المنتج")) return;
+
+            // ينزل العنصر لتحت
+            parent.style.marginTop = "18px";
+            parent.style.marginBottom = "20px";
+
+            // شكل المربع
+            parent.style.background = "#00273d";
+            parent.style.border = "1px solid #0b4b73";
+            parent.style.borderRadius = "12px";
+            parent.style.padding = "12px 16px";
+
+            // لون النص
+            parent.style.color = "#ffffff";
+            parent.style.fontWeight = "700";
+
+            // الرقم
+            badge.style.background = "#0b4b73";
+            badge.style.color = "#ffffff";
+            badge.style.padding = "3px 10px";
+            badge.style.borderRadius = "999px";
+            badge.style.fontWeight = "800";
+        });
+
+    }
+
+    styleViewer();
+
+    new MutationObserver(styleViewer).observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+})();</script>
+<script src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+
+
+<script>
+function moveProductDetails() {
+    const policies = document.querySelector('.flex.flex-col.mt-4.rounded-xl.border');
+    const details = document.querySelector('.product_tabs_container');
+
+    if (!policies || !details) return;
+
+    if (policies.previousElementSibling !== details) {
+        policies.parentNode.insertBefore(details, policies);
+    }
+}
+
+moveProductDetails();
+
+new MutationObserver(moveProductDetails).observe(document.body, {
+    childList: true,
+    subtree: true
+});
+</script>
+<script>
+(function () {
+    let isStatePushed = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwipe = false;
+
+    // تتبع حركات اللمس لمعرفة ما إذا كان المستخدم يقوم بسحب/سوايب للصور لمنع فتح المعرض بالخطأ
+    document.addEventListener("touchstart", function(e) {
+        if (!e.touches || e.touches.length === 0) return;
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        isSwipe = false;
+    }, { passive: true });
+
+    document.addEventListener("touchmove", function(e) {
+        if (!e.touches || e.touches.length === 0) return;
+        const touch = e.touches[0];
+        const diffX = Math.abs(touch.clientX - touchStartX);
+        const diffY = Math.abs(touch.clientY - touchStartY);
+        
+        // إذا تحرك الإصبع أكثر من 10 بكسل نعتبرها حركة سحب (Swipe) وليس نقرة (Tap)
+        if (diffX > 10 || diffY > 10) {
+            isSwipe = true;
+        }
+    }, { passive: true });
+
+    function init() {
+        // التأكد من أننا في صفحة منتج
+        if (!location.pathname.startsWith("/products/")) return;
+
+        // منع تكرار إنشاء المعرض
+        if (document.getElementById("akkad-preview")) return;
+
+        const gallery = document.querySelector(".p_gallery_container");
+        if (!gallery) return;
+
+        // ===== Overlay =====
+        const overlay = document.createElement("div");
+        overlay.innerHTML = `
+        <div id="akkad-preview">
+            <span class="close">&times;</span>
+            <img>
+        </div>`;
+        document.body.appendChild(overlay);
+
+        // ===== CSS =====
+        const style = document.createElement("style");
+        style.id = "akkad-preview-style";
+        style.textContent = `
+#akkad-preview {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s, visibility 0.25s;
+    touch-action: none;
+}
+
+#akkad-preview.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+#akkad-preview img {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    transform: scale(0.9);
+}
+
+/* تفعيل الأنيميشن فقط عند الفتح أو الإغلاق وليس أثناء استخدام الزوم التفاعلي باليد */
+#akkad-preview:not(.interactive) img {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#akkad-preview.show img {
+    transform: scale(1);
+}
+
+#akkad-preview .close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 36px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    line-height: 1;
+    user-select: none;
+    z-index: 2;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+#akkad-preview .close:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+`;
+        document.head.appendChild(style);
+
+        const box = document.getElementById("akkad-preview");
+        const preview = box.querySelector("img");
+
+        // متغييرات الزوم والتمرير للموبايل
+        let scale = 1;
+        let lastScale = 1;
+        let startDistance = 0;
+        let isPanning = false;
+        let startX = 0, startY = 0;
+        let translateX = 0, translateY = 0;
+
+        // ===== فتح الصورة =====
+        function open(src, fromPopState = false){
+            resetZoom(); // إعادة تهيئة الزوم عند فتح صورة جديدة
+            preview.src = src;
+            box.classList.add("show");
+            document.body.style.overflow = "hidden";
+
+            if (!fromPopState) {
+                history.pushState({ akkadPreview: true, src: src }, "");
+                isStatePushed = true;
+            } else {
+                isStatePushed = true;
+            }
+        }
+
+        // ===== غلق الصورة =====
+        function close(){
+            if (!box || !box.classList.contains("show")) return;
+            box.classList.remove("show");
+            document.body.style.overflow = "";
+            isStatePushed = false;
+            resetZoom();
+        }
+
+        // ===== الضغط على الصورة =====
+        function handle(e){
+            // إذا كانت الحركة عبارة عن سحب/سوايب، نتجاهل الفتح
+            if (isSwipe) {
+                isSwipe = false;
+                return;
+            }
+
+            const img = e.target.closest(".p_gallery_container img");
+            if (!img) return;
+
+            // تجاهل الصور المصغرة
+            if (img.closest(".akkad-gallery")) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            open(img.currentSrc || img.src);
+        }
+
+        // استخدام click موحد للكمبيوتر والموبايل لتجنب مشاكل الـ Touch
+        document.addEventListener("click", handle, { capture: true });
+
+        // غلق بالضغط على الخلفية أو زر الإغلاق
+        function closePreview(e){
+            if (e.target === box || e.target.classList.contains("close")){
+                if (isStatePushed) {
+                    history.back();
+                } else {
+                    close();
+                }
+            }
+        }
+
+        box.addEventListener("click", closePreview);
+
+        // زرار ESC للكمبيوتر
+        document.addEventListener("keydown", function(e){
+            if (e.key === "Escape"){
+                if (isStatePushed) {
+                    history.back();
+                } else {
+                    close();
+                }
+            }
+        });
+
+        // زرار Back في الموبايل أو أي تغيير في تاريخ التصفح
+        window.addEventListener("popstate", function(e){
+            if (e.state && e.state.akkadPreview) {
+                open(e.state.src, true);
+            } else {
+                close();
+            }
+        });
+
+        // استعادة حالة الصورة المفتوحة عند تحديث الصفحة (Refresh)
+        if (history.state && history.state.akkadPreview && history.state.src) {
+            open(history.state.src, true);
+        }
+
+        // ===== خصائص Pinch to Zoom والتمرير للموبايل =====
+        preview.addEventListener("touchstart", function (e) {
+            box.classList.add("interactive"); // إيقاف الأنيميشن لتفادي البطء أثناء تحريك الإصبع
+            if (e.touches.length === 2) {
+                // بداية الزوم بإصبعين
+                startDistance = getDistance(e.touches[0], e.touches[1]);
+                lastScale = scale;
+            } else if (e.touches.length === 1 && scale > 1) {
+                // بداية التمرير بإصبع واحد (فقط إذا كانت الصورة مكبرة بالفعل)
+                isPanning = true;
+                startX = e.touches[0].clientX - translateX;
+                startY = e.touches[0].clientY - translateY;
+            }
+        }, { passive: false });
+
+        preview.addEventListener("touchmove", function (e) {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const dist = getDistance(e.touches[0], e.touches[1]);
+                // تحديد حدود التكبير بين 1x و 4x
+                scale = Math.min(Math.max(1, lastScale * (dist / startDistance)), 4);
+                updateTransform();
+            } else if (e.touches.length === 1 && isPanning) {
+                e.preventDefault();
+                translateX = e.touches[0].clientX - startX;
+                translateY = e.touches[0].clientY - startY;
+                limitTranslate();
+                updateTransform();
+            }
+        }, { passive: false });
+
+        preview.addEventListener("touchend", function (e) {
+            if (e.touches.length < 2) {
+                lastScale = scale;
+            }
+            if (e.touches.length === 0) {
+                isPanning = false;
+                box.classList.remove("interactive"); // إعادة تفعيل الأنيميشن
+                if (scale <= 1.01) {
+                    resetZoom();
+                }
+            }
+        }, { passive: true });
+
+        function getDistance(t1, t2) {
+            return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        }
+
+        function updateTransform() {
+            preview.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        }
+
+        // منع سحب أطراف الصورة خارج الشاشة عند تكبيرها
+        function limitTranslate() {
+            if (scale <= 1) {
+                translateX = 0;
+                translateY = 0;
+                return;
+            }
+            const rect = preview.getBoundingClientRect();
+            const maxX = Math.max(0, (rect.width - window.innerWidth) / 2);
+            const maxY = Math.max(0, (rect.height - window.innerHeight) / 2);
+
+            translateX = Math.min(Math.max(translateX, -maxX), maxX);
+            translateY = Math.min(Math.max(translateY, -maxY), maxY);
+        }
+
+        function resetZoom() {
+            scale = 1;
+            lastScale = 1;
+            translateX = 0;
+            translateY = 0;
+            preview.style.transform = "";
+        }
+    }
+
+    // فحص الرابط والتهيئة
+    function checkAndInit() {
+        if (location.pathname.startsWith("/products/")) {
+            init();
+        } else {
+            // تنظيف الكود عند الخروج من صفحة المنتجات (مفيد للـ SPAs)
+            const existingPreview = document.getElementById("akkad-preview");
+            if (existingPreview) existingPreview.remove();
+            const existingStyle = document.getElementById("akkad-preview-style");
+            if (existingStyle) existingStyle.remove();
+        }
+    }
+
+    // التشغيل عند تحميل الصفحة لأول مرة
+    if (document.readyState === "loading"){
+        document.addEventListener("DOMContentLoaded", checkAndInit);
+    } else {
+        checkAndInit();
+    }
+
+    // مراقبة التنقل الديناميكي داخل الموقع (للـ AJAX / SPA / Instant Click)
+    const originalPushState = history.pushState;
+    history.pushState = function () {
+        originalPushState.apply(this, arguments);
+        setTimeout(checkAndInit, 100);
+    };
+
+    const originalReplaceState = history.replaceState;
+    history.replaceState = function () {
+        originalReplaceState.apply(this, arguments);
+        setTimeout(checkAndInit, 100);
+    };
+
+    window.addEventListener("popstate", checkAndInit);
+
+    // مراقبة تغييرات الصفحة ديناميكياً لتشغيل المعرض فور ظهور حاوية الصور بدون الحاجة لريستارت
+    const observer = new MutationObserver(() => {
+        checkAndInit();
+    });
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+
+})();
+</script>
+<script>
+(function () {
+
+    function hideOKKA() {
+        document.querySelectorAll("h3").forEach(h3 => {
+            if (h3.textContent.toUpperCase().includes("OKKA")) {
+                h3.style.display = "none";
+            }
+        });
+    }
+
+    hideOKKA();
+
+    new MutationObserver(hideOKKA).observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+})();
+</script>
+
+<script>
+(function () {
+
+    function isHomePage() {
+        const path = window.location.pathname.replace(/\/+$/, "") || "/";
+        return path === "/";
+    }
+
+    function createFloatingCounter() {
+
+        if (document.getElementById("akkad-floating-counter")) return;
+
+        const box = document.createElement("div");
+        box.id = "akkad-floating-counter";
+
+        box.innerHTML = `
+            <div class="live-dot"></div>
+            <span class="text">
+                <b id="akkad-live-number">42</b>
+                عميل يشاهد هذه الصفحة
+            </span>
+        `;
+
+        document.body.appendChild(box);
+
+        const style = document.createElement("style");
+        style.id = "akkad-floating-counter-style";
+
+        style.textContent = `
+#akkad-floating-counter{
+    position:fixed;
+    left:20px;
+    bottom:20px;
+
+    z-index:99999;
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    width:270px;
+    height:54px;
+
+    padding:0 16px;
+
+    background:#00273d;
+    color:#fff;
+
+    border-radius:999px;
+    box-sizing:border-box;
+
+    font-size:14px;
+    font-weight:600;
+
+    white-space:nowrap;
+}
+
+#akkad-floating-counter .text{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+
+    overflow:hidden;
+}
+
+#akkad-floating-counter b{
+    flex:0 0 48px;
+    text-align:center;
+
+    color:#7dd3fc;
+    font-size:18px;
+    font-weight:700;
+}
+
+.live-dot{
+    flex-shrink:0;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#22c55e;
+    display:block;
+
+    animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+    0%{
+        transform:scale(1);
+        box-shadow:0 0 0 0 rgba(34,197,94,.7);
+    }
+    70%{
+        transform:scale(1.15);
+        box-shadow:0 0 0 10px rgba(34,197,94,0);
+    }
+    100%{
+        transform:scale(1);
+        box-shadow:0 0 0 0 rgba(34,197,94,0);
+    }
+}
+
+@media(max-width:768px){
+
+#akkad-floating-counter{
+
+    left:12px;
+    bottom:20px;
+
+    width:245px;
+    height:48px;
+
+    font-size:12px;
+}
+
+#akkad-floating-counter b{
+    flex:0 0 44px;
+    font-size:16px;
+}
+
+}
+`;
+
+        if (!document.getElementById("akkad-floating-counter-style")) {
+            document.head.appendChild(style);
+        }
+
+        const number = document.getElementById("akkad-live-number");
+
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1).replace(".0", "") + "M";
+            }
+
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1).replace(".0", "") + "K";
+            }
+
+            return num;
+        }
+
+        function updateNumber() {
+            const random = Math.floor(Math.random() * 5000) + 1;
+            number.textContent = formatNumber(random);
+        }
+
+        function loop() {
+
+            if (!document.getElementById("akkad-floating-counter")) return;
+
+            updateNumber();
+            setTimeout(loop, Math.random() * 5000 + 3000);
+        }
+
+        loop();
+
+    }
+
+    function initCounter() {
+
+        if (!isHomePage()) {
+            document.getElementById("akkad-floating-counter")?.remove();
+            return;
+        }
+
+        if (document.getElementById("akkad-floating-counter")) return;
+
+        createFloatingCounter();
+    }
+
+    window.addEventListener("load", () => {
+        setTimeout(initCounter, 500);
+    });
+
+    new MutationObserver(initCounter).observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+})();
+</script>
+<script>
+
+(function () {
+if (!location.href.includes("funnels")) return;
+
+setInterval(() => {
+
+    // تغيير تكلفة الشحن باستمرار
+    const shipping = document.querySelector(".shipping_cost");
+    if (shipping) {
+        shipping.innerHTML = `
+            <span style="
+                display:inline-block;
+                background:#9896a4;
+                border:1px solid #9896a4;
+                border-radius:8px;
+                padding:4px 10px;
+                font-size:14px;
+                font-weight:700;
+                color:#374151;
+            ">
+                50 ج.م
+            </span>
+        `;
+    }
+
+    // تغيير الإجمالي باستمرار
+    const total = document.querySelector(".total_price");
+    if (total) {
+        total.innerHTML = `
+            419.99
+            <span class="font-[inherit]">ج.م</span>
+        `;
+    }
+
+const salePrice = document.getElementById("salePrice");
+if (salePrice) {
+    salePrice.innerHTML = `
+        <span style="
+            display:inline-flex;
+            align-items:center;
+            gap:3px;
+            white-space:nowrap;
+            background:#f8fafc;
+            border:1px solid #f8fafc;
+            border-radius:8px;
+            padding:4px 10px;
+            font-size:30px;
+            font-weight:700;
+            color:#374151;
+        ">
+            <span>369.99</span>
+            <span class="font-[inherit]" style="white-space:nowrap;">ج.م</span>
+        </span>
+    `;
+}
+
+// تغيير كل أسعار المنتج (العادي + الـ Sticky Bar)
+document.querySelectorAll("#salePrice").forEach(salePrice => {
+    salePrice.innerHTML = `
+        <span style="
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+            white-space:nowrap;
+            background:#f8fafc;
+            border:none;
+            border-radius:10px;
+            padding:6px 12px;
+            font-size:30px;
+            font-weight:800;
+            color:#111827;
+            line-height:1;
+        ">
+            <span>369.99</span>
+            <span style="
+                font-size:30px;
+                font-weight:800;
+                white-space:nowrap;
+            ">
+                ج.م
+            </span>
+        </span>
+    `;
+});
+
+}, 200);
+
+})();
+</script>
+<script>
+(function () {
+
+    function swapPayments() {
+
+        const container = document.querySelector(".payments_container");
+        if (!container) return;
+
+        const transfer = [...container.children].find(el =>
+            el.textContent.includes("صورة التحويل")
+        );
+
+        const cod = [...container.children].find(el =>
+            el.textContent.includes("دفع عند الاستلام")
+        );
+
+        if (!transfer || !cod) return;
+
+        // لو دفع عند الاستلام بالفعل أول عنصر متعملش حاجة
+        if (container.firstElementChild === cod) return;
+
+        container.insertBefore(cod, transfer);
+    }
+
+    // أول مرة
+    setTimeout(swapPayments, 1000);
+
+    // عند أي تغيير
+    new MutationObserver(() => {
+        setTimeout(swapPayments, 50);
+    }).observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+})();
+(function () {
+
+    let initialized = false;
+
+    const timer = setInterval(() => {
+
+        const container = document.querySelector(".payments_container");
+        if (!container) return;
+
+        const cards = [...container.children];
+
+        const transfer = cards.find(card =>
+            card.textContent.includes("صورة التحويل")
+        );
+
+        const cod = cards.find(card =>
+            card.textContent.includes("دفع عند الاستلام")
+        );
+
+        if (!transfer || !cod) return;
+
+        // تبديل الترتيب
+        if (container.firstElementChild !== cod) {
+            container.insertBefore(cod, transfer);
+        }
+
+        // أول مرة فقط
+        if (!initialized) {
+            initialized = true;
+
+            setTimeout(() => {
+                cod.dispatchEvent(new MouseEvent("click", {
+                    bubbles: true,
+                    cancelable: true
+                }));
+            }, 300);
+
+            clearInterval(timer);
+        }
+
+    }, 200);
+
+})();
+</script>
+
+
+<script>
+(function () {
+
+    /* =========================================
+       صفحات المنتجات
+       ========================================= */
+
+    const TARGET_1 =
+        "/products/high-school-graduation-gift-classic-design-2026";
+
+    const TARGET_2 =
+        "/products/high-school-graduation-gift-modern-design-2026";
+
+
+    /* =========================================
+       تحديد الصفحة الحالية
+       ========================================= */
+
+    const currentPath = window.location.pathname;
+
+    if (
+        currentPath !== TARGET_1 &&
+        currentPath !== TARGET_2
+    ) {
+        return;
+    }
+
+
+    /* =========================================
+       اسم المنتج
+       ========================================= */
+
+    const PRODUCT_ALT =
+        currentPath === TARGET_1
+            ? "هدية نجاح الثانوية العامة 2026 | برواز مخصص بتصميم كلاسيك بالاسم والصورة"
+            : "هدية نجاح الثانوية العامة 2026 | برواز مخصص بتصميم عصري بالاسم والصورة";
+
+
+    /* =========================================
+       صور السلايدر
+       ========================================= */
+
+    const SLIDER_IMAGES = [
+
+        "https://files.easy-orders.net/1786365476227722534.webp",
+
+        "https://files.easy-orders.net/1786365466534135347.webp",
+
+        "https://files.easy-orders.net/1786365458894914294.webp",
+
+        "https://files.easy-orders.net/1786365451845303830.webp",
+
+        "https://files.easy-orders.net/1786365447594796680.webp",
+
+        "https://files.easy-orders.net/1786365441649159061.webp",
+
+        "https://files.easy-orders.net/1786365434307345455.webp"
+
+    ];
+
+
+    const ID = "akkad-graduation-slider";
+
+
+    /* =========================================
+       CSS
+       ========================================= */
+
+    function addStyles() {
+
+        if (
+            document.getElementById(
+                "akkad-graduation-slider-css"
+            )
+        ) {
+            return;
+        }
+
+
+        const style =
+            document.createElement("style");
+
+
+        style.id =
+            "akkad-graduation-slider-css";
+
+
+        style.textContent = `
+
+        /* =====================================
+           السلايدر
+           ===================================== */
+
+        #${ID} {
+
+            width: 100% !important;
+
+            max-width: 100% !important;
+
+            position: relative !important;
+
+            overflow: hidden !important;
+
+            margin: 15px 0 !important;
+
+            padding: 0 !important;
+
+            box-sizing: border-box !important;
+
+            direction: ltr !important;
+
+            background: transparent !important;
+        }
+
+
+        /* =====================================
+           المسار
+           ===================================== */
+
+        #${ID} .akkad-track {
+
+            display: flex !important;
+
+            flex-direction: row !important;
+
+            width: 100% !important;
+
+            margin: 0 !important;
+
+            padding: 0 !important;
+
+            transition:
+                transform .45s ease !important;
+
+            will-change: transform !important;
+        }
+
+
+        /* =====================================
+           كل صورة
+           ===================================== */
+
+        #${ID} .akkad-slide {
+
+            flex: 0 0 100% !important;
+
+            width: 100% !important;
+
+            min-width: 100% !important;
+
+            max-width: 100% !important;
+
+            margin: 0 !important;
+
+            padding: 0 !important;
+
+            display: block !important;
+
+            box-sizing: border-box !important;
+        }
+
+
+        #${ID} .akkad-slide img {
+
+            display: block !important;
+
+            width: 100% !important;
+
+            height: auto !important;
+
+            max-width: 100% !important;
+
+            margin: 0 !important;
+
+            padding: 0 !important;
+
+            border: 0 !important;
+
+            border-radius: 0 !important;
+
+            object-fit: contain !important;
+
+            user-select: none !important;
+
+            -webkit-user-drag: none !important;
+        }
+
+
+        /* =====================================
+           الأسهم
+           ===================================== */
+
+        #${ID} .akkad-arrow {
+
+            position: absolute !important;
+
+            top: 50% !important;
+
+            transform:
+                translateY(-50%) !important;
+
+            width: 42px !important;
+
+            height: 42px !important;
+
+            display: flex !important;
+
+            align-items: center !important;
+
+            justify-content: center !important;
+
+            box-sizing: border-box !important;
+
+            padding: 0 !important;
+
+            margin: 0 !important;
+
+            border:
+                1px solid
+                rgba(255,255,255,.65) !important;
+
+            border-radius: 50% !important;
+
+            background:
+                rgba(4,11,29,.65) !important;
+
+            color: #fff !important;
+
+            font-family: Arial, sans-serif !important;
+
+            font-size: 0 !important;
+
+            line-height: 0 !important;
+
+            text-align: center !important;
+
+            cursor: pointer !important;
+
+            z-index: 50 !important;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,.25) !important;
+
+            transition:
+                background .2s ease,
+                transform .2s ease,
+                box-shadow .2s ease !important;
+
+            -webkit-tap-highlight-color:
+                transparent !important;
+        }
+
+
+        /* =====================================
+           SVG السهم
+           ===================================== */
+
+        #${ID} .akkad-arrow svg {
+
+            width: 22px !important;
+
+            height: 22px !important;
+
+            display: block !important;
+
+            flex-shrink: 0 !important;
+        }
+
+
+        /* =====================================
+           Hover
+           ===================================== */
+
+        #${ID} .akkad-arrow:hover {
+
+            background:
+                rgba(4,11,29,.9) !important;
+
+            box-shadow:
+                0 5px 16px
+                rgba(0,0,0,.35) !important;
+
+            transform:
+                translateY(-50%)
+                scale(1.06) !important;
+        }
+
+
+        /* =====================================
+           الضغط
+           ===================================== */
+
+        #${ID} .akkad-arrow:active {
+
+            transform:
+                translateY(-50%)
+                scale(.94) !important;
+        }
+
+
+        /* =====================================
+           السهم السابق
+           ===================================== */
+
+        #${ID} .akkad-prev {
+
+            left: 12px !important;
+        }
+
+
+        /* =====================================
+           السهم التالي
+           ===================================== */
+
+        #${ID} .akkad-next {
+
+            right: 12px !important;
+        }
+
+
+        /* =====================================
+           النقاط
+           ===================================== */
+
+        #${ID} .akkad-dots {
+
+            position: absolute !important;
+
+            bottom: 10px !important;
+
+            left: 50% !important;
+
+            transform:
+                translateX(-50%) !important;
+
+            display: flex !important;
+
+            align-items: center !important;
+
+            justify-content: center !important;
+
+            gap: 6px !important;
+
+            z-index: 50 !important;
+        }
+
+
+        #${ID} .akkad-dot {
+
+            width: 7px !important;
+
+            height: 7px !important;
+
+            padding: 0 !important;
+
+            margin: 0 !important;
+
+            border: 0 !important;
+
+            border-radius: 50% !important;
+
+            background:
+                rgba(255,255,255,.65) !important;
+
+            cursor: pointer !important;
+
+            transition:
+                width .2s ease,
+                background .2s ease !important;
+        }
+
+
+        #${ID} .akkad-dot.active {
+
+            width: 20px !important;
+
+            border-radius: 10px !important;
+
+            background: #fff !important;
+        }
+
+
+        /* =====================================
+           الموبايل
+           ===================================== */
+
+        @media (max-width: 768px) {
+
+            #${ID} {
+
+                width: 100% !important;
+
+                margin: 10px 0 !important;
+            }
+
+
+            #${ID} .akkad-arrow {
+
+                width: 36px !important;
+
+                height: 36px !important;
+
+                border-color:
+                    rgba(255,255,255,.55) !important;
+            }
+
+
+            #${ID} .akkad-arrow svg {
+
+                width: 19px !important;
+
+                height: 19px !important;
+            }
+
+
+            #${ID} .akkad-prev {
+
+                left: 8px !important;
+            }
+
+
+            #${ID} .akkad-next {
+
+                right: 8px !important;
+            }
+
+
+            #${ID} .akkad-dots {
+
+                bottom: 7px !important;
+
+                gap: 5px !important;
+            }
+
+
+            #${ID} .akkad-dot {
+
+                width: 6px !important;
+
+                height: 6px !important;
+            }
+
+
+            #${ID} .akkad-dot.active {
+
+                width: 17px !important;
+            }
+
+        }
+
+        `;
+
+
+        document.head.appendChild(style);
+    }
+
+
+    /* =========================================
+       البحث عن الصور الأصلية
+       ========================================= */
+
+    function findImages() {
+
+        const result = [];
+
+
+        document
+            .querySelectorAll("img")
+            .forEach(function (img) {
+
+                const src =
+                    (
+                        img.currentSrc ||
+                        img.src ||
+                        ""
+                    ).split("?")[0];
+
+
+                if (
+                    SLIDER_IMAGES.includes(src)
+                ) {
+
+                    result.push(img);
+
+                }
+
+            });
+
+
+        return result;
+    }
+
+
+    /* =========================================
+       إنشاء السلايدر
+       ========================================= */
+
+    function buildSlider() {
+
+        /* منع إنشاء السلايدر مرتين */
+
+        if (
+            document.getElementById(ID)
+        ) {
+            return;
+        }
+
+
+        const found =
+            findImages();
+
+
+        /* لازم كل الصور تكون موجودة */
+
+        if (
+            found.length !==
+            SLIDER_IMAGES.length
+        ) {
+            return;
+        }
+
+
+        /* =====================================
+           ترتيب الصور
+           ===================================== */
+
+        const ordered =
+            SLIDER_IMAGES.map(function (src) {
+
+                return found.find(
+                    function (img) {
+
+                        const current =
+                            (
+                                img.currentSrc ||
+                                img.src ||
+                                ""
+                            ).split("?")[0];
+
+
+                        return current === src;
+
+                    }
+                );
+
+            });
+
+
+        if (
+            ordered.some(function (img) {
+                return !img;
+            })
+        ) {
+            return;
+        }
+
+
+        /* =====================================
+           تحديد مكان أول صورة
+           ===================================== */
+
+        const firstImage =
+            ordered[0];
+
+
+        const firstParagraph =
+            firstImage.closest("p");
+
+
+        const insertionParent =
+            firstParagraph ||
+            firstImage.parentElement;
+
+
+        if (!insertionParent) {
+            return;
+        }
+
+
+        /* =====================================
+           إنشاء السلايدر
+           ===================================== */
+
+        const slider =
+            document.createElement("div");
+
+
+        slider.id = ID;
+
+
+        const track =
+            document.createElement("div");
+
+
+        track.className =
+            "akkad-track";
+
+
+        /* =====================================
+           إنشاء الصور
+           ===================================== */
+
+        ordered.forEach(
+            function (oldImg, index) {
+
+                const slide =
+                    document.createElement("div");
+
+
+                slide.className =
+                    "akkad-slide";
+
+
+                const img =
+                    document.createElement("img");
+
+
+                img.src =
+                    oldImg.currentSrc ||
+                    oldImg.src;
+
+
+                img.alt =
+                    PRODUCT_ALT;
+
+
+                if (index === 0) {
+
+                    img.loading = "eager";
+
+                } else {
+
+                    img.loading = "lazy";
+
+                }
+
+
+                slide.appendChild(img);
+
+                track.appendChild(slide);
+
+            }
+        );
+
+
+        /* =====================================
+           السهم السابق
+           ===================================== */
+
+        const prev =
+            document.createElement("button");
+
+
+        prev.type = "button";
+
+
+        prev.className =
+            "akkad-arrow akkad-prev";
+
+
+        prev.innerHTML = `
+
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+
+                <path
+                    d="M15 5L8 12L15 19"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+
+            </svg>
+
+        `;
+
+
+        prev.setAttribute(
+            "aria-label",
+            "الصورة السابقة"
+        );
+
+
+        /* =====================================
+           السهم التالي
+           ===================================== */
+
+        const next =
+            document.createElement("button");
+
+
+        next.type = "button";
+
+
+        next.className =
+            "akkad-arrow akkad-next";
+
+
+        next.innerHTML = `
+
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+
+                <path
+                    d="M9 5L16 12L9 19"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+
+            </svg>
+
+        `;
+
+
+        next.setAttribute(
+            "aria-label",
+            "الصورة التالية"
+        );
+
+
+        /* =====================================
+           النقاط
+           ===================================== */
+
+        const dots =
+            document.createElement("div");
+
+
+        dots.className =
+            "akkad-dots";
+
+
+        SLIDER_IMAGES.forEach(
+            function (_, index) {
+
+                const dot =
+                    document.createElement("button");
+
+
+                dot.type = "button";
+
+
+                dot.className =
+                    "akkad-dot";
+
+
+                if (index === 0) {
+
+                    dot.classList.add(
+                        "active"
+                    );
+
+                }
+
+
+                dot.setAttribute(
+                    "aria-label",
+                    "الصورة " +
+                    (index + 1)
+                );
+
+
+                dots.appendChild(dot);
+
+            }
+        );
+
+
+        /* =====================================
+           إضافة العناصر
+           ===================================== */
+
+        slider.appendChild(track);
+
+        slider.appendChild(prev);
+
+        slider.appendChild(next);
+
+        slider.appendChild(dots);
+
+
+        /* =====================================
+           إدخال السلايدر
+           ===================================== */
+
+        insertionParent
+            .parentNode
+            .insertBefore(
+                slider,
+                insertionParent
+            );
+
+
+        /* =====================================
+           حذف الصور الأصلية
+           ===================================== */
+
+        ordered.forEach(
+            function (img) {
+
+                const p =
+                    img.closest("p");
+
+
+                if (p) {
+
+                    const otherImages =
+                        p.querySelectorAll(
+                            "img"
+                        );
+
+
+                    const text =
+                        p.textContent.trim();
+
+
+                    if (
+                        otherImages.length === 1 &&
+                        text === ""
+                    ) {
+
+                        p.remove();
+
+                        return;
+                    }
+
+                }
+
+
+                img.remove();
+
+            }
+        );
+
+
+        /* =====================================
+           التحكم
+           ===================================== */
+
+        let current = 0;
+
+        let autoSlide;
+
+
+        function goTo(index) {
+
+            current = index;
+
+
+            track.style.transform =
+                "translate3d(-" +
+                (current * 100) +
+                "%,0,0)";
+
+
+            dots
+                .querySelectorAll(
+                    ".akkad-dot"
+                )
+                .forEach(
+                    function (dot, i) {
+
+                        dot.classList.toggle(
+                            "active",
+                            i === current
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =====================================
+           Auto Slide
+           كل ثانيتين
+           ===================================== */
+
+        function startAutoSlide() {
+
+            clearInterval(
+                autoSlide
+            );
+
+
+            autoSlide =
+                setInterval(
+                    function () {
+
+                        goTo(
+                            (current + 1) %
+                            SLIDER_IMAGES.length
+                        );
+
+                    },
+                    2000
+                );
+
+        }
+
+
+        startAutoSlide();
+
+
+        /* =====================================
+           Next
+           ===================================== */
+
+        next.addEventListener(
+            "click",
+            function (e) {
+
+                e.preventDefault();
+
+                e.stopPropagation();
+
+
+                goTo(
+                    (current + 1) %
+                    SLIDER_IMAGES.length
+                );
+
+
+                startAutoSlide();
+
+            }
+        );
+
+
+        /* =====================================
+           Previous
+           ===================================== */
+
+        prev.addEventListener(
+            "click",
+            function (e) {
+
+                e.preventDefault();
+
+                e.stopPropagation();
+
+
+                goTo(
+                    (current - 1 +
+                        SLIDER_IMAGES.length) %
+                    SLIDER_IMAGES.length
+                );
+
+
+                startAutoSlide();
+
+            }
+        );
+
+
+        /* =====================================
+           النقاط
+           ===================================== */
+
+        dots
+            .querySelectorAll(
+                ".akkad-dot"
+            )
+            .forEach(
+                function (dot, index) {
+
+                    dot.addEventListener(
+                        "click",
+                        function (e) {
+
+                            e.preventDefault();
+
+                            e.stopPropagation();
+
+
+                            goTo(index);
+
+                            startAutoSlide();
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================
+           Swipe للموبايل
+           ===================================== */
+
+        let startX = 0;
+
+        let startY = 0;
+
+
+        slider.addEventListener(
+            "touchstart",
+            function (e) {
+
+                if (
+                    !e.touches.length
+                ) {
+                    return;
+                }
+
+
+                startX =
+                    e.touches[0].clientX;
+
+
+                startY =
+                    e.touches[0].clientY;
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        slider.addEventListener(
+            "touchend",
+            function (e) {
+
+                if (
+                    !e.changedTouches.length
+                ) {
+                    return;
+                }
+
+
+                const endX =
+                    e.changedTouches[0].clientX;
+
+
+                const endY =
+                    e.changedTouches[0].clientY;
+
+
+                const diffX =
+                    startX - endX;
+
+
+                const diffY =
+                    startY - endY;
+
+
+                /* الحركة لازم تكون أفقية */
+
+                if (
+                    Math.abs(diffX) < 40 ||
+                    Math.abs(diffX) <
+                    Math.abs(diffY)
+                ) {
+                    return;
+                }
+
+
+                if (diffX > 0) {
+
+                    goTo(
+                        (current + 1) %
+                        SLIDER_IMAGES.length
+                    );
+
+                } else {
+
+                    goTo(
+                        (current - 1 +
+                            SLIDER_IMAGES.length) %
+                        SLIDER_IMAGES.length
+                    );
+
+                }
+
+
+                startAutoSlide();
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        /* =====================================
+           إيقاف مؤقت بالماوس
+           ===================================== */
+
+        slider.addEventListener(
+            "mouseenter",
+            function () {
+
+                clearInterval(
+                    autoSlide
+                );
+
+            }
+        );
+
+
+        slider.addEventListener(
+            "mouseleave",
+            function () {
+
+                startAutoSlide();
+
+            }
+        );
+
+
+        /* =====================================
+           إيقاف مؤقت باللمس
+           ===================================== */
+
+        slider.addEventListener(
+            "touchstart",
+            function () {
+
+                clearInterval(
+                    autoSlide
+                );
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        slider.addEventListener(
+            "touchend",
+            function () {
+
+                startAutoSlide();
+
+            },
+            {
+                passive: true
+            }
+        );
+
+    }
+
+
+    /* =========================================
+       التشغيل
+       ========================================= */
+
+    function init() {
+
+        if (
+            window.location.pathname !== TARGET_1 &&
+            window.location.pathname !== TARGET_2
+        ) {
+            return;
+        }
+
+
+        addStyles();
+
+        buildSlider();
+
+    }
+
+
+    /* =========================================
+       DOM Ready
+       ========================================= */
+
+    if (
+        document.readyState === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                setTimeout(
+                    init,
+                    1000
+                );
+
+            }
+        );
+
+    } else {
+
+        setTimeout(
+            init,
+            1000
+        );
+
+    }
+
+
+    /* =========================================
+       EasyOrders / React
+       ========================================= */
+
+    let timer;
+
+
+    const observer =
+        new MutationObserver(
+            function () {
+
+                if (
+                    document.getElementById(ID)
+                ) {
+                    return;
+                }
+
+
+                clearTimeout(timer);
+
+
+                timer =
+                    setTimeout(
+                        init,
+                        300
+                    );
+
+            }
+        );
+
+
+    observer.observe(
+        document.body,
+        {
+            childList: true,
+            subtree: true
+        }
+    );
+
+
+})();
+</script>

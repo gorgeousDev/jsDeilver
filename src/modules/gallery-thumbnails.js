@@ -97,10 +97,10 @@ export function initGallery(containerSelector = ".swiper") {
         setTimeout(() => {
           updateActiveThumb();
 
-          thumb.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'center'
+          var target = thumb.offsetLeft - (gallery.clientWidth / 2) + (thumb.offsetWidth / 2);
+          gallery.scrollTo({
+            left: target,
+            behavior: 'smooth'
           });
         }, 100);
       }
