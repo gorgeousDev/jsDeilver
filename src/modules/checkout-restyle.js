@@ -8,7 +8,9 @@
   style.id = 'akkad-checkout-style';
 
   style.textContent = [
-    '.akkad-sale-badge { display: none !important; }',
+    /* keep sale labels out of the checkout only — this script is loaded
+       site-wide, so an unscoped rule here hides them on every page */
+    '.checkout_container .akkad-sale-tag, .checkout_order_summary .akkad-sale-tag, .akkad-sale-badge { display: none !important; }',
     '[data-cart="item-name"] { display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; text-overflow: ellipsis !important; max-height: 2.8em !important; line-height: 1.4 !important; }',
     '.checkout_container { grid-template-columns: 1fr !important; padding: 0 16px !important; }',
     '.checkout_order_summary { order: 2 !important; background: #fff !important; border: 2px solid #A8DDD4 !important; border-radius: 16px !important; padding: 24px !important; margin-top: 16px !important; margin-bottom: 120px !important; }',

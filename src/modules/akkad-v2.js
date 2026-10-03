@@ -1333,105 +1333,56 @@ function __akkad_isHomePage() {
 })();
 
 /* =========================================
-   13. Modern Sparkled Sale Badge
+   13. Small "SALE" tag + remove theme "تخفيضات"
    ========================================= */
 (function () {
+
+    var TAG_CLASS = "akkad-sale-tag";
+    var DISCOUNT_WORD = "تخفيضات";
+    var GONE = "display:none !important; visibility:hidden !important;";
 
     /* =========================================
        CSS (one-time injection into body, not head
        so Next.js hydration doesn't remove it)
        ========================================= */
     function addStyles() {
-        if (document.getElementById("akkad-sale-badge-css")) return;
+        if (document.getElementById("akkad-sale-tag-css")) return;
 
         var style = document.createElement("style");
-        style.id = "akkad-sale-badge-css";
+        style.id = "akkad-sale-tag-css";
         style.textContent = [
-            /* — new badge wrapper — */
-            '.akkad-sale-badge{',
+            /* — wrapper: pinned to the card's top-left corner — */
+            '.akkad-sale-tag{',
             '    position:absolute !important;',
             '    top:0 !important;',
-            '    right:0 !important;',
+            '    left:0 !important;',
             '    z-index:15 !important;',
+            '    display:block !important;',
+            '    line-height:1 !important;',
             '    pointer-events:none !important;',
             '}',
             '',
-            /* — pill — */
-            '.akkad-sale-badge .akkad-badge-pill{',
-            '    position:relative !important;',
-            '    display:inline-flex !important;',
-            '    align-items:center !important;',
-            '    justify-content:center !important;',
-            '    gap:5px !important;',
-            '    padding:6px 14px 6px 10px !important;',
-            '    background:linear-gradient(135deg, #ff2d55, #ff6b6b) !important;',
+            /* — the label itself — */
+            '.akkad-sale-tag > span{',
+            '    display:inline-block !important;',
+            '    padding:3px 7px !important;',
+            '    background:#f4436c !important;',
             '    color:#fff !important;',
-            '    font-size:13px !important;',
-            '    font-weight:800 !important;',
             '    font-family:Tajawal,sans-serif !important;',
-            '    border-radius:0 0 0 14px !important;',
-            '    box-shadow:0 4px 15px rgba(255,45,85,.4) !important;',
-            '    overflow:hidden !important;',
+            '    font-size:11px !important;',
+            '    font-weight:700 !important;',
+            '    letter-spacing:.4px !important;',
+            '    border-radius:0 5px 5px 0 !important;',
+            '    box-shadow:0 1px 4px rgba(0,0,0,.18) !important;',
             '    white-space:nowrap !important;',
-            '}',
-            '',
-            /* — sparkles — */
-            '.akkad-sale-badge .sparkle{',
-            '    position:absolute !important;',
-            '    width:3px !important;',
-            '    height:3px !important;',
-            '    background:#fff !important;',
-            '    border-radius:50% !important;',
-            '    opacity:0 !important;',
-            '    animation:akkadSparkle 1.8s ease-in-out infinite !important;',
-            '}',
-            '.akkad-sale-badge .sparkle:nth-child(1){ top:4px; left:8px; animation-delay:0s; }',
-            '.akkad-sale-badge .sparkle:nth-child(2){ top:12px; left:20px; animation-delay:.35s; width:2px; height:2px; }',
-            '.akkad-sale-badge .sparkle:nth-child(3){ top:6px; right:10px; animation-delay:.7s; }',
-            '.akkad-sale-badge .sparkle:nth-child(4){ bottom:4px; left:14px; animation-delay:1.05s; width:2px; height:2px; }',
-            '.akkad-sale-badge .sparkle:nth-child(5){ bottom:6px; right:8px; animation-delay:1.4s; }',
-            '',
-            '@keyframes akkadSparkle{',
-            '    0%,100%{ opacity:0; transform:scale(0) rotate(0deg); }',
-            '    50%{ opacity:1; transform:scale(1) rotate(180deg); }',
-            '}',
-            '',
-            /* — shine sweep — */
-            '.akkad-sale-badge .akkad-badge-pill::before{',
-            '    content:"" !important;',
-            '    position:absolute !important;',
-            '    top:-50% !important;',
-            '    left:-80% !important;',
-            '    width:40% !important;',
-            '    height:200% !important;',
-            '    background:linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent) !important;',
-            '    transform:rotate(25deg) !important;',
-            '    animation:akkadShine 2.5s ease-in-out infinite !important;',
-            '}',
-            '',
-            '@keyframes akkadShine{',
-            '    0%{ left:-80%; }',
-            '    45%,100%{ left:140%; }',
-            '}',
-            '',
-            /* — star icon — */
-            '.akkad-sale-badge .akkad-star{',
-            '    font-size:12px !important;',
-            '    line-height:1 !important;',
-            '    animation:akkadStarPulse 1.2s ease-in-out infinite !important;',
-            '}',
-            '',
-            '@keyframes akkadStarPulse{',
-            '    0%,100%{ transform:scale(1) rotate(0deg); }',
-            '    50%{ transform:scale(1.3) rotate(15deg); }',
             '}',
             '',
             /* — mobile — */
             '@media(max-width:768px){',
-            '    .akkad-sale-badge .akkad-badge-pill{',
-            '        padding:5px 12px 5px 8px !important;',
-            '        font-size:12px !important;',
-            '        border-radius:0 0 0 12px !important;',
+            '    .akkad-sale-tag > span{',
+            '        padding:2px 6px !important;',
+            '        font-size:10px !important;',
+            '        border-radius:0 4px 4px 0 !important;',
             '    }',
             '}'
         ].join('\n');
@@ -1441,72 +1392,76 @@ function __akkad_isHomePage() {
     }
 
     /* =========================================
-       Hide "تخفيضات" spans using inline style
-       (survives React re-renders on that element)
+       Drop the theme's "تخفيضات" chip on every page.
+       Inline style, so a React re-render on that node
+       cannot bring it back.
        ========================================= */
-    function hideOriginalBadges() {
-        var allSpans = document.querySelectorAll("span");
-        for (var i = 0; i < allSpans.length; i++) {
-            var span = allSpans[i];
-            if (span.textContent.trim() === "تخفيضات" ||
-                span.textContent.trim() === "تخفيضات") {
-                span.style.cssText = "display:none !important; visibility:hidden !important; width:0 !important; height:0 !important; overflow:hidden !important; position:absolute !important;";
-                /* also hide parent if it only contains this span */
-                var parent = span.parentElement;
-                if (parent && parent.children.length === 1 &&
-                    parent.textContent.trim() === "تخفيضات") {
-                    parent.style.cssText = "display:none !important; visibility:hidden !important; width:0 !important; height:0 !important; overflow:hidden !important; position:absolute !important;";
-                }
+    function removeDiscountLabels() {
+        var spans = document.querySelectorAll("span");
+        for (var i = 0; i < spans.length; i++) {
+            var span = spans[i];
+            if (span.textContent.trim() !== DISCOUNT_WORD) continue;
+
+            span.style.cssText = GONE;
+
+            /* also hide the wrapper if the chip is its only child */
+            var parent = span.parentElement;
+            if (parent && parent.children.length === 1 &&
+                parent.textContent.trim() === DISCOUNT_WORD) {
+                parent.style.cssText = GONE;
             }
         }
     }
 
     /* =========================================
-       Inject new badge into sale cards
+       Small "SALE" tag on cards that are genuinely
+       on sale (a struck-through old price).
        ========================================= */
+    function buildTag() {
+        var tag = document.createElement("div");
+        tag.className = TAG_CLASS;
+        tag.setAttribute("aria-hidden", "true");
+        tag.innerHTML = "<span>SALE</span>";
+        return tag;
+    }
+
+    /* the card's <a> is the positioning context; make sure of it */
+    function hostFor(card) {
+        var link = card.querySelector('a[href*="/products/"]') || card.querySelector("a");
+        if (!link) return null;
+        if (window.getComputedStyle(link).position === "static") {
+            link.style.position = "relative";
+        }
+        return link;
+    }
+
     function processCards() {
+        /* clear the old sparkled badge left behind by a previous build */
+        var legacy = document.querySelectorAll(".akkad-sale-badge");
+        for (var l = 0; l < legacy.length; l++) {
+            legacy[l].parentNode.removeChild(legacy[l]);
+        }
+
         var cards = document.querySelectorAll(".fasty_product_card");
         for (var c = 0; c < cards.length; c++) {
             var card = cards[c];
 
-            /* skip if already has our badge */
-            if (card.querySelector(".akkad-sale-badge")) continue;
+            var priceBox = card.querySelector(".fasty_product_card_price");
+            if (!priceBox || !priceBox.querySelector("del")) continue;
 
-            /* only cards with a sale (old price with <del>) */
-            var priceContainer = card.querySelector(".fasty_product_card_price");
-            if (!priceContainer) continue;
-            if (!priceContainer.querySelector("del")) continue;
+            var host = hostFor(card);
+            if (!host || host.querySelector("." + TAG_CLASS)) continue;
 
-            /* build badge */
-            var badge = document.createElement("div");
-            badge.className = "akkad-sale-badge";
-            badge.innerHTML =
-                '<div class="akkad-badge-pill">' +
-                    '<span class="sparkle"></span>' +
-                    '<span class="sparkle"></span>' +
-                    '<span class="sparkle"></span>' +
-                    '<span class="sparkle"></span>' +
-                    '<span class="sparkle"></span>' +
-                    '<span class="akkad-star">&#10022;</span>' +
-                    '<span>SALE</span>' +
-                '</div>';
-
-            /* inject into the <a> wrapper (position:relative) */
-            var link = card.querySelector("a");
-            if (link) {
-                link.appendChild(badge);
-            }
+            host.appendChild(buildTag());
         }
     }
 
     /* =========================================
        Run
        ========================================= */
-    var isHome = typeof __akkad_isHomePage === "function" && __akkad_isHomePage();
-
     function run() {
         addStyles();
-        if (!isHome) hideOriginalBadges();
+        removeDiscountLabels();
         processCards();
     }
 
@@ -1516,13 +1471,10 @@ function __akkad_isHomePage() {
         run();
     }
 
-    var badgeTimer;
+    var timer;
     new MutationObserver(function () {
-        clearTimeout(badgeTimer);
-        badgeTimer = setTimeout(function () {
-            if (!isHome) hideOriginalBadges();
-            processCards();
-        }, 500);
+        clearTimeout(timer);
+        timer = setTimeout(run, 500);
     }).observe(document.body, {
         childList: true,
         subtree: true
@@ -2106,8 +2058,28 @@ if (!document.getElementById(styleId)) {
         var nameEl = card.querySelector(".fasty_product_card_name");
         if (nameEl) nameEl.textContent = product.name || "";
 
-        var priceBox = card.querySelector(".fasty_product_card_price");
+var priceBox = card.querySelector(".fasty_product_card_price");
         if (priceBox) priceBox.innerHTML = priceMarkup(product, currency);
+
+        /* the template card carries its own SALE tag; it must not leak onto a
+           different product, so drop it and re-add only if this one is on sale */
+        var inherited = card.querySelectorAll(".akkad-sale-tag");
+        for (var t = 0; t < inherited.length; t++) {
+            inherited[t].parentNode.removeChild(inherited[t]);
+        }
+        if (hasSale(product)) {
+            var saleLink = card.querySelector('a[href*="/products/"]') || card.querySelector("a");
+            if (saleLink) {
+                if (window.getComputedStyle(saleLink).position === "static") {
+                    saleLink.style.position = "relative";
+                }
+                var tag = document.createElement("div");
+                tag.className = "akkad-sale-tag";
+                tag.setAttribute("aria-hidden", "true");
+                tag.innerHTML = "<span>SALE</span>";
+                saleLink.appendChild(tag);
+            }
+        }
 
         /* React binds these on real cards; a clone would ship a dead button,
            so the options button becomes a plain link to the product. */
