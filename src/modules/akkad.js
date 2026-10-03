@@ -613,7 +613,7 @@
 
         "@media (max-width: 767px) {",
         "  .fasty_product_featured_container {",
-        "    grid-template-columns: 1fr !important;",
+   " grid-template-columns: repeat(2, minmax(0, 1fr)) !important;",
         "  }",
 
         "  .fasty_product_featured_container > .animate-slideIn {",
