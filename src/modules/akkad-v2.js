@@ -23,7 +23,7 @@ function __akkad_isHomePage() {
    ========================================= */
 (function () {
     var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@8ec164c/src/modules/akkad.js";
+    s.src = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a87d4b2/src/modules/akkad.js";
     s.defer = true;
     document.head.appendChild(s);
 })();
