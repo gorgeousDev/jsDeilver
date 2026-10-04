@@ -88,6 +88,9 @@
     '.select__menu-item.is-selected, .select__menu-item.is-focused { background: var(--co-accent) !important; color: var(--co-on-accent) !important; }',
     '.select__value, .select__label, .select__input { color: var(--co-ink) !important; }',
     '.select__indicator { color: var(--co-ink-2) !important; }',
+    /* react-select paints its own divider, which is a hardcoded #ccc in the
+       theme and was the last light pixel left anywhere on the page */
+    '.select__indicator-separator { background: var(--co-line-strong) !important; opacity: 1 !important; }',
 
     '.payment_card_content { display: flex !important; flex-direction: column !important; }',
 

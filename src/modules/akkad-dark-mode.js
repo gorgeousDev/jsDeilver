@@ -84,6 +84,11 @@
         return [
             "html." + ROOT + "{",
             "    color-scheme:dark;",
+            /* the theme paints <html> white, which stops the body background
+               propagating to the canvas. Without a ground here, any strip the
+               body does not cover shows white: a 6px band down the left edge
+               on mobile, where the header row runs a few px past the viewport */
+            "    background:" + P.page + " !important;",
             "}",
 
             /* page */
