@@ -235,7 +235,7 @@ function __akkad_isHomePage() {
             parent.style.color = "#ffffff";
             parent.style.fontWeight = "700";
 
-            badge.style.background = "#0b4b73";
+            badge.style.background = "#A34054";
             badge.style.color = "#ffffff";
             badge.style.padding = "3px 10px";
             badge.style.borderRadius = "999px";
@@ -1552,7 +1552,7 @@ if (!document.getElementById(styleId)) {
     "  border: 1px solid #ddd !important;",
     "  border-radius: 50% !important;",
     "  background: #fff !important;",
-    "  color: #040b1d !important;",
+    "  color: #1B1931 !important;",
     "  font-size: 20px !important;",
     "  line-height: 1 !important;",
     "  cursor: pointer !important;",
@@ -1560,7 +1560,7 @@ if (!document.getElementById(styleId)) {
     "}",
 
     ".akkad-gallery-arrow:hover {",
-    "  background: #040b1d !important;",
+    "  background: #1B1931 !important;",
     "  color: #fff !important;",
     "}",
 
@@ -1601,7 +1601,7 @@ if (!document.getElementById(styleId)) {
     "footer,",
     ".default_footer,",
     "footer.bg-gray-50 {",
-    "  background: #040b1d !important;",
+    "  background: #1B1931 !important;",
     "  color: #fff !important;",
     "}",
 
@@ -1619,7 +1619,6 @@ if (!document.getElementById(styleId)) {
     "}",
 
     ".default_footer_links_container {",
-    "  border-bottom: 1px solid #040b1d;",
     "  padding-bottom: 20px;",
     "  margin-bottom: 20px;",
     "}",
@@ -1680,12 +1679,12 @@ if (!document.getElementById(styleId)) {
 
     ".akkad-categories-inner a {",
     "  text-decoration: none;",
-    "  color: #040b1d;",
+    "  color: #1B1931;",
     "  font-weight: 700;",
     "}",
 
     ".akkad-categories-inner a:hover {",
-    "  color: #004956;",
+    "  color: #A34054;",
     "}",
 
 

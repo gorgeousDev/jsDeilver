@@ -315,42 +315,14 @@
             "html." + ROOT + " input::placeholder,",
             "html." + ROOT + " textarea::placeholder{ color:" + P.text3 + " !important; }",
 
-            /* checkout — checkout-restyle.js paints this flow in teal
-               (#0F8478 on 14 rules). A cool teal on a plum ground reads as a
-               clash, so dark mode re-tints it to the palette: teal -> rose
-               for structure, teal -> apricot for focus. White text still
-               goes on the rose (6.14:1) and dark ink on the apricot. */
+            /* checkout — checkout-restyle.js owns this flow. It ships a
+               --co-* variable set that swaps wholesale under html.akkad-dark,
+               so every card, input, payment option, invoice, coupon box and
+               the mobile sticky bar is plum in dark mode by construction.
+               Only the page ground is kept here, as a safety net for the
+               moment React paints before that script runs. */
             "html." + ROOT + " .checkout_container,",
             "html." + ROOT + " .checkout_bg{ background:" + P.page + " !important; }",
-            "html." + ROOT + " .checkout_order_summary{",
-            "    background:" + P.surface + " !important;",
-            "    border-color:" + P.border + " !important;",
-            "}",
-            "html." + ROOT + " .checkout_form label{ color:" + P.text2 + " !important; }",
-
-            /* structural teal borders -> rose */
-            "html." + ROOT + " .payment_card,",
-            "html." + ROOT + " .global_input,",
-            "html." + ROOT + " .global_textarea,",
-            "html." + ROOT + " .checkout_container [class*=\"border-blue-600\"]{",
-            "    border-color:" + P.rose + " !important;",
-            "}",
-
-            /* focus rings: the one place the apricot is used as a fill, so it
-               takes #1B1931 ink rather than white (white would be 2.18:1) */
-            "html." + ROOT + " .global_input:focus,",
-            "html." + ROOT + " .global_textarea:focus{",
-            "    border-color:" + P.accent + " !important;",
-            "    box-shadow:0 0 0 3px rgba(237,158,89,.22) !important;",
-            "    background:" + P.surface2 + " !important;",
-            "    color:" + P.text + " !important;",
-            "}",
-
-            "html." + ROOT + " #contact-info-heading{",
-            "    color:" + P.text + " !important;",
-            "    border-color:" + P.border + " !important;",
-            "}",
-            "html." + ROOT + " #contact-info-heading::before{ background:" + P.rose + " !important; }",
 
             /* short cross-fade, only while the mode is being switched */
             "html." + FADE + " body,",
