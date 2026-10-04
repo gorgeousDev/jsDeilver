@@ -8,10 +8,15 @@
  *
  * Palette is derived from the colours already on the site:
  *   #040b1d header/footer navy -> page background
- *   #061c32 / #0a2a45 / #0d3557  navy surfaces for cards, panels, placeholders
- *   #12405f / #1c5c8a  borders
+ *   #0a2a45 / #0d3557 / #10456b  navy surfaces for cards, panels, placeholders
+ *   #1a4468 / #2a6ea0  borders
  *   #e6eef6 / #b9cbdb / #8ba3b8  text
- *   #004956 / #0f8478 / #d4af37  brand teal, checkout teal, gold (kept)
+ *   #1a8899 / #0f8478 / #d4af37  brand teal, checkout teal, gold (kept)
+ *
+ * The surface ramp deliberately starts well above the page colour. Cards at
+ * #061c32 measured dLum 0.008 against #040b1d, which is too small to read as
+ * a panel, so the whole grid looked like flat text on a void. #0a2a45 gives
+ * dLum 0.018 and the cards separate without going grey.
  */
 (function () {
     "use strict";
@@ -27,14 +32,17 @@
        --------------------------------------------------------------- */
     var P = {
         page:     "#040b1d",
-        surface:  "#061c32",
-        surface2: "#0a2a45",
-        surface3: "#0d3557",
-        border:   "#12405f",
-        border2:  "#1c5c8a",
+        surface:  "#0a2a45",
+        surface2: "#0d3557",
+        surface3: "#10456b",
+        border:   "#1a4468",
+        border2:  "#2a6ea0",
         text:     "#e6eef6",
         text2:    "#b9cbdb",
-        text3:    "#8ba3b8"
+        text3:    "#8ba3b8",
+        /* the brand teal #004956 all but vanishes on a dark card, so the
+           dark-mode border uses a lightened teal of the same hue */
+        cardEdge: "#1a8899"
     };
 
     /* ---------------------------------------------------------------
@@ -107,10 +115,13 @@
             "html." + ROOT + " .border-gray-400{ border-color:" + P.border2 + " !important; }",
             "html." + ROOT + " .border-heading{ border-color:" + P.border + " !important; }",
 
-            /* product cards — keep the teal brand border, flip the fills */
+            /* product cards — keep the teal brand border, flip the fills.
+               gallery.css pins the border to #004956 !important, so the
+               dark value needs matching importance and higher specificity. */
             "html." + ROOT + " .fasty_product_card{",
             "    background:" + P.surface + " !important;",
             "    color:" + P.text + " !important;",
+            "    border-color:" + P.cardEdge + " !important;",
             "}",
             "html." + ROOT + " .fasty_product_card_img{ background:" + P.surface3 + " !important; }",
             "html." + ROOT + " .fasty_product_card_name{ color:" + P.text + " !important; }",
@@ -132,6 +143,91 @@
             "}",
             "html." + ROOT + " .akkad-products-section .akkad-arrow:hover{",
             "    background:" + P.surface2 + " !important;",
+            "}",
+
+            /* --- leaks the utility sweep cannot reach -----------------
+               These are painted by rules with no colour utility to hook:
+               #akkad-nav has no class at all, .home_section_container is a
+               hashed emotion class, and the product tab / swiper dots use
+               !bg-black, which is black on a near-black page. */
+
+            /* the promo strip above the header: was pure #fff with #555
+               links and white text, so its own text was invisible */
+            "html." + ROOT + " #akkad-nav{",
+            "    background:" + P.surface + " !important;",
+            "    color:" + P.text2 + " !important;",
+            "    border-bottom:1px solid " + P.border + " !important;",
+            "}",
+            "html." + ROOT + " #akkad-nav a{ color:" + P.text2 + " !important; }",
+            "html." + ROOT + " #akkad-nav a.school-link{ color:#fff !important; }",
+            "html." + ROOT + " #akkad-nav .star{ color:#ffd83d !important; }",
+            "html." + ROOT + " #akkad-nav span{ color:" + P.text + " !important; }",
+
+            /* hashed emotion class, two 1268px white blocks on the home page */
+            "html." + ROOT + " .home_section_container{",
+            "    background:" + P.surface + " !important;",
+            "    color:" + P.text + " !important;",
+            "}",
+
+            /* wishlist heart: a white 38x38 tile */
+            "html." + ROOT + " span.rounded-xl.border.p-2{",
+            "    background:" + P.surface2 + " !important;",
+            "    border-color:" + P.border + " !important;",
+            "    color:" + P.text + " !important;",
+            "}",
+
+            /* gallery thumbs sit on a white mat from .akkad-thumb{background:#fff
+               !important} in akkad-v2.js. That rule is injected into <body>,
+               so an equal-specificity override in <head> would still lose on
+               document order — hence the extra class in the selector. */
+            "html." + ROOT + " img.akkad-thumb,",
+            "html." + ROOT + " .akkad-thumb{",
+            "    background:" + P.surface2 + " !important;",
+            "    border-color:" + P.border + " !important;",
+            "}",
+
+            /* the selected product tab is bg-black: harsh on a dark page and
+               only 1.1:1 against it */
+            "html." + ROOT + " [role=\"tab\"].bg-black,",
+            "html." + ROOT + " [role=\"tab\"][class*=\"bg-black\"]{",
+            "    background:" + P.surface2 + " !important;",
+            "    color:" + P.text + " !important;",
+            "    border:1px solid " + P.border + " !important;",
+            "    box-shadow:none !important;",
+            "}",
+
+            /* swiper dots carry !bg-black / bg-white via !important */
+            "html." + ROOT + " .swiper-pagination-bullet{",
+            "    background:" + P.text3 + " !important;",
+            "    opacity:.55 !important;",
+            "}",
+            "html." + ROOT + " .swiper-pagination-bullet-active{",
+            "    background:" + P.text + " !important;",
+            "    opacity:1 !important;",
+            "}",
+
+            /* the primary CTA carries text-skin-primary (#040b1d), which on a
+               dark card measures 1.14:1 — give it the brand edge instead */
+            "html." + ROOT + " .add_to_cart_btn,",
+            "html." + ROOT + " button[class*=\"add_to_cart\"]{",
+            "    background:" + P.surface2 + " !important;",
+            "    color:" + P.text + " !important;",
+            "    border-color:" + P.cardEdge + " !important;",
+            "}",
+            "html." + ROOT + " .add_to_cart_btn:hover,",
+            "html." + ROOT + " button[class*=\"add_to_cart\"]:hover{",
+            "    background:" + P.surface3 + " !important;",
+            "}",
+
+            /* header and footer are the same navy as the page (dLum 0.0000),
+               so both ends of the page had no edge at all */
+            "html." + ROOT + " header.fasty_header,",
+            "html." + ROOT + " header > div[class*=\"bg-white/95\"]{",
+            "    border-bottom:1px solid " + P.border + " !important;",
+            "}",
+            "html." + ROOT + " footer{",
+            "    background:" + P.surface + " !important;",
+            "    border-top:1px solid " + P.border + " !important;",
             "}",
 
             /* inputs */
@@ -335,6 +431,7 @@
             var next = document.documentElement.classList.contains(ROOT) ? "light" : "dark";
             write(next);
             paint(true);
+            scheduleInk();
         });
 
         group.insertBefore(btn, group.firstChild);
@@ -347,6 +444,114 @@
     var timer = setInterval(function () {
         if (mountButton() || ++tries > 60) clearInterval(timer);
     }, 250);
+
+    /* ---------------------------------------------------------------
+       Ink sweep — the safety net for text CSS cannot reach.
+
+       The theme paints text with colours that have no dark-mode
+       counterpart: text-skin-primary (#040b1d) on the add-to-cart label,
+       #555 on the promo links, and so on. Once the surfaces flip, that
+       ink is the same colour as its own background — the add-to-cart
+       label measured 1.14:1, i.e. invisible. Rather than chase each
+       utility, measure every text node against its real background and
+       repair only what is genuinely unreadable.
+       --------------------------------------------------------------- */
+    var INK = "data-akkad-ink";
+    var MIN_CONTRAST = 3.2;      /* below this, treat as unreadable */
+    var DARK_BG_LUM = 0.2;       /* only touch text sitting on a dark fill */
+
+    function rgb(str) {
+        var m = (str || "").match(/[\d.]+/g);
+        if (!m || m.length < 3 || +m[3] === 0) return null;
+        return [+m[0], +m[1], +m[2]];
+    }
+
+    function lum(c) {
+        var a = c[0] / 255, b = c[1] / 255, d = c[2] / 255;
+        a = a <= 0.03928 ? a / 12.92 : Math.pow((a + 0.055) / 1.055, 2.4);
+        b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+        d = d <= 0.03928 ? d / 12.92 : Math.pow((d + 0.055) / 1.055, 2.4);
+        return 0.2126 * a + 0.7152 * b + 0.0722 * d;
+    }
+
+    function ratio(fg, bg) {
+        var a = lum(fg), b = lum(bg);
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    }
+
+    /* nearest painted background, so transparent wrappers inherit correctly */
+    function behind(el) {
+        var n = el;
+        while (n && n.nodeType === 1) {
+            var c = rgb(getComputedStyle(n).backgroundColor);
+            if (c) return c;
+            n = n.parentElement;
+        }
+        return [255, 255, 255];
+    }
+
+    /* a flat grey reads as secondary; anything with real chroma is a
+       deliberate accent, so only greys get softened to text2 */
+    function isGrey(c) {
+        return Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]) < 26;
+    }
+
+    function sweepInk() {
+        if (!document.body) return;
+        var dark = document.documentElement.classList.contains(ROOT);
+        if (!dark) return restoreInk();
+
+        var all = document.body.querySelectorAll("*");
+        for (var i = 0; i < all.length; i++) {
+            var el = all[i];
+            if (el.closest("#" + BTN_ID)) continue;
+
+            var s = getComputedStyle(el);
+            if (s.display === "none" || s.visibility === "hidden") continue;
+
+            /* only elements that own a text node, so a wrapper keeps the
+               colour its children resolve against */
+            var owns = false;
+            for (var k = 0; k < el.childNodes.length; k++) {
+                if (el.childNodes[k].nodeType === 3 && el.childNodes[k].nodeValue.trim()) {
+                    owns = true;
+                    break;
+                }
+            }
+            if (!owns) continue;
+
+            var fg = rgb(s.color);
+            var bg = behind(el);
+            if (!fg) continue;
+            if (lum(bg) > DARK_BG_LUM) continue;
+            if (ratio(fg, bg) >= MIN_CONTRAST) continue;
+
+            if (!el.hasAttribute(INK)) el.setAttribute(INK, el.style.color || "");
+            el.style.color = isGrey(fg) ? P.text2 : P.text;
+        }
+    }
+
+    function restoreInk() {
+        var fixed = document.querySelectorAll("[" + INK + "]");
+        for (var i = 0; i < fixed.length; i++) {
+            fixed[i].style.color = fixed[i].getAttribute(INK) || "";
+            fixed[i].removeAttribute(INK);
+        }
+    }
+
+    /* the theme repaints constantly (sliders, swipers), so debounce hard and
+       also re-check on a timer to catch late renders */
+    var inkTimer = null;
+    function scheduleInk() {
+        clearTimeout(inkTimer);
+        inkTimer = setTimeout(sweepInk, 220);
+    }
+
+    var inkPasses = 0;
+    var inkTicker = setInterval(function () {
+        sweepInk();
+        if (++inkPasses > 20) clearInterval(inkTicker);
+    }, 900);
 
     /* ---------------------------------------------------------------
        Go — synchronous so the first paint is already the right mode
@@ -366,7 +571,7 @@
     /* follow the OS live, unless the visitor has chosen */
     try {
         var mq = window.matchMedia("(prefers-color-scheme: dark)");
-        var onChange = function () { if (!read()) paint(true); };
+        var onChange = function () { if (!read()) { paint(true); scheduleInk(); } };
         if (mq.addEventListener) mq.addEventListener("change", onChange);
         else if (mq.addListener) mq.addListener(onChange);
     } catch (e) {}
@@ -375,11 +580,15 @@
        fires on every card animation otherwise) */
     var restoreTimer = null;
     new MutationObserver(function () {
+        scheduleInk();
         if (document.getElementById(STYLE_ID) && document.getElementById(BTN_ID)) return;
         clearTimeout(restoreTimer);
         restoreTimer = setTimeout(function () {
             if (!document.getElementById(STYLE_ID)) injectStyle();
             if (!document.getElementById(BTN_ID)) mountButton();
+            sweepInk();
         }, 250);
     }).observe(document.documentElement, { childList: true, subtree: true });
+
+    sweepInk();
 })();

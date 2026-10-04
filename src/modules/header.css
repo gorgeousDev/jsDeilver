@@ -27,10 +27,12 @@ header,
 
 }
 
-/* العداد الأحمر في السلة */
+/* العداد الأحمر في السلة
+   #e53935 with white 12px text measured 4.23:1, just under the 4.5:1 AA
+   threshold. #c62828 is the same red a step deeper and reaches 5.62:1. */
 .fasty_header_container .bg-skin-primary{
 
-    background:#e53935 !important;
+    background:#c62828 !important;
     color:#fff !important;
 
 }

@@ -1366,7 +1366,7 @@ function __akkad_isHomePage() {
             '.akkad-sale-tag > span{',
             '    display:inline-block !important;',
             '    padding:3px 7px !important;',
-            '    background:#f4436c !important;',
+            '    background:#d81b4f !important;',
             '    color:#fff !important;',
             '    font-family:Tajawal,sans-serif !important;',
             '    font-size:11px !important;',
