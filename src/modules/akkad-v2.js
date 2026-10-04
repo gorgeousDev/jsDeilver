@@ -2430,3 +2430,47 @@ var priceBox = card.querySelector(".fasty_product_card_price");
         start();
     }
 })();
+
+/* =========================================
+   16. Featured banner white frame
+   =========================================
+   The exported webp 1784395371176817130 is 1964x801, but the photograph only
+   occupies rows 185-615: 1964x431, aspect 4.557. The rest is pure white, and
+   the theme sizes .feature-img to the file aspect, so those bars render as a
+   white band above and below the photo in dark mode.
+
+   Giving the box the photo's own aspect makes object-fit:cover crop exactly
+   those two bars away - 185px of padding scales to precisely the 35.2px that
+   a 374x82 box has to trim. Keyed on the asset id, so replacing the banner
+   just drops the rule. The file should still be re-exported without the
+   padding; this only exists so the live banner is not white. */
+(function () {
+    "use strict";
+
+    var STYLE_ID = "akkad-feature-frame-css";
+
+    function inject() {
+        if (document.getElementById(STYLE_ID)) return;
+
+        var style = document.createElement("style");
+        style.id = STYLE_ID;
+        style.textContent = [
+            'img.feature-img[src*="1784395371176817130"]{',
+            '    aspect-ratio: 1964 / 431 !important;',
+            '    height: auto !important;',
+            '}',
+            /* the photo is dark, so if it ever fails to load the slot should
+               read as an empty dark panel rather than a white one */
+            '.feature-img{ background:#1B1931; }',
+            'html.akkad-dark .feature-img{ background:#1B1931 !important; }'
+        ].join("\n");
+
+        (document.head || document.documentElement).appendChild(style);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", inject, { once: true });
+    } else {
+        inject();
+    }
+})();
