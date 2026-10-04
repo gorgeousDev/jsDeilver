@@ -45,7 +45,7 @@ function __akkad_isHomePage() {
         n: "201508331823",
         m: "مرحبًا، لدي بعض الأسئلة قبل إتمام عملية الشراء.",
         w: 3,
-        b: "#040b1d",
+        b: "#44174E",
         c: "#ffffff",
         mr: "0",
         ml: "0",
@@ -228,8 +228,8 @@ function __akkad_isHomePage() {
 
             parent.style.marginTop = "18px";
             parent.style.marginBottom = "20px";
-            parent.style.background = "#00273d";
-            parent.style.border = "1px solid #0b4b73";
+            parent.style.background = "#44174E";
+            parent.style.border = "1px solid #662249";
             parent.style.borderRadius = "12px";
             parent.style.padding = "12px 16px";
             parent.style.color = "#ffffff";
@@ -654,7 +654,7 @@ function __akkad_isHomePage() {
     width:270px;\n\
     height:54px;\n\
     padding:0 16px;\n\
-    background:#00273d;\n\
+    background:#44174E;\n\
     color:#fff;\n\
     border-radius:999px;\n\
     box-sizing:border-box;\n\
@@ -1002,7 +1002,7 @@ function __akkad_isHomePage() {
     margin: 0 !important;\n\
     border: 1px solid rgba(255,255,255,.65) !important;\n\
     border-radius: 50% !important;\n\
-    background: rgba(4,11,29,.65) !important;\n\
+    background: rgba(27,25,49,.72) !important;\n\
     color: #fff !important;\n\
     font-family: Arial, sans-serif !important;\n\
     font-size: 0 !important;\n\
@@ -1023,7 +1023,7 @@ function __akkad_isHomePage() {
 }\n\
 \n\
 #akkad-graduation-slider .akkad-arrow:hover {\n\
-    background: rgba(4,11,29,.9) !important;\n\
+    background: rgba(27,25,49,.92) !important;\n\
     box-shadow: 0 5px 16px rgba(0,0,0,.35) !important;\n\
     transform: translateY(-50%) scale(1.06) !important;\n\
 }\n\
@@ -1366,7 +1366,7 @@ function __akkad_isHomePage() {
             '.akkad-sale-tag > span{',
             '    display:inline-block !important;',
             '    padding:3px 7px !important;',
-            '    background:#d81b4f !important;',
+            '    background:#A34054 !important;',
             '    color:#fff !important;',
             '    font-family:Tajawal,sans-serif !important;',
             '    font-size:11px !important;',
@@ -2415,7 +2415,7 @@ var priceBox = card.querySelector(".fasty_product_card_price");
 .akkad-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}\n\
 .akkad-grid-cell{min-width:0;box-sizing:border-box}\n\
 .akkad-grid-cell .fasty_product_card{width:100%!important;max-width:100%!important;box-sizing:border-box}\n\
-.akkad-toggle-all{display:block;margin:16px auto 8px;padding:9px 22px;font-family:inherit;font-size:13px;font-weight:600;color:#fff;background:#00273d;border:0;border-radius:999px;cursor:pointer}\n\
+.akkad-toggle-all{display:block;margin:16px auto 8px;padding:9px 22px;font-family:inherit;font-size:13px;font-weight:600;color:#fff;background:#44174E;border:0;border-radius:999px;cursor:pointer}\n\
 @media (max-width:900px){.akkad-slider-item{flex:0 0 calc((100vw - 32px)/3);width:calc((100vw - 32px)/3)}.akkad-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}\n\
 @media (max-width:600px){.akkad-slider-item{flex:0 0 calc((100vw - 24px)/2);width:calc((100vw - 24px)/2)}.akkad-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.akkad-section-title{font-size:18px}.akkad-arrow{width:30px;height:30px;font-size:20px}}\n";
 

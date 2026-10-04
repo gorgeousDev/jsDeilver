@@ -1,11 +1,15 @@
-/* Footer */
+/* Footer.
+   #040b1d -> #1B1931: the lightness is unchanged (both land on L .0115), so
+   the footer keeps reading as a dark band in light mode and stops fighting
+   the plum page in dark mode. akkad-dark-mode.js then lifts the dark-mode
+   footer to #44174E so it keeps an edge against the page. */
 footer{
-    background:#040b1d !important;
+    background:#1B1931 !important;
     color:#fff !important;
 }
 
 footer.bg-gray-50{
-    background:#040b1d !important;
+    background:#1B1931 !important;
 }
 /* جميع الروابط */
 .default_footer a{
@@ -29,7 +33,7 @@ footer.bg-gray-50{
 
 /* EasyOrders */
 .default_footer p:last-child a{
-    color:#00b894 !important;
+    color:#ED9E59 !important;
 }
 
 .default_footer p:last-child a:hover{
@@ -38,7 +42,7 @@ footer.bg-gray-50{
 
 /* الخط الفاصل */
 .default_footer_links_container{
-    border-bottom:1px solid #040b1d;
+    border-bottom:1px solid rgba(233,188,185,.16);
     padding-bottom:20px;
     margin-bottom:20px;
 }
@@ -59,5 +63,5 @@ footer.bg-gray-50{
 footer,
 .default_footer,
 .default_footer *{
-    background:#040b1d !important;
+    background:#1B1931 !important;
 }

@@ -6,17 +6,25 @@
  * - One tap = explicit override, remembered in localStorage.
  * - Works on every page, checkout included.
  *
- * Palette is derived from the colours already on the site:
- *   #040b1d header/footer navy -> page background
- *   #0a2a45 / #0d3557 / #10456b  navy surfaces for cards, panels, placeholders
- *   #1a4468 / #2a6ea0  borders
- *   #e6eef6 / #b9cbdb / #8ba3b8  text
- *   #1a8899 / #0f8478 / #d4af37  brand teal, checkout teal, gold (kept)
+ * Palette supplied by the client:
+ *   #1B1931  page background
+ *   #44174E  cards and panels
+ *   #662249  nested surfaces: inputs, image placeholders, hover
+ *   #A34054  rose - card edges, sale tag, cart counter
+ *   #ED9E59  apricot - the single accent: links, focus, sale price
+ *   #E9BCB9  blush - primary text
  *
- * The surface ramp deliberately starts well above the page colour. Cards at
- * #061c32 measured dLum 0.008 against #040b1d, which is too small to read as
- * a panel, so the whole grid looked like flat text on a void. #0a2a45 gives
- * dLum 0.018 and the cards separate without going grey.
+ * #CAA4A5 and #AB8B90 are #E9BCB9 mixed back toward the page colour, for
+ * secondary and tertiary ink; #5C2151 is the quiet border between the two
+ * surface steps. Nothing else is invented.
+ *
+ * Contrast against every fill it lands on:
+ *   #E9BCB9  10.05 / 8.36 / 6.54   on page / card / nested
+ *   #CAA4A5   7.61 / 6.33 / 4.95
+ *   #AB8B90   5.55 / 4.62 / 3.61   (tertiary only: struck price, placeholder)
+ *   #ED9E59   7.83 / 6.52 / 5.10
+ *   white on #A34054 6.14, on #ED9E59 only 2.18 - so the accent always
+ *   carries #1B1931 ink and never white.
  */
 (function () {
     "use strict";
@@ -31,18 +39,21 @@
        Palette
        --------------------------------------------------------------- */
     var P = {
-        page:     "#040b1d",
-        surface:  "#0a2a45",
-        surface2: "#0d3557",
-        surface3: "#10456b",
-        border:   "#1a4468",
-        border2:  "#2a6ea0",
-        text:     "#e6eef6",
-        text2:    "#b9cbdb",
-        text3:    "#8ba3b8",
-        /* the brand teal #004956 all but vanishes on a dark card, so the
-           dark-mode border uses a lightened teal of the same hue */
-        cardEdge: "#1a8899"
+        page:     "#1B1931",
+        surface:  "#44174E",
+        surface2: "#662249",
+        /* hover needs to be a visible step above #662249, so #662249 lightened */
+        surfaceHi: "#7C2E58",
+        border:   "#5C2151",
+        border2:  "#A34054",
+        rose:     "#A34054",
+        accent:   "#ED9E59",
+        text:     "#E9BCB9",
+        text2:    "#CAA4A5",
+        text3:    "#AB8B90",
+        /* the theme's teal card edge is #004956 in gallery.css; the rose is
+           the palette's equivalent, and reads at 2.31:1 on the card */
+        cardEdge: "#A34054"
     };
 
     /* ---------------------------------------------------------------
@@ -86,11 +97,11 @@
 
             /* surfaces */
             "html." + ROOT + " .bg-white{ background:" + P.surface + " !important; }",
-            "html." + ROOT + " .bg-white\\/95{ background:rgba(6,28,50,.95) !important; }",
-            "html." + ROOT + " .bg-gray-50{ background:#04162c !important; }",
+            "html." + ROOT + " .bg-white\\/95{ background:rgba(27,25,49,.95) !important; }",
+            "html." + ROOT + " .bg-gray-50{ background:" + P.surface + " !important; }",
             "html." + ROOT + " .bg-gray-100{ background:" + P.surface + " !important; }",
             "html." + ROOT + " .bg-gray-200{ background:" + P.surface2 + " !important; }",
-            "html." + ROOT + " .bg-gray-300{ background:" + P.surface3 + " !important; }",
+            "html." + ROOT + " .bg-gray-300{ background:" + P.surface2 + " !important; }",
             "html." + ROOT + " .bg-heading{ background:" + P.surface + " !important; }",
             "html." + ROOT + " .bg-\\[\\#f3f3f3\\]{ background:" + P.surface2 + " !important; }",
             "html." + ROOT + " .bg-\\[\\#f8fafc\\]{ background:" + P.page + " !important; }",
@@ -109,24 +120,39 @@
             "html." + ROOT + " .placeholder-gray-500::placeholder{ color:" + P.text3 + " !important; }",
 
             /* borders */
-            "html." + ROOT + " .border-gray-100{ border-color:#0e3050 !important; }",
-            "html." + ROOT + " .border-gray-200{ border-color:#0e3050 !important; }",
+            "html." + ROOT + " .border-gray-100{ border-color:" + P.border + " !important; }",
+            "html." + ROOT + " .border-gray-200{ border-color:" + P.border + " !important; }",
             "html." + ROOT + " .border-gray-300{ border-color:" + P.border + " !important; }",
             "html." + ROOT + " .border-gray-400{ border-color:" + P.border2 + " !important; }",
             "html." + ROOT + " .border-heading{ border-color:" + P.border + " !important; }",
 
-            /* product cards — keep the teal brand border, flip the fills.
-               gallery.css pins the border to #004956 !important, so the
-               dark value needs matching importance and higher specificity. */
+            /* product cards — keep the rose edge from the palette, flip the fills.
+               gallery.css pins the border with !important, so the dark value
+               needs matching importance and higher specificity. */
             "html." + ROOT + " .fasty_product_card{",
             "    background:" + P.surface + " !important;",
             "    color:" + P.text + " !important;",
             "    border-color:" + P.cardEdge + " !important;",
             "}",
-            "html." + ROOT + " .fasty_product_card_img{ background:" + P.surface3 + " !important; }",
+            "html." + ROOT + " .fasty_product_card_img{ background:" + P.surface2 + " !important; }",
             "html." + ROOT + " .fasty_product_card_name{ color:" + P.text + " !important; }",
             "html." + ROOT + " .fasty_product_card_price{ color:" + P.text + " !important; }",
             "html." + ROOT + " .fasty_product_card_price del{ color:" + P.text3 + " !important; }",
+
+            /* --- the one accent ---------------------------------------
+               The theme paints the sale price text-red-400 (#f87171) and
+               that appears 212 times on the home page alone. A cool pink
+               on a plum ground reads as a clash; #ED9E59 is the palette's
+               own accent and still clears 5.10:1 on the deepest fill.
+               text-red-* generally becomes the accent too, and only ever
+               carries #1B1931 ink, never white (white on it is 2.18:1). */
+            "html." + ROOT + " .text-red-400,",
+            "html." + ROOT + " .text-red-500,",
+            "html." + ROOT + " .text-red-600{ color:" + P.accent + " !important; }",
+            "html." + ROOT + " .fasty_product_card_price del,",
+            "html." + ROOT + " .text-heading,",
+            "html." + ROOT + " a{ transition:color .15s ease; }",
+            "html." + ROOT + " a:hover{ color:" + P.accent + " !important; }",
 
             /* akkad section 14 */
             "html." + ROOT + " .akkad-products-section,",
@@ -134,15 +160,15 @@
 
             /* section 14 arrows are white circles with an inherited glyph
                colour, so both the fill and the chevron have to be set.
-               Scoped so the graduation slider keeps its own dark navy. */
+               Scoped so the graduation slider is left alone. */
             "html." + ROOT + " .akkad-products-section .akkad-arrow{",
-            "    background:" + P.surface3 + " !important;",
+            "    background:" + P.surface2 + " !important;",
             "    color:" + P.text + " !important;",
             "    border:1px solid " + P.border + " !important;",
             "    box-shadow:0 2px 10px rgba(0,0,0,.5) !important;",
             "}",
             "html." + ROOT + " .akkad-products-section .akkad-arrow:hover{",
-            "    background:" + P.surface2 + " !important;",
+            "    background:" + P.surfaceHi + " !important;",
             "}",
 
             /* --- leaks the utility sweep cannot reach -----------------
@@ -160,7 +186,7 @@
             "}",
             "html." + ROOT + " #akkad-nav a{ color:" + P.text2 + " !important; }",
             "html." + ROOT + " #akkad-nav a.school-link{ color:#fff !important; }",
-            "html." + ROOT + " #akkad-nav .star{ color:#ffd83d !important; }",
+            "html." + ROOT + " #akkad-nav .star{ color:" + P.accent + " !important; }",
             "html." + ROOT + " #akkad-nav span{ color:" + P.text + " !important; }",
 
             /* hashed emotion class, two 1268px white blocks on the home page */
@@ -216,16 +242,63 @@
             "}",
             "html." + ROOT + " .add_to_cart_btn:hover,",
             "html." + ROOT + " button[class*=\"add_to_cart\"]:hover{",
-            "    background:" + P.surface3 + " !important;",
+            "    background:" + P.surfaceHi + " !important;",
             "}",
 
-            /* header and footer are the same navy as the page (dLum 0.0000),
-               so both ends of the page had no edge at all */
+            /* the page edges. header.css pins the header to #040b1d with
+               !important in BOTH modes, so dark mode overrides it here
+               rather than depending on that file being republished. */
+            "html." + ROOT + " header,",
+            "html." + ROOT + " .fasty_header_container{",
+            "    background:" + P.page + " !important;",
+            "}",
             "html." + ROOT + " header.fasty_header,",
             "html." + ROOT + " header > div[class*=\"bg-white/95\"]{",
             "    border-bottom:1px solid " + P.border + " !important;",
             "}",
-            "html." + ROOT + " footer{",
+
+            /* the cart counter is also pinned by header.css */
+            "html." + ROOT + " .fasty_header_container .bg-skin-primary{",
+            "    background:" + P.rose + " !important;",
+            "    color:#fff !important;",
+            "}",
+
+            /* the social band above the footer sits on the theme's navy;
+               dark mode brings it back to the page colour so the footer
+               reads as one plum block with a single edge */
+            "html." + ROOT + " .akkad-social-section{",
+            "    background:" + P.page + " !important;",
+            "    color:" + P.text2 + " !important;",
+            "}",
+
+            /* the four brand circles and the contact icon chips inside it are
+               painted with the theme's navy, which on the page colour would
+               sit at dLum 0.008 - all but invisible */
+            "html." + ROOT + " .akkad-social-section a[target=\"_blank\"],",
+            "html." + ROOT + " .akkad-social-section i.fa-solid{",
+            "    background:" + P.surface2 + " !important;",
+            "    color:" + P.text + " !important;",
+            "}",
+            /* the footer text carries its own navy chips on the theme's
+               grey-utility classes; on the plum footer they read as faint
+               dark rectangles behind each link, so drop them.
+               .default_footer is the element that actually paints the band -
+               styling <footer> alone leaves the theme's navy showing. */
+            "html." + ROOT + " footer .text-gray-400,",
+            "html." + ROOT + " footer .text-gray-500,",
+            "html." + ROOT + " footer .text-gray-600,",
+            "html." + ROOT + " footer .text-gray-700,",
+            "html." + ROOT + " .default_footer_link,",
+            "html." + ROOT + " .default_footer_links_container,",
+            "html." + ROOT + " .default_footer .animate-slideIn,",
+            "html." + ROOT + " .footer_store_info,",
+            "html." + ROOT + " .footer_store_info div,",
+            "html." + ROOT + " .footer_store_info span,",
+            "html." + ROOT + " .default_footer p,",
+            "html." + ROOT + " .default_footer a{ background:transparent !important; }",
+
+            "html." + ROOT + " footer,",
+            "html." + ROOT + " .default_footer{",
             "    background:" + P.surface + " !important;",
             "    border-top:1px solid " + P.border + " !important;",
             "}",
@@ -242,7 +315,11 @@
             "html." + ROOT + " input::placeholder,",
             "html." + ROOT + " textarea::placeholder{ color:" + P.text3 + " !important; }",
 
-            /* checkout — keep its teal identity, re-base only the neutrals */
+            /* checkout — checkout-restyle.js paints this flow in teal
+               (#0F8478 on 14 rules). A cool teal on a plum ground reads as a
+               clash, so dark mode re-tints it to the palette: teal -> rose
+               for structure, teal -> apricot for focus. White text still
+               goes on the rose (6.14:1) and dark ink on the apricot. */
             "html." + ROOT + " .checkout_container,",
             "html." + ROOT + " .checkout_bg{ background:" + P.page + " !important; }",
             "html." + ROOT + " .checkout_order_summary{",
@@ -250,11 +327,30 @@
             "    border-color:" + P.border + " !important;",
             "}",
             "html." + ROOT + " .checkout_form label{ color:" + P.text2 + " !important; }",
+
+            /* structural teal borders -> rose */
+            "html." + ROOT + " .payment_card,",
+            "html." + ROOT + " .global_input,",
+            "html." + ROOT + " .global_textarea,",
+            "html." + ROOT + " .checkout_container [class*=\"border-blue-600\"]{",
+            "    border-color:" + P.rose + " !important;",
+            "}",
+
+            /* focus rings: the one place the apricot is used as a fill, so it
+               takes #1B1931 ink rather than white (white would be 2.18:1) */
+            "html." + ROOT + " .global_input:focus,",
+            "html." + ROOT + " .global_textarea:focus{",
+            "    border-color:" + P.accent + " !important;",
+            "    box-shadow:0 0 0 3px rgba(237,158,89,.22) !important;",
+            "    background:" + P.surface2 + " !important;",
+            "    color:" + P.text + " !important;",
+            "}",
+
             "html." + ROOT + " #contact-info-heading{",
             "    color:" + P.text + " !important;",
             "    border-color:" + P.border + " !important;",
             "}",
-            "html." + ROOT + " #contact-info-heading::before{ background:#0f8478 !important; }",
+            "html." + ROOT + " #contact-info-heading::before{ background:" + P.rose + " !important; }",
 
             /* short cross-fade, only while the mode is being switched */
             "html." + FADE + " body,",
@@ -274,10 +370,10 @@
             "    html." + FADE + " *{ transition:none !important; }",
             "}",
 
-            /* -------------------------------------------------------------
-               Toggle button. Header and footer are #040b1d in both modes, so
-               the icon is always white.
-               ------------------------------------------------------------- */
+/* -------------------------------------------------------------
+   Toggle button. The header is the page colour in dark mode and the
+   site's own navy in light, so the icon is white either way.
+   ------------------------------------------------------------- */
             "#" + BTN_ID + "{",
             "    flex:0 0 auto;",
             "    width:36px;",
