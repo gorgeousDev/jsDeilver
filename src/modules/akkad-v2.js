@@ -2116,13 +2116,7 @@ var priceBox = card.querySelector(".fasty_product_card_price");
         h.className = "akkad-section-title";
         h.textContent = " " + title + " ";
 
-        var more = document.createElement("button");
-        more.type = "button";
-        more.className = "akkad-section-more";
-        more.textContent = state.showAll ? CFG.lessLabel : CFG.moreLabel;
-
         head.appendChild(h);
-        head.appendChild(more);
         section.appendChild(head);
 
         if (isGrid) {
