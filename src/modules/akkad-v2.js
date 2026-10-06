@@ -1778,6 +1778,14 @@ if (!document.getElementById(styleId)) {
                 keywords: [ "sticker", "ستيكر", "ملصق" ]
             },
             {
+                key: "notebook-tickets",
+                title: "تيكتات كراسات المذاكرة 📓",
+                keywords: [
+                    "notebook-ticket", "تيكتات", "تيكت",
+                    "تذكرة", "كراسات"
+                ]
+            },
+            {
                 key: "general",
                 title: "منتجات عملية لكل يوم ☕",
                 keywords: []
