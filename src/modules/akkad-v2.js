@@ -1779,7 +1779,7 @@ if (!document.getElementById(styleId)) {
             },
             {
                 key: "notebook-tickets",
-                title: "تيكتات كراسات المذاكرة 📓",
+                title: "تيكتات شخصية لكل كراسة 📝",
                 keywords: [
                     "notebook-ticket", "تيكتات", "تيكت",
                     "تذكرة", "كراسات"
@@ -1790,7 +1790,8 @@ if (!document.getElementById(styleId)) {
                 title: "منتجات عملية لكل يوم ☕",
                 keywords: []
             }
-        ]
+        ],
+        renderOrder: [ "study", "stickers", "general", "notebook-tickets" ]
     };
 
     var state = {
@@ -1960,16 +1961,17 @@ if (!document.getElementById(styleId)) {
         for (var i = 0; i < CFG.buckets.length; i++) {
             var group = { key: CFG.buckets[i].key, title: CFG.buckets[i].title, products: [] };
             map[group.key] = group;
-            order.push(group);
+            order.push(group.key);
         }
 
         for (var k = 0; k < state.products.length; k++) {
             map[classify(state.products[k])].products.push(state.products[k]);
         }
 
+        var seq = CFG.renderOrder || order;
         var out = [];
-        for (var m = 0; m < order.length; m++) {
-            if (order[m].products.length) out.push(order[m]);
+        for (var m = 0; m < seq.length; m++) {
+            if (map[seq[m]].products.length) out.push(map[seq[m]]);
         }
         return out;
     }
