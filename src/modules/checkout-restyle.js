@@ -58,13 +58,33 @@
     'html.akkad-dark .checkout_container .fixed.bottom-0{ border-color: var(--co-line-strong) !important; }',
 
     '.payment_card { border: 2px solid var(--co-line-strong) !important; border-radius: 12px !important; padding: 16px !important; margin-bottom: 12px !important; background: var(--co-raised) !important; color: var(--co-ink) !important; transition: all 0.2s !important; }',
-    '.payment_card:has(input:checked) { border-color: var(--co-bright) !important; background: var(--co-soft) !important; }',
+    /* the theme marks the selected card by toggling Tailwind classes
+       (border-blue-600 on the card, bg-blue-500 on the circle), not by native
+       radio inputs, so a :has(input:checked) rule alone would never fire.
+       The dark group above (html.akkad-dark .checkout_container .payment_card,
+       0,3,1) also beats a bare [class*="border-blue-600"] (0,2,0), which is why
+       the selected border collapsed back to --co-line-strong at night. Re-scope
+       the selected state one level deeper so it wins that tie. */
+    '.payment_card:has(input:checked),',
+    '.payment_card[class*="border-blue-600"] { border-color: var(--co-accent-2) !important; background: var(--co-soft) !important; }',
+    'html.akkad-dark .checkout_container .payment_card:has(input:checked),',
+    'html.akkad-dark .checkout_container .payment_card[class*="border-blue-600"] { border-color: var(--co-bright) !important; background: var(--co-soft) !important; }',
+    /* in light the palette maps one plum (#A34054) onto both --co-line-strong
+       and --co-bright, so the chosen and idle borders would be identical; the
+       deeper accent-2 keeps the selected edge readable next to the idle one. */
     '.payment_card_name { font-weight: 700 !important; font-size: 15px !important; color: var(--co-ink) !important; }',
     '.payment_card_description { font-size: 13px !important; color: var(--co-ink-2) !important; margin-top: 2px !important; }',
     '.radio_container { width: 22px !important; height: 22px !important; border-radius: 50% !important; border: 2px solid var(--co-line-strong) !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; }',
     '.radio_circle { width: 12px !important; height: 12px !important; border-radius: 50% !important; background: var(--co-line-strong) !important; }',
     '.radio_circle[class*="bg-blue"] { background: var(--co-accent) !important; }',
-    '.payment_card[class*="border-blue-600"] { border-color: var(--co-bright) !important; }',
+    /* dark mode: akkad-dark-mode.js re-maps the theme's bg-gray-200 and
+       border-gray-200 utilities (html.akkad-dark .bg-gray-200 = 0,2,1), which
+       outrank these bare rules and flattened the ring and dot onto the card
+       background. Re-assert them one level deeper so the empty radio is a
+       visible beige ring and the chosen state an unmistakable bright dot. */
+    'html.akkad-dark .checkout_container .radio_container{ border-color: var(--co-line-strong) !important; }',
+    'html.akkad-dark .checkout_container .radio_circle{ background: var(--co-line-strong) !important; }',
+    'html.akkad-dark .checkout_container .radio_circle[class*="bg-blue"]{ background: var(--co-bright) !important; }',
 
     '.checkout_cart_items_container { border: 1px solid var(--co-line-strong) !important; border-radius: 12px !important; overflow: hidden !important; margin: 16px 0 !important; }',
     '.cart-item { padding: 16px !important; border-bottom: 1px solid var(--co-line) !important; background: var(--co-raised) !important; color: var(--co-ink) !important; }',

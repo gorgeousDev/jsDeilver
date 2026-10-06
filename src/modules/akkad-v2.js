@@ -1793,7 +1793,8 @@ if (!document.getElementById(styleId)) {
         building: false,
         showAll: false,
         wired: false,
-        lastUrl: ""
+        lastUrl: "",
+        started: false
     };
 
     /* =========================================
@@ -2348,10 +2349,13 @@ var priceBox = card.querySelector(".fasty_product_card_price");
 
     function start() {
         if (!isOfficePage()) return;
+        if (state.started) return;
+        state.started = true;
 
         state.lastUrl = window.location.href;
         wireControls();
         injectStyles();
+        ensureOfficeWatchers();
 
         fetchProducts()
             .then(function (list) {
@@ -2373,6 +2377,19 @@ var priceBox = card.querySelector(".fasty_product_card_price");
                 setTimeout(build, 2000);
             });
 
+        }
+    /* This file is parsed once on whatever page the store opened. If that page
+       was not the office URL, start() bailed above and left no observer and no
+       URL poll behind — so navigating to the office page in-app (soft routing)
+       rendered nothing until the user hard-refreshed. Keep one observer and one
+       poll alive for the whole session; build() and start() re-check
+       isOfficePage(), so the watchers are inert on any other page. */
+    var officeObserverReady = false;
+
+    function ensureOfficeWatchers() {
+        if (officeObserverReady) return;
+        officeObserverReady = true;
+
         /* If the theme re-renders its grid (filter, language, pagination) we
            must regroup — the API list is the source of truth either way. */
         var observer = new MutationObserver(function () {
@@ -2381,16 +2398,25 @@ var priceBox = card.querySelector(".fasty_product_card_price");
             window.clearTimeout(window.__akkadOfficeTimer);
             window.__akkadOfficeTimer = setTimeout(build, 250);
         });
-        observer.observe(document.body, { childList: true, subtree: true });
-
-        setInterval(function () {
-            if (window.location.href !== state.lastUrl) {
-                state.lastUrl = window.location.href;
-                invalidate();
-            }
-            build();
-        }, 1000);
+        observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
     }
+
+    /* This poll is deliberately UNCONDITIONAL — it runs on every page for the
+       whole session. Soft navigation never reloads this file, so if it only
+       existed once start() had run, an in-app arrival at the office URL would
+       never be noticed (the very bug it is here to fix). */
+    setInterval(function () {
+        if (!isOfficePage()) return;
+        if (!state.started) {
+            start();
+            return;
+        }
+        if (window.location.href !== state.lastUrl) {
+            state.lastUrl = window.location.href;
+            invalidate();
+        }
+        build();
+    }, 1000);
 
     function injectStyles() {
         if (document.getElementById("akkad-office-css")) return;
