@@ -135,8 +135,6 @@
             velocity: 0,
             active: false
         };
-
-        try { viewport.setPointerCapture(event.pointerId); } catch (e) {}
     }
 
     function onPointerMove(event) {
@@ -160,6 +158,11 @@
 
             drag.active = true;
             beginDrag(drag.viewport);
+
+            /* Capturing here — once the gesture is a real drag — keeps the
+               follow-up click on the viewport (where it is swallowed), while a
+               plain click without capture still lands on the product anchor. */
+            try { drag.viewport.setPointerCapture(event.pointerId); } catch (e) {}
         }
 
         if (event.cancelable) event.preventDefault();

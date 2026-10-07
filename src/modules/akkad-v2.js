@@ -1786,12 +1786,17 @@ if (!document.getElementById(styleId)) {
                 ]
             },
             {
+                key: "notebooks",
+                title: "📒 نوت بوك بتصميمات مميزة",
+                keywords: [ "notebook" ]
+            },
+            {
                 key: "general",
                 title: "منتجات عملية لكل يوم ☕",
                 keywords: []
             }
         ],
-        renderOrder: [ "study", "stickers", "general", "notebook-tickets" ]
+        renderOrder: [ "study", "stickers", "general", "notebook-tickets", "notebooks" ]
     };
 
     var state = {
