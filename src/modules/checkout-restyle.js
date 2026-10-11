@@ -19,7 +19,7 @@
     '.checkout_container { grid-template-columns: 1fr !important; padding: 0 16px !important; }',
     /* WhatsApp order-confirmation reminder: sits as the very first thing the
        reader sees when they arrive at the checkout card */
-    '.checkout_container .akkad-wa-reminder { grid-column: 1 / -1 !important; display: flex !important; align-items: center !important; gap: 12px !important; background: linear-gradient(135deg, #128C7E, #075E54) !important; color: #ffffff !important; padding: 13px 16px !important; border-radius: 12px !important; margin-bottom: 16px !important; font-weight: 800 !important; font-size: 14px !important; line-height: 1.6 !important; box-shadow: 0 3px 12px rgba(18, 140, 126, .28) !important; }',
+    '.checkout_container .akkad-wa-reminder { grid-column: 1 / -1 !important; display: flex !important; align-items: center !important; gap: 12px !important; background: linear-gradient(135deg, #128C7E, #075E54) !important; color: #ffffff !important; padding: 13px 16px !important; border-radius: 12px !important; margin-top: 12px !important; margin-bottom: 16px !important; font-weight: 800 !important; font-size: 14px !important; line-height: 1.6 !important; box-shadow: 0 3px 12px rgba(18, 140, 126, .28) !important; }',
     '.checkout_container .akkad-wa-reminder svg { flex: 0 0 auto !important; width: 26px !important; height: 26px !important; }',
     '.checkout_container .akkad-wa-reminder span { flex: 1 1 auto !important; }',
     '.checkout_order_summary { order: 2 !important; background: var(--co-panel) !important; border: 2px solid var(--co-line) !important; border-radius: 16px !important; padding: 24px !important; margin-top: 16px !important; margin-bottom: 120px !important; color: var(--co-ink) !important; }',
