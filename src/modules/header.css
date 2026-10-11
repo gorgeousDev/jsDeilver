@@ -63,7 +63,7 @@ header,
 }
 
 .radio_container:has(input:checked),
-.radio_container:has([class*="bg-blue"]){ border-color:var(--co-accent,#A34054) !important; }
+.radio_container:has([class*="bg-blue"]){ border-color:var(--co-accent,#A34054) !important; background-color:var(--co-soft,rgba(163,64,84,.10)) !important; }
 
 .radio_circle[class*="bg-blue"]{ background:var(--co-accent,#A34054) !important; }
 
@@ -93,7 +93,7 @@ html.akkad-dark .radio_container{ border-color:var(--co-line-strong,#AB8B90) !im
 html.akkad-dark .radio_circle{ background:var(--co-line-strong,#AB8B90) !important; }
 
 html.akkad-dark .radio_container:has(input:checked),
-html.akkad-dark .radio_container:has([class*="bg-blue"]){ border-color:var(--co-bright,#ED9E59) !important; }
+html.akkad-dark .radio_container:has([class*="bg-blue"]){ border-color:var(--co-bright,#ED9E59) !important; background-color:var(--co-soft,rgba(163,64,84,.28)) !important; }
 
 html.akkad-dark .radio_circle[class*="bg-blue"]{ background:var(--co-bright,#ED9E59) !important; }
 
