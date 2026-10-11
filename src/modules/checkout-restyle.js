@@ -82,11 +82,40 @@
        outrank these bare rules and flattened the ring and dot onto the card
        background. Re-assert them one level deeper so the empty radio is a
        visible beige ring and the chosen state an unmistakable bright dot. */
-    'html.akkad-dark .checkout_container .radio_container{ border-color: var(--co-line-strong) !important; }',
-    'html.akkad-dark .checkout_container .radio_circle{ background: var(--co-line-strong) !important; }',
-    'html.akkad-dark .checkout_container .radio_circle[class*="bg-blue"]{ background: var(--co-bright) !important; }',
+'html.akkad-dark .checkout_container .radio_container{ border-color: var(--co-line-strong) !important; }',
+     'html.akkad-dark .checkout_container .radio_circle{ background: var(--co-line-strong) !important; }',
+     'html.akkad-dark .checkout_container .radio_circle[class*="bg-blue"]{ background: var(--co-bright) !important; }',
 
-    '.checkout_cart_items_container { border: 1px solid var(--co-line-strong) !important; border-radius: 12px !important; overflow: hidden !important; margin: 16px 0 !important; }',
+     /* ---------- site-wide radio + selection states (all pages) ----------
+        The theme reuses the same .radio_container/.radio_circle widget on
+        product variant pickers and anywhere else a choice is rendered, and it
+        marks the active option by toggling a blue utility class onto the dot
+        (or the input) rather than reading :checked. The rules above were only
+        re-asserted for dark mode inside .checkout_container, so the widget was
+        unreadable after midnight on every other page. Promote the three states
+        (idle ring, idle dot, active dot) to site-wide scope so any radio in the
+        website shows the same crisp "on" state as the checkout. */
+     '.radio_container { width: 22px !important; height: 22px !important; border-radius: 50% !important; border: 2px solid var(--co-line-strong) !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; transition: border-color 0.2s ease !important; }',
+     '.radio_circle { width: 12px !important; height: 12px !important; border-radius: 50% !important; background: var(--co-line-strong) !important; transition: background 0.2s ease !important; }',
+     '.radio_container:has(input:checked),',
+     '.radio_container:has(.radio_circle[class*="bg-blue"]),',
+     '.radio_container:has([class*="bg-blue"]) { border-color: var(--co-accent) !important; }',
+     '.radio_circle[class*="bg-blue"] { background: var(--co-accent) !important; }',
+     'html.akkad-dark .radio_container:has(input:checked),',
+     'html.akkad-dark .radio_container:has([class*="bg-blue"]) { border-color: var(--co-bright) !important; }',
+     'html.akkad-dark .radio_circle[class*="bg-blue"] { background: var(--co-bright) !important; }',
+     'html.akkad-dark .radio_container { border-color: var(--co-line-strong) !important; }',
+     'html.akkad-dark .radio_circle { background: var(--co-line-strong) !important; }',
+     /* visible native radios (the theme hides its own inside the widget via
+        .peer/.absolute/.sr-only) get the same accent dot when picked */
+     'input[type="radio"]:not(.peer):not(.absolute):not(.sr-only):not(.hidden):not([hidden]) { appearance: none !important; -webkit-appearance: none !important; width: 20px !important; height: 20px !important; border-radius: 50% !important; border: 2px solid var(--co-line-strong) !important; background-color: var(--co-raised) !important; cursor: pointer !important; flex-shrink: 0 !important; }',
+     'input[type="radio"]:checked:not(.peer):not(.absolute):not(.sr-only):not(.hidden):not([hidden]) { border-color: var(--co-accent) !important; background-image: radial-gradient(circle, var(--co-accent) 45%, transparent 55%) !important; }',
+     'html.akkad-dark input[type="radio"]:checked:not(.peer):not(.absolute):not(.sr-only):not(.hidden):not([hidden]) { border-color: var(--co-bright) !important; background-image: radial-gradient(circle, var(--co-bright) 45%, transparent 55%) !important; }',
+     /* product variant color swatches: the checked chip gets the brand ring */
+     '.color_variation_checked { box-shadow: 0 0 0 2px var(--co-accent) !important; }',
+     'html.akkad-dark .color_variation_checked { box-shadow: 0 0 0 2px var(--co-bright) !important; }',
+
+     '.checkout_cart_items_container { border: 1px solid var(--co-line-strong) !important; border-radius: 12px !important; overflow: hidden !important; margin: 16px 0 !important; }',
     '.cart-item { padding: 16px !important; border-bottom: 1px solid var(--co-line) !important; background: var(--co-raised) !important; color: var(--co-ink) !important; }',
     '.cart-item:last-child { border-bottom: none !important; }',
     '.cart-item h3[data-cart="item-name"] { font-weight: 700 !important; font-size: 14px !important; color: var(--co-ink) !important; }',
