@@ -184,12 +184,44 @@
 
     '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }',
     '@media (min-width: 1024px) { .checkout_container { grid-template-columns: 1fr 1fr !important; gap: 40px !important; max-width: 1100px !important; padding: 0 40px !important; } .checkout_form { order: 1 !important; padding-top: 30px !important; } .checkout_order_summary { order: 2 !important; position: sticky !important; top: 90px !important; align-self: start !important; padding: 28px !important; margin-bottom: 0 !important; } .akkad-invoice { padding: 20px !important; } .akkad-invoice-brand h2 { font-size: 22px !important; } .akkad-invoice-table { font-size: 13px !important; } .akkad-invoice-table th { padding: 12px 8px !important; } .akkad-invoice-table td { padding: 12px 10px !important; } .akkad-invoice-customer { font-size: 12px !important; } .akkad-invoice-total-row span:first-child { font-size: 16px !important; } .akkad-invoice-total-row span:last-child { font-size: 20px !important; } }',
-    '@media (max-width: 480px) { .akkad-invoice-table { font-size: 10px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 2px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }'
+    '@media (max-width: 480px) { .akkad-invoice-table { font-size: 10px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 2px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }',
+
+    /* ---------- /thanks professional success page ---------- */
+    '.thanks_container .akkad-thanks-card { direction: rtl !important; width: min(640px, 96%) !important; margin: 0 auto 0 auto !important; background: linear-gradient(180deg, #fffdfe, #fdf5f8) !important; border: 2px solid var(--co-line-strong) !important; border-radius: 24px !important; padding: 28px 24px !important; box-shadow: var(--co-shadow) !important; text-align: center !important; font-family: Tajawal, sans-serif !important; color: var(--co-ink) !important; }',
+    'html.akkad-dark .thanks_container .akkad-thanks-card { background: linear-gradient(180deg, #3d1747, #291030) !important; border-color: #5C2151 !important; box-shadow: 0 18px 40px rgba(0,0,0,.45) !important; }',
+    '.akkad-thanks-badge { width: 86px !important; height: 86px !important; margin: 0 auto 6px auto !important; border-radius: 50% !important; background: radial-gradient(circle at 30% 25%, #2BD97C, #12a351) !important; box-shadow: 0 10px 24px rgba(18,163,81,.35), inset 0 -6px 12px rgba(0,0,0,.12) !important; display: flex !important; align-items: center !important; justify-content: center !important; position: relative !important; }',
+    '.akkad-thanks-badge::after { content: "" !important; position: absolute !important; inset: -10px !important; border-radius: 50% !important; border: 2px solid rgba(18,163,81,.4) !important; animation: akkadPulse 1.8s ease-out infinite !important; }',
+    '@keyframes akkadPulse { 0% { transform: scale(.82); opacity: .9; } 100% { transform: scale(1.4); opacity: 0; } }',
+    '.akkad-thanks-badge svg { width: 46px !important; height: 46px !important; color: #fff !important; }',
+    '.akkad-thanks-title { font-size: 27px !important; font-weight: 900 !important; color: var(--co-ink) !important; margin: 12px 0 4px 0 !important; }',
+    '.akkad-thanks-title span { color: var(--co-bright) !important; }',
+    '.akkad-thanks-sub { font-size: 15px !important; font-weight: 700 !important; color: var(--co-ink-2) !important; margin: 2px 0 0 0 !important; }',
+    '.akkad-thanks-order { display: inline-block !important; margin: 14px auto 0 auto !important; background: var(--co-soft) !important; border: 1px dashed var(--co-line-strong) !important; color: var(--co-ink) !important; border-radius: 999px !important; padding: 7px 18px !important; font-size: 13px !important; font-weight: 800 !important; }',
+    '.akkad-thanks-msg { font-size: 13px !important; font-weight: 600 !important; line-height: 1.9 !important; color: var(--co-ink-2) !important; margin: 16px auto 2px auto !important; max-width: 470px !important; }',
+    '.akkad-thanks-steps { display: flex !important; gap: 0 !important; justify-content: center !important; margin: 24px 0 6px 0 !important; }',
+    '.akkad-thanks-step { flex: 1 !important; position: relative !important; display: flex !important; flex-direction: column !important; align-items: center !important; gap: 6px !important; }',
+    '.akkad-thanks-step + .akkad-thanks-step::before { content: "" !important; position: absolute !important; top: 17px !important; right: -50% !important; width: 100% !important; height: 2px !important; background: var(--co-line) !important; }',
+    '.akkad-thanks-step-num { width: 36px !important; height: 36px !important; border-radius: 50% !important; background: var(--co-accent) !important; color: var(--co-on-accent) !important; display: flex !important; align-items: center !important; justify-content: center !important; font-weight: 900 !important; font-size: 15px !important; position: relative !important; z-index: 1 !important; box-shadow: 0 4px 10px rgba(163,64,84,.3) !important; }',
+    '.akkad-thanks-step b { font-size: 12.5px !important; font-weight: 800 !important; color: var(--co-ink) !important; }',
+    '.akkad-thanks-step small { font-size: 10.5px !important; color: var(--co-ink-3) !important; }',
+    '.akkad-thanks-divider { height: 1px !important; background: var(--co-line) !important; margin: 22px 0 20px 0 !important; }',
+    '.akkad-thanks-wa { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 10px !important; }',
+    '.akkad-thanks-wa-icon { width: 52px !important; height: 52px !important; border-radius: 50% !important; background: linear-gradient(135deg, #25D366, #128C7E) !important; display: flex !important; align-items: center !important; justify-content: center !important; box-shadow: 0 8px 18px rgba(18,140,126,.35) !important; }',
+    '.akkad-thanks-wa-icon svg { width: 30px !important; height: 30px !important; color: #fff !important; }',
+    '.akkad-thanks-wa-before { font-size: 15px !important; font-weight: 800 !important; color: var(--co-ink) !important; margin: 0 !important; }',
+    '.akkad-thanks-wa-btn { display: inline-flex !important; align-items: center !important; gap: 8px !important; background: linear-gradient(135deg, #25D366, #075E54) !important; color: #ffffff !important; text-decoration: none !important; border-radius: 999px !important; padding: 13px 46px !important; font-weight: 900 !important; font-size: 17px !important; box-shadow: 0 10px 22px rgba(18,140,126,.4) !important; transition: transform .15s ease !important; }',
+    '.akkad-thanks-wa-btn:hover { transform: translateY(-2px) scale(1.02) !important; }',
+    '.akkad-thanks-wa-after { font-size: 12.5px !important; font-weight: 700 !important; color: var(--co-ink-2) !important; margin: 0 !important; }',
+    '.akkad-thanks-home { display: inline-block !important; margin-top: 24px !important; text-decoration: none !important; border: 2px solid var(--co-line-strong) !important; color: var(--co-accent) !important; font-weight: 800 !important; font-size: 13px !important; border-radius: 999px !important; padding: 10px 32px !important; transition: all .15s ease !important; }',
+    '.akkad-thanks-home:hover { background: var(--co-accent) !important; color: var(--co-on-accent) !important; }',
+    '@media (max-width: 520px) { .akkad-thanks-steps { flex-direction: column; gap: 12px; } .akkad-thanks-step { flex-direction: row; align-items: center; justify-content: center; gap: 12px; } .akkad-thanks-step + .akkad-thanks-step::before { display: none; } .akkad-thanks-title { font-size: 22px; } .akkad-thanks-card { padding: 24px 16px; } }'
   ].join('\n');
 
   document.head.appendChild(style);
 
-  if (!window.location.pathname.includes('checkout')) {
+  if (window.location.pathname.includes('thanks')) {
+    runThanksPage();
+  } else if (!window.location.pathname.includes('checkout')) {
     var checkoutCheck = setInterval(function() {
       if (window.location.pathname.includes('checkout')) {
         clearInterval(checkoutCheck);
@@ -232,6 +264,71 @@
     for (var i = 0; i < headers.length; i++) {
       headers[i].style.display = 'none';
     }
+  }
+
+  /* ---------- /thanks professional success page ---------- */
+  var WA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+  var THANKS_WA_LINK = 'https://wa.me/201508331823?text=' + encodeURIComponent('مرحبا . لقد طلبت من متجركم و اريد التأكيد');
+
+  function buildThanksPage() {
+    var container = document.querySelector('.thanks_container');
+    if (!container) return false;
+
+    /* strip EasyOrders' original title / message / home-button rows but keep
+       the "منتجات مشابهة" offers block (and page footer) below the new card.
+       Idempotent: also clears any re-added rows if React re-renders them. */
+    var stop = false;
+    var removable = [];
+    Array.from(container.children).forEach(function(k) {
+      if (stop) return;
+      var cls = k.classList && k.classList.contains ? k.className : '';
+      var isCard = /akkad-thanks-card/.test(cls);
+      if (isCard || k.querySelector('a[href*="/products/"]') || k.querySelector('.home_section_top_container')) { stop = true; return; }
+      removable.push(k);
+    });
+    removable.forEach(function(k) { k.remove(); });
+
+    if (container.querySelector('.akkad-thanks-card')) return true;
+
+    container.style.marginTop = '40px';
+    container.style.paddingBottom = '44px';
+    container.style.justifyContent = 'flex-start';
+
+    var orderId = (new URLSearchParams(window.location.search)).get('order_id') || '';
+
+    var card = document.createElement('div');
+    card.className = 'akkad-thanks-card';
+    card.setAttribute('data-akkad-thanks', '1');
+    card.innerHTML =
+      '<div class="akkad-thanks-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div>' +
+      '<h1 class="akkad-thanks-title">شكراً لطلبك من <span>أكاد</span></h1>' +
+      '<p class="akkad-thanks-sub">تم استلام طلبك بنجاح</p>' +
+      (orderId ? '<div class="akkad-thanks-order">رقم الطلب: ' + orderId + '</div>' : '') +
+      '<p class="akkad-thanks-msg">سيتم التواصل معك عبر الهاتف خلال 24 ساعة لتأكيد البيانات قبل الشحن.</p>' +
+      '<div class="akkad-thanks-steps">' +
+        '<div class="akkad-thanks-step"><span class="akkad-thanks-step-num">1</span><div><b>استلام الطلب</b><br><small>تم تسجيل طلبك بنجاح</small></div></div>' +
+        '<div class="akkad-thanks-step"><span class="akkad-thanks-step-num">2</span><div><b>التواصل للتأكيد</b><br><small>اتصال هاتفي خلال 24 ساعة</small></div></div>' +
+        '<div class="akkad-thanks-step"><span class="akkad-thanks-step-num">3</span><div><b>الشحن والتسليم</b><br><small>تجهيز طلبك وتسليمه إليك</small></div></div>' +
+      '</div>' +
+      '<div class="akkad-thanks-divider"></div>' +
+      '<div class="akkad-thanks-wa">' +
+        '<div class="akkad-thanks-wa-icon">' + WA_SVG + '</div>' +
+        '<p class="akkad-thanks-wa-before">أو يمكنك التواصل معنا</p>' +
+        '<a class="akkad-thanks-wa-btn" href="' + THANKS_WA_LINK + '" target="_blank" rel="noopener">من هنا</a>' +
+        '<p class="akkad-thanks-wa-after">لتأكيد الطلب سريعاً</p>' +
+      '</div>' +
+      '<a class="akkad-thanks-home" href="/">متابعة التسوق</a>';
+
+    container.insertBefore(card, container.firstChild);
+    return true;
+  }
+
+  function runThanksPage() {
+    var tries = 0;
+    var iv = setInterval(function() {
+      if (buildThanksPage() || ++tries > 60) clearInterval(iv);
+    }, 250);
+    new MutationObserver(function() { buildThanksPage(); }).observe(document.body, { childList: true, subtree: true });
   }
 
   function injectReminder() {
