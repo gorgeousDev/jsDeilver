@@ -307,7 +307,7 @@
       '<p class="akkad-thanks-msg">سيتم التواصل معك عبر الهاتف خلال 24 ساعة لتأكيد البيانات قبل الشحن.</p>' +
       '<div class="akkad-thanks-steps">' +
         '<div class="akkad-thanks-step"><span class="akkad-thanks-step-num">1</span><div><b>استلام الطلب</b><br><small>تم تسجيل طلبك بنجاح</small></div></div>' +
-        '<div class="akkad-thanks-step"><span class="akkad-thanks-step-num">2</span><div><b>التواصل للتأكيد</b><br><small>اتصال هاتفي خلال 24 ساعة</small></div></div>' +
+        '<div class="akkad-thanks-step"><span class="akkad-thanks-step-num">2</span><div><b>التواصل للتأكيد</b><br><small>التواصل عبر الواتساب</small></div></div>' +
         '<div class="akkad-thanks-step"><span class="akkad-thanks-step-num">3</span><div><b>الشحن والتسليم</b><br><small>تجهيز طلبك وتسليمه إليك</small></div></div>' +
       '</div>' +
       '<div class="akkad-thanks-divider"></div>' +
