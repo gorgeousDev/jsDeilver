@@ -215,10 +215,23 @@
 
   function run() {
     injectReminder();
+    fixCheckoutHeader();
     fixPayments();
     injectInvoice();
     fixInputs();
     listenSubmit();
+  }
+
+  /* the EasyOrders checkout template renders its own 82px logo header BELOW
+     the site nav strip (#akkad-nav), so the top of the page shows the nav
+     first and the checkout header underneath it. Hide that extra theme header
+     so #akkad-nav is the single top bar and the page opens cleanly. */
+  function fixCheckoutHeader() {
+    if (!window.location.pathname.includes('checkout')) return;
+    var headers = document.querySelectorAll('header.sticky.top-0.z-50');
+    for (var i = 0; i < headers.length; i++) {
+      headers[i].style.display = 'none';
+    }
   }
 
   function injectReminder() {
