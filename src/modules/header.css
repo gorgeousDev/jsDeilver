@@ -62,10 +62,16 @@ header,
     transition:background .2s ease !important;
 }
 
+/* active = the whole radio circle fills with the brand color so the pick is
+   obvious; the inner dot flips to the on-accent tone to stay visible on it.
+   Selectors are built to out-specify the checkout-scoped rules in
+   checkout-restyle.js so this keeps winning in both themes everywhere. */
 .radio_container:has(input:checked),
-.radio_container:has([class*="bg-blue"]){ border-color:var(--co-accent,#A34054) !important; background-color:var(--co-soft,rgba(163,64,84,.10)) !important; }
+.radio_container:has([class*="bg-blue"]){ border-color:var(--co-accent,#A34054) !important; background-color:var(--co-accent,#A34054) !important; }
 
-.radio_circle[class*="bg-blue"]{ background:var(--co-accent,#A34054) !important; }
+.radio_circle[class*="bg-blue"]{ background:var(--co-on-accent,#ffffff) !important; }
+.radio_container:has(input:checked) .radio_circle,
+.radio_container:has([class*="bg-blue"]) .radio_circle{ background:var(--co-on-accent,#ffffff) !important; }
 
 /* native radios the theme shows as-is (its own hidden ones stay hidden) */
 input[type="radio"]:not(.peer):not(.absolute):not(.sr-only):not(.hidden):not([hidden]){
@@ -92,10 +98,13 @@ input[type="radio"]:checked:not(.peer):not(.absolute):not(.sr-only):not(.hidden)
 html.akkad-dark .radio_container{ border-color:var(--co-line-strong,#AB8B90) !important; }
 html.akkad-dark .radio_circle{ background:var(--co-line-strong,#AB8B90) !important; }
 
-html.akkad-dark .radio_container:has(input:checked),
-html.akkad-dark .radio_container:has([class*="bg-blue"]){ border-color:var(--co-bright,#ED9E59) !important; background-color:var(--co-soft,rgba(163,64,84,.28)) !important; }
+/* dark: the bright fill needs a dark dot, not white, to keep contrast */
+html.akkad-dark body .radio_container:has(input:checked),
+html.akkad-dark body .radio_container:has([class*="bg-blue"]){ border-color:var(--co-bright,#ED9E59) !important; background-color:var(--co-bright,#ED9E59) !important; }
 
-html.akkad-dark .radio_circle[class*="bg-blue"]{ background:var(--co-bright,#ED9E59) !important; }
+html.akkad-dark .radio_circle[class*="bg-blue"]{ background:var(--co-sunken,#3a1445) !important; }
+html.akkad-dark body .radio_container:has(input:checked) .radio_circle,
+html.akkad-dark body .radio_container:has([class*="bg-blue"]) .radio_circle{ background:var(--co-sunken,#3a1445) !important; }
 
 html.akkad-dark input[type="radio"]:not(.peer):not(.absolute):not(.sr-only):not(.hidden):not([hidden]){
     background-color:var(--co-raised,#662249) !important;
