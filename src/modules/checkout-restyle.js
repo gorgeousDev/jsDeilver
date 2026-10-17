@@ -271,30 +271,53 @@
   var THANKS_WA_LINK = 'https://wa.me/201508331823?text=' + encodeURIComponent('مرحبا . لقد طلبت من متجركم و اريد التأكيد');
 
   function buildThanksPage() {
-    var container = document.querySelector('.thanks_container');
+    var container = document.querySelector('.thanks_container') ||
+                    document.querySelector('main div.mt-20') ||
+                    document.querySelector('div.mt-20');
     if (!container) return false;
+    var orderId = (new URLSearchParams(window.location.search)).get('order_id') || '';
 
-    /* strip EasyOrders' original title / message / home-button rows but keep
-       the "منتجات مشابهة" offers block (and page footer) below the new card.
-       Idempotent: also clears any re-added rows if React re-renders them. */
-    var stop = false;
-    var removable = [];
-    Array.from(container.children).forEach(function(k) {
-      if (stop) return;
-      var cls = k.classList && k.classList.contains ? k.className : '';
-      var isCard = /akkad-thanks-card/.test(cls);
-      if (isCard || k.querySelector('a[href*="/products/"]') || k.querySelector('.home_section_top_container')) { stop = true; return; }
-      removable.push(k);
-    });
-    removable.forEach(function(k) { k.remove(); });
+    if (orderId) {
+      /* legit order: keep EVERYTHING the server renders (the order tracking /
+         invoice block, offers, footer) and only drop EasyOrders' own thank-you
+         filler + its duplicate home button, then put our card on top. */
+      Array.from(container.children).forEach(function(k) {
+        var cls = k.className || '';
+        if (/akkad-thanks-card/.test(cls)) return;
+        var isServer = !!k.querySelector('[data-invoice]') || (k.hasAttribute && k.hasAttribute('data-invoice'));
+        if (isServer) return;
+        var isFiller = !!k.querySelector('.thanks_content') || /(^|\s)thanks_content(\s|$)/.test(cls);
+        var isDupHome = !k.querySelector('[data-invoice]') && !k.querySelector('a[href*="/products/"]') && !!k.querySelector('a[href="/"]');
+        if (isFiller || isDupHome) k.remove();
+      });
+    } else {
+      /* no order id: strip the original title / message / home-button rows but
+         keep the "منتجات مشابهة" offers block and footer below the card.
+         Idempotent, in case React re-renders the rows. */
+      var stop = false;
+      var removable = [];
+      Array.from(container.children).forEach(function(k) {
+        if (stop) return;
+        var cls = k.className || '';
+        var isCard = /akkad-thanks-card/.test(cls);
+        var isServer = !!k.querySelector('a[href*="/products/"], .home_section_top_container, [data-invoice]') ||
+                       (k.hasAttribute && k.hasAttribute('data-invoice'));
+        if (isCard || isServer) { stop = true; return; }
+        removable.push(k);
+      });
+      removable.forEach(function(k) { k.remove(); });
+    }
 
     if (container.querySelector('.akkad-thanks-card')) return true;
 
     container.style.marginTop = '40px';
     container.style.paddingBottom = '44px';
     container.style.justifyContent = 'flex-start';
-
-    var orderId = (new URLSearchParams(window.location.search)).get('order_id') || '';
+    if (!(container.classList && container.classList.contains('thanks_container'))) {
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.alignItems = 'center';
+    }
 
     var card = document.createElement('div');
     card.className = 'akkad-thanks-card';
