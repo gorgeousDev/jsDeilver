@@ -187,7 +187,7 @@
     '@media (max-width: 480px) { .akkad-invoice-table { font-size: 10px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 2px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }',
 
     /* ---------- /thanks professional success page ---------- */
-    '.thanks_container .akkad-thanks-card { direction: rtl !important; width: min(640px, 96%) !important; margin: 0 auto 0 auto !important; background: linear-gradient(180deg, #fffdfe, #fdf5f8) !important; border: 2px solid var(--co-line-strong) !important; border-radius: 24px !important; padding: 28px 24px !important; box-shadow: var(--co-shadow) !important; text-align: center !important; font-family: Tajawal, sans-serif !important; color: var(--co-ink) !important; }',
+    '.thanks_container .akkad-thanks-card { direction: rtl !important; width: min(640px, 96%) !important; margin: 0 auto 40px auto !important; background: linear-gradient(180deg, #fffdfe, #fdf5f8) !important; border: 2px solid var(--co-line-strong) !important; border-radius: 24px !important; padding: 28px 24px !important; box-shadow: var(--co-shadow) !important; text-align: center !important; font-family: Tajawal, sans-serif !important; color: var(--co-ink) !important; }',
     'html.akkad-dark .thanks_container .akkad-thanks-card { background: linear-gradient(180deg, #3d1747, #291030) !important; border-color: #5C2151 !important; box-shadow: 0 18px 40px rgba(0,0,0,.45) !important; }',
     '.akkad-thanks-badge { width: 86px !important; height: 86px !important; margin: 0 auto 6px auto !important; border-radius: 50% !important; background: radial-gradient(circle at 30% 25%, #2BD97C, #12a351) !important; box-shadow: 0 10px 24px rgba(18,163,81,.35), inset 0 -6px 12px rgba(0,0,0,.12) !important; display: flex !important; align-items: center !important; justify-content: center !important; position: relative !important; }',
     '.akkad-thanks-badge::after { content: "" !important; position: absolute !important; inset: -10px !important; border-radius: 50% !important; border: 2px solid rgba(18,163,81,.4) !important; animation: akkadPulse 1.8s ease-out infinite !important; }',
@@ -214,7 +214,7 @@
     '.akkad-thanks-wa-after { font-size: 12.5px !important; font-weight: 700 !important; color: var(--co-ink-2) !important; margin: 0 !important; }',
     '.akkad-thanks-home { display: inline-block !important; margin-top: 24px !important; text-decoration: none !important; border: 2px solid var(--co-line-strong) !important; color: var(--co-accent) !important; font-weight: 800 !important; font-size: 13px !important; border-radius: 999px !important; padding: 10px 32px !important; transition: all .15s ease !important; }',
     '.akkad-thanks-home:hover { background: var(--co-accent) !important; color: var(--co-on-accent) !important; }',
-    '@media (max-width: 520px) { .akkad-thanks-steps { flex-direction: column; gap: 12px; } .akkad-thanks-step { flex-direction: row; align-items: center; justify-content: center; gap: 12px; } .akkad-thanks-step + .akkad-thanks-step::before { display: none; } .akkad-thanks-title { font-size: 22px; } .akkad-thanks-card { padding: 24px 16px; } }'
+    '@media (max-width: 520px) { .akkad-thanks-steps { flex-direction: column; gap: 12px; } .akkad-thanks-step { flex-direction: row; align-items: center; justify-content: center; gap: 12px; } .akkad-thanks-step + .akkad-thanks-step::before { display: none; } .akkad-thanks-title { font-size: 22px; } .akkad-thanks-card { padding: 24px 16px !important; } .thanks_container .akkad-thanks-card { margin-bottom: 28px !important; } }'
   ].join('\n');
 
   document.head.appendChild(style);
@@ -347,29 +347,50 @@
   function runThanksPage() {
     if (thanksRunning) return;
     thanksRunning = true;
-    /* Keep watching while we are on /thanks instead of giving up after a
-       fixed number of tries. On a slow mobile first load the EasyOrders
-       thank-you block renders late — and the app can replace the container
-       it first paints — so a one-shot injection is lost until the next
-       reload. This self-heals: it re-picks the container and re-injects
-       whenever the app swaps the tree, and stops only once we leave /thanks. */
-    var iv = setInterval(function() {
+    /* Wait for the page to settle before the first injection: the thanks
+       container is React-managed, and inserting into it while React is still
+       hydrating causes hydration errors (React #418/#423). After the wait the
+       self-healing loop keeps the card correct even if the app renders late
+       or swaps the container. */
+    whenSettled(function() {
       if (window.location.pathname.indexOf('thanks') === -1) {
-        clearInterval(iv);
         thanksRunning = false;
         return;
       }
-      var container = document.querySelector('.thanks_container') ||
-                      document.querySelector('main div.mt-20') ||
-                      document.querySelector('div.mt-20');
-      if (container && !container._akkadThanksObs) {
-        container._akkadThanksObs = true;
-        /* observe only the container (not the whole body) so we never thrash
-           the app into extra renders while it hydrates */
-        new MutationObserver(function() { buildThanksPage(); }).observe(container, { childList: true });
-      }
-      buildThanksPage();
-    }, 300);
+      /* Keep watching while we are on /thanks instead of giving up after a
+         fixed number of tries. On a slow mobile first load the EasyOrders
+         thank-you block renders late — and the app can replace the container
+         it first paints — so a one-shot injection is lost until the next
+         reload. This self-heals and stops only once we leave /thanks. */
+      var iv = setInterval(function() {
+        if (window.location.pathname.indexOf('thanks') === -1) {
+          clearInterval(iv);
+          thanksRunning = false;
+          return;
+        }
+        var container = document.querySelector('.thanks_container') ||
+                        document.querySelector('main div.mt-20') ||
+                        document.querySelector('div.mt-20');
+        if (container && !container._akkadThanksObs) {
+          container._akkadThanksObs = true;
+          /* observe only the container (not the whole body) so we never thrash
+             the app into extra renders while it hydrates */
+          new MutationObserver(function() { buildThanksPage(); }).observe(container, { childList: true });
+        }
+        buildThanksPage();
+      }, 300);
+    });
+  }
+
+  /* Wait for the page to settle (window load + a beat) before touching any
+     React-managed node, with a cap so a slow/hung subresource cannot block
+     us forever. */
+  function whenSettled(fn) {
+    var done = false;
+    function go() { if (done) return; done = true; fn(); }
+    if (document.readyState === 'complete') { setTimeout(go, 50); return; }
+    window.addEventListener('load', function() { setTimeout(go, 400); }, { once: true });
+    setTimeout(go, 2500);
   }
 
   /* ---- route dispatch ------------------------------------------------
