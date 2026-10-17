@@ -512,11 +512,31 @@
         return true;
     }
 
-    /* the header can re-render, so keep trying for a short while */
-    var tries = 0;
-    var timer = setInterval(function () {
-        if (mountButton() || ++tries > 60) clearInterval(timer);
-    }, 250);
+    /* Hydration safety: this is a server-rendered React app. Inserting a
+       foreign node into the header BEFORE React finishes hydrating breaks
+       hydration across the whole site (React #418 / #423 - "the initial UI
+       does not match what was rendered on the server", then the root falls
+       back to client rendering). So we never touch the React tree until the
+       window has loaded and React has had a beat to settle; after that a
+       stray node is harmless. */
+    var mountReady = false;
+
+    function startMounting() {
+        if (mountReady) return;
+        mountReady = true;
+        mountButton();
+        /* the header can re-render, so keep trying for a short while */
+        var tries = 0;
+        var timer = setInterval(function () {
+            if (mountButton() || ++tries > 60) clearInterval(timer);
+        }, 250);
+    }
+
+    function scheduleMount() {
+        var fire = function () { setTimeout(startMounting, 400); };
+        if (document.readyState === "complete") fire();
+        else window.addEventListener("load", fire, { once: true });
+    }
 
     /* ---------------------------------------------------------------
        Ink sweep — the safety net for text CSS cannot reach.
@@ -634,11 +654,12 @@
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", function () {
-            mountButton();
             paint(false);
+            scheduleMount();
         });
     } else {
-        mountButton();
+        paint(false);
+        scheduleMount();
     }
 
     /* follow the OS live, unless the visitor has chosen */
@@ -658,7 +679,7 @@
         clearTimeout(restoreTimer);
         restoreTimer = setTimeout(function () {
             if (!document.getElementById(STYLE_ID)) injectStyle();
-            if (!document.getElementById(BTN_ID)) mountButton();
+            if (mountReady && !document.getElementById(BTN_ID)) mountButton();
             sweepInk();
         }, 250);
     }).observe(document.documentElement, { childList: true, subtree: true });
