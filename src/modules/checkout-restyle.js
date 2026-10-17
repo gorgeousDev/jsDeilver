@@ -279,8 +279,10 @@
 
     if (orderId) {
       /* legit order: keep EVERYTHING the server renders (the order tracking /
-         invoice block, offers, footer) and only drop EasyOrders' own thank-you
-         filler + its duplicate home button, then put our card on top. */
+         invoice block, offers, footer) and only HIDE EasyOrders' own thank-you
+         filler + its duplicate home button, then put our card on top.
+         Hiding (not removing) keeps React's tree intact — removing nodes the
+         app controls can make it re-render/remount and re-hit its API. */
       Array.from(container.children).forEach(function(k) {
         var cls = k.className || '';
         if (/akkad-thanks-card/.test(cls)) return;
@@ -288,14 +290,12 @@
         if (isServer) return;
         var isFiller = !!k.querySelector('.thanks_content') || /(^|\s)thanks_content(\s|$)/.test(cls);
         var isDupHome = !k.querySelector('[data-invoice]') && !k.querySelector('a[href*="/products/"]') && !!k.querySelector('a[href="/"]');
-        if (isFiller || isDupHome) k.remove();
+        if (isFiller || isDupHome) hideThanksRow(k);
       });
     } else {
-      /* no order id: strip the original title / message / home-button rows but
-         keep the "منتجات مشابهة" offers block and footer below the card.
-         Idempotent, in case React re-renders the rows. */
+      /* no order id: hide the original title / message / home-button rows but
+         keep the "منتجات مشابهة" offers block and footer below the card. */
       var stop = false;
-      var removable = [];
       Array.from(container.children).forEach(function(k) {
         if (stop) return;
         var cls = k.className || '';
@@ -303,9 +303,8 @@
         var isServer = !!k.querySelector('a[href*="/products/"], .home_section_top_container, [data-invoice]') ||
                        (k.hasAttribute && k.hasAttribute('data-invoice'));
         if (isCard || isServer) { stop = true; return; }
-        removable.push(k);
+        hideThanksRow(k);
       });
-      removable.forEach(function(k) { k.remove(); });
     }
 
     if (container.querySelector('.akkad-thanks-card')) return true;
@@ -346,12 +345,26 @@
     return true;
   }
 
+  /* non-destructive hide — never removes nodes React owns */
+  function hideThanksRow(el) {
+    el.style.setProperty('display', 'none', 'important');
+    el.setAttribute('data-akkad-thanks-hidden', '1');
+  }
+
   function runThanksPage() {
     var tries = 0;
     var iv = setInterval(function() {
-      if (buildThanksPage() || ++tries > 60) clearInterval(iv);
+      var container = document.querySelector('.thanks_container') ||
+                      document.querySelector('main div.mt-20') ||
+                      document.querySelector('div.mt-20');
+      if (container && !container._akkadThanksObs) {
+        container._akkadThanksObs = true;
+        /* observe only the container (not the whole body) so we never thrash
+           the app into extra renders while it hydrates */
+        new MutationObserver(function() { buildThanksPage(); }).observe(container, { childList: true });
+      }
+      if ((buildThanksPage() && container) || ++tries > 80) clearInterval(iv);
     }, 250);
-    new MutationObserver(function() { buildThanksPage(); }).observe(document.body, { childList: true, subtree: true });
   }
 
   function injectReminder() {
