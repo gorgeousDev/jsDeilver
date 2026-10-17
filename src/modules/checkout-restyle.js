@@ -298,7 +298,7 @@
       });
     }
 
-    if (container.querySelector('.akkad-thanks-card')) return true;
+    if (document.querySelector('.akkad-thanks-card')) return true;
 
     container.style.marginTop = '40px';
     container.style.paddingBottom = '44px';
@@ -347,8 +347,18 @@
   function runThanksPage() {
     if (thanksRunning) return;
     thanksRunning = true;
-    var tries = 0;
+    /* Keep watching while we are on /thanks instead of giving up after a
+       fixed number of tries. On a slow mobile first load the EasyOrders
+       thank-you block renders late — and the app can replace the container
+       it first paints — so a one-shot injection is lost until the next
+       reload. This self-heals: it re-picks the container and re-injects
+       whenever the app swaps the tree, and stops only once we leave /thanks. */
     var iv = setInterval(function() {
+      if (window.location.pathname.indexOf('thanks') === -1) {
+        clearInterval(iv);
+        thanksRunning = false;
+        return;
+      }
       var container = document.querySelector('.thanks_container') ||
                       document.querySelector('main div.mt-20') ||
                       document.querySelector('div.mt-20');
@@ -358,11 +368,8 @@
            the app into extra renders while it hydrates */
         new MutationObserver(function() { buildThanksPage(); }).observe(container, { childList: true });
       }
-      if ((buildThanksPage() && container) || ++tries > 80) {
-        clearInterval(iv);
-        thanksRunning = false;
-      }
-    }, 250);
+      buildThanksPage();
+    }, 300);
   }
 
   /* ---- route dispatch ------------------------------------------------
