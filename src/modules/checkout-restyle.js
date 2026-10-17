@@ -219,20 +219,11 @@
 
   document.head.appendChild(style);
 
-  if (window.location.pathname.includes('thanks')) {
-    runThanksPage();
-  } else if (!window.location.pathname.includes('checkout')) {
-    var checkoutCheck = setInterval(function() {
-      if (window.location.pathname.includes('checkout')) {
-        clearInterval(checkoutCheck);
-        setTimeout(run, 100);
-        setTimeout(run, 500);
-        setTimeout(run, 1500);
-      }
-    }, 500);
-    new MutationObserver(scheduleRun).observe(document.body, { childList: true, subtree: true });
-    return;
-  }
+  /* Route dispatch is deferred until after the definitions below (see the
+     routeTick() block after the thanks functions). EasyOrders reaches /thanks
+     and /checkout by client-side navigation, so the route can change after
+     this file has loaded — dispatching once at parse time (as the old code
+     did) is why the thanks card only appeared after a manual reload/new tab. */
 
   var runScheduled = false;
 
@@ -351,7 +342,11 @@
     el.setAttribute('data-akkad-thanks-hidden', '1');
   }
 
+  var thanksRunning = false;
+
   function runThanksPage() {
+    if (thanksRunning) return;
+    thanksRunning = true;
     var tries = 0;
     var iv = setInterval(function() {
       var container = document.querySelector('.thanks_container') ||
@@ -363,8 +358,52 @@
            the app into extra renders while it hydrates */
         new MutationObserver(function() { buildThanksPage(); }).observe(container, { childList: true });
       }
-      if ((buildThanksPage() && container) || ++tries > 80) clearInterval(iv);
+      if ((buildThanksPage() && container) || ++tries > 80) {
+        clearInterval(iv);
+        thanksRunning = false;
+      }
     }, 250);
+  }
+
+  /* ---- route dispatch ------------------------------------------------
+     Runs at load and again whenever the SPA changes the URL, so reaching
+     /thanks (e.g. right after an order placed on the checkout route) injects
+     the card without a manual reload. */
+  var lastPath = null;
+
+  function routeTick() {
+    var p = window.location.pathname;
+    if (p === lastPath) return;
+    lastPath = p;
+    if (p.indexOf('thanks') !== -1) runThanksPage();
+  }
+
+  try {
+    ["pushState", "replaceState"].forEach(function (m) {
+      var orig = history[m];
+      history[m] = function () { var r = orig.apply(this, arguments); routeTick(); return r; };
+    });
+  } catch (e) {}
+  window.addEventListener("popstate", routeTick);
+  setInterval(routeTick, 400);
+
+  routeTick();
+
+  if (!window.location.pathname.includes('checkout')) {
+    /* off-checkout pages (home / product / cart): do nothing heavy. The old
+       code attached a body-wide subtree MutationObserver that ran the whole
+       checkout pipeline on every DOM mutation of every page. SPA navigation
+       into checkout is caught by this lightweight path poll instead — and
+       routeTick() above handles navigation into /thanks. */
+    var checkoutCheck = setInterval(function () {
+      if (window.location.pathname.includes('checkout')) {
+        clearInterval(checkoutCheck);
+        setTimeout(run, 100);
+        setTimeout(run, 500);
+        setTimeout(run, 1500);
+      }
+    }, 500);
+    return;
   }
 
   function injectReminder() {
