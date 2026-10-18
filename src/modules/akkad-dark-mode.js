@@ -194,6 +194,16 @@
             "html." + ROOT + " #akkad-nav .star{ color:" + P.accent + " !important; }",
             "html." + ROOT + " #akkad-nav span{ color:" + P.text + " !important; }",
 
+            /* the categories bar akkad.js builds under the header is pinned to a
+               white background with navy links, so in dark mode it reads as a
+               hard white strip across the page */
+            "html." + ROOT + " .akkad-categories-nav{",
+            "    background:" + P.surface + " !important;",
+            "    border-color:" + P.border + " !important;",
+            "}",
+            "html." + ROOT + " .akkad-categories-inner a{ color:" + P.text + " !important; }",
+            "html." + ROOT + " .akkad-categories-inner a:hover{ color:" + P.accent + " !important; }",
+
             /* hashed emotion class, two 1268px white blocks on the home page */
             "html." + ROOT + " .home_section_container{",
             "    background:" + P.surface + " !important;",

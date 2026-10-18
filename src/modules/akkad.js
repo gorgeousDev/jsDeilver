@@ -1,6 +1,10 @@
 (function () {
   var ignoreNextScroll = false;
+  /* Which page the gallery was built for. A plain "done" flag meant the gallery
+     was built once on the first product visited and then never again: a soft
+     navigation to a second product left the thumbnails missing until a refresh. */
   var galleryDone = false;
+  var galleryPath = null;
 
   // 1. Function declarations at IIFE function scope (Valid ES5)
   function fixAlt() {
@@ -15,8 +19,13 @@
     }
   }
 
+  function markGalleryDone() {
+    galleryDone = true;
+    galleryPath = window.location.pathname;
+  }
+
   function initGallery() {
-    if (galleryDone) return;
+    if (galleryDone && galleryPath === window.location.pathname) return;
     var container = document.querySelector(".swiper");
     if (!container) return;
 
@@ -25,7 +34,7 @@
 
     if (existingGallery) {
       var hasVideoThumb = existingGallery.querySelector("div.akkad-thumb");
-      if (hasVideoThumb) { galleryDone = true; return; }
+      if (hasVideoThumb) { markGalleryDone(); return; }
 
       for (var v = 0; v < mediaEls.length; v++) {
         if (mediaEls[v].tagName === "VIDEO") {
@@ -72,7 +81,7 @@
         })(t);
       }
 
-      galleryDone = true;
+      markGalleryDone();
       return;
     }
 
@@ -164,7 +173,7 @@
     ========================= */
 
     pagination.insertAdjacentElement("afterend", wrapper);
-    galleryDone = true;
+    markGalleryDone();
 
     /* =========================
        Scroll Arrows
@@ -416,13 +425,34 @@
       (document.head || document.documentElement).appendChild(meta);
     }
 
-    // 3. CSS Files Loader (CDN)
-    var files = [
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/product-card.css",
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/gallery.css",
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/slider.css",
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/header.css",
-      "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/footer.css",
+    // 3. CSS Files Loader (CDN).
+    // The stylesheet URLs are derived from wherever this file was served from,
+    // not a commit pinned at write time. Pinning a commit inside the source went
+    // stale on the next publish: the site kept loading an old gallery.css /
+    // footer.css while the newer files sat unused in the repo, so the fixes never
+    // reached the page until someone remembered to bump this constant. Using the
+    // executing script's own directory keeps akkad.js and its stylesheets on the
+    // same commit forever — whichever commit the tag block points at.
+    var selfSrc = "";
+    try { selfSrc = (document.currentScript && document.currentScript.src) || ""; } catch (e) {}
+    var base = selfSrc.replace(/[^\/]*$/, "");
+    /* Fallback only: currentScript is set for every classic script, but if it were
+       ever unavailable we would rather load the last known good stylesheets than
+       load none at all and leave the page unstyled. */
+    var STALE = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/";
+    var files = base ? [
+      base + "product-card.css",
+      base + "gallery.css",
+      base + "slider.css",
+      base + "header.css",
+      base + "footer.css",
+      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    ] : [
+      STALE + "product-card.css",
+      STALE + "gallery.css",
+      STALE + "slider.css",
+      STALE + "header.css",
+      STALE + "footer.css",
       "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     ];
 
@@ -448,7 +478,10 @@
     // 6. initGallery Execution
     var galleryTimer;
     var galleryObserver = new MutationObserver(function () {
-      if (galleryDone || (typeof __akkad_isHomePage === "function" && __akkad_isHomePage())) {
+      /* Only the home page is genuinely done for good. Disconnecting on
+         galleryDone meant the first product visited froze the flag and every
+         product reached afterwards by soft navigation had no thumbnails. */
+      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) {
         galleryObserver.disconnect(); return;
       }
       clearTimeout(galleryTimer);
@@ -499,6 +532,20 @@
       initNavbar();
     } else {
       window.addEventListener("load", initNavbar);
+    }
+
+    // The header is re-rendered by a soft navigation, which drops the injected
+    // categories bar; re-add it whenever the DOM settles rather than only once at load.
+    if (document.body) {
+      var navTimer;
+      new MutationObserver(function () {
+        if (document.querySelector(".akkad-categories-nav")) return;
+        clearTimeout(navTimer);
+        navTimer = setTimeout(initNavbar, 400);
+      }).observe(document.body, {
+        childList: true,
+        subtree: true
+      });
     }
 
   } catch (error) {

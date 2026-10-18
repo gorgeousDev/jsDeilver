@@ -22,8 +22,19 @@ function __akkad_isHomePage() {
    1. Load akkad.js
    ========================================= */
 (function () {
+    /* Load akkad.js from the same commit this file came from, not a commit that
+       was pasted in once and forgotten. When akkad.js carried a stale pinned
+       commit of its own, the stylesheets it injects were frozen at that commit
+       and every later CSS change silently never reached the site. */
+    var base = "";
+    try {
+        var self = document.currentScript && document.currentScript.src;
+        if (self) base = self.replace(/[^\/]*$/, "");
+    } catch (e) {}
+
     var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a87d4b2/src/modules/akkad.js";
+    s.src = base ? base + "akkad.js"
+                 : "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a87d4b2/src/modules/akkad.js";
     s.defer = true;
     document.head.appendChild(s);
 })();
@@ -912,15 +923,24 @@ function __akkad_isHomePage() {
     var TARGET_1 = "/products/high-school-graduation-gift-classic-design-2026";
     var TARGET_2 = "/products/high-school-graduation-gift-modern-design-2026";
 
-    var currentPath = window.location.pathname;
-
-    if (currentPath !== TARGET_1 && currentPath !== TARGET_2) {
-        return;
+    /* Deciding at parse time whether this page is a target page was what made the
+       slider work only after a full refresh: this file is parsed once on whatever
+       page the store opened on, and a soft navigation to one of these two products
+       never re-runs it, so the early return above left no init, no timer and no
+       observer behind. The path is now checked every time init() runs. */
+    function isTarget() {
+        var p = window.location.pathname;
+        return p === TARGET_1 || p === TARGET_2;
     }
 
-    var PRODUCT_ALT = currentPath === TARGET_1
-        ? "هدية نجاح الثانوية العامة 2026 | برواز مخصص بتصميم كلاسيك بالاسم والصورة"
-        : "هدية نجاح الثانوية العامة 2026 | برواز مخصص بتصميم عصري بالاسم والصورة";
+    /* Computed at build time rather than at parse time, so a soft navigation to
+       the other of the two products picks up the right alt text too. */
+    var ALT_CLASSIC = "هدية نجاح الثانوية العامة 2026 | برواز مخصص بتصميم كلاسيك بالاسم والصورة";
+    var ALT_MODERN = "هدية نجاح الثانوية العامة 2026 | برواز مخصص بتصميم عصري بالاسم والصورة";
+
+    function productAlt() {
+        return window.location.pathname === TARGET_1 ? ALT_CLASSIC : ALT_MODERN;
+    }
 
     var SLIDER_IMAGES = [
         "https://files.easy-orders.net/1786365476227722534.webp",
@@ -1153,7 +1173,7 @@ function __akkad_isHomePage() {
 
             var img = document.createElement("img");
             img.src = oldImg.currentSrc || oldImg.src;
-            img.alt = PRODUCT_ALT;
+            img.alt = productAlt();
 
             if (index === 0) {
                 img.loading = "eager";
@@ -1306,7 +1326,7 @@ function __akkad_isHomePage() {
     }
 
     function init() {
-        if (window.location.pathname !== TARGET_1 && window.location.pathname !== TARGET_2) return;
+        if (!isTarget()) return;
         addStyles();
         buildSlider();
     }
@@ -1318,6 +1338,23 @@ function __akkad_isHomePage() {
     } else {
         setTimeout(init, 1000);
     }
+
+    /* Soft navigation: the observer below catches the DOM churn a route change
+       makes, but a route hook removes any doubt for the case where the target
+       product is already fully rendered before the observer's debounce lands. */
+    var lastHref = window.location.href;
+    function routeTick() {
+        if (!isTarget()) return;
+        if (window.location.href === lastHref) return;
+        lastHref = window.location.href;
+        clearTimeout(timer);
+        timer = setTimeout(init, 300);
+    }
+    var _push = history.pushState;
+    var _replace = history.replaceState;
+    history.pushState = function () { var r = _push.apply(this, arguments); setTimeout(routeTick, 0); return r; };
+    history.replaceState = function () { var r = _replace.apply(this, arguments); setTimeout(routeTick, 0); return r; };
+    window.addEventListener("popstate", routeTick);
 
     var timer;
     var observer = new MutationObserver(function () {
