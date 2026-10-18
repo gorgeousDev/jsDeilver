@@ -29,6 +29,10 @@
     var container = document.querySelector(".swiper");
     if (!container) return;
 
+    var mediaEls = container.querySelectorAll(
+      ".swiper-slide:not(.swiper-slide-duplicate) img, .swiper-slide:not(.swiper-slide-duplicate) video"
+    );
+
     var galleryHost = container.parentElement || container;
     var existingGallery = galleryHost.querySelector(".akkad-gallery");
 
@@ -84,10 +88,6 @@
       markGalleryDone();
       return;
     }
-
-    var mediaEls = container.querySelectorAll(
-      ".swiper-slide:not(.swiper-slide-duplicate) img, .swiper-slide:not(.swiper-slide-duplicate) video"
-    );
 
     if (!mediaEls.length) return;
 
@@ -478,12 +478,12 @@
     // 6. initGallery Execution
     var galleryTimer;
     var galleryObserver = new MutationObserver(function () {
-      /* Only the home page is genuinely done for good. Disconnecting on
-         galleryDone meant the first product visited froze the flag and every
-         product reached afterwards by soft navigation had no thumbnails. */
-      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) {
-        galleryObserver.disconnect(); return;
-      }
+      /* Never disconnect. Disconnecting when the gallery was done (or when the
+         home page was seen) meant the observer was gone by the time a soft
+         navigation reached a product, so no gallery was built until a full
+         refresh. The home page simply skips; the observer stays alive so the
+         next route change is still watched. */
+      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
       clearTimeout(galleryTimer);
       galleryTimer = setTimeout(initGallery, 300);
     });
