@@ -195,10 +195,16 @@
        touch so it no longer sits on top of the checkout button on mobile. */
     '@media (max-width: 1024px) { html.on-checkout #pky_wa_button { bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; right: 16px !important; width: 54px !important; height: 54px !important; } }',
     /* The lower order-summary section duplicates the mobile summary that sits
-       right after the client fields. Hide its toggle + body but KEEP them
-       mounted: the injected mobile qty controls forward their clicks to the
-       React-owned (+/-/remove) buttons that live inside this hidden body. */
-    '#checkout-order-summary-toggle, #checkout-order-summary-content { display: none !important; }',
+       right after the client fields. On MOBILE only, hide its toggle + body but
+       KEEP them mounted: the injected mobile qty controls forward their clicks
+       to the React-owned (+/-/remove) buttons that live inside this hidden
+       body. On desktop this lower summary IS the primary one, so it stays. */
+    '@media (max-width: 1024px) { #checkout-order-summary-toggle, #checkout-order-summary-content { display: none !important; } }',
+    /* Unfold the upper mobile summary by default. React renders it collapsed
+       (product list hidden behind the "الاجمالي" total row), which is why the
+       injected editable controls were invisible. Force the content open on
+       mobile so the products + qty/delete controls show without a tap. */
+    '@media (max-width: 1024px) { #checkout-mobile-order-summary-content { display: block !important; max-height: none !important; overflow: visible !important; } }',
     /* Styling for the qty controls injected into each mobile cart row. */
     '.akkad-qty-row { margin-top: 10px !important; }',
     '.akkad-qty-row button { border: 1px solid var(--co-line-strong) !important; background: var(--co-soft) !important; color: var(--co-ink) !important; border-radius: 8px !important; width: 30px !important; height: 30px !important; font-weight: 700 !important; cursor: pointer !important; line-height: 1 !important; }',
@@ -546,6 +552,7 @@
 
     function lowerItems() { return lowerList.querySelectorAll('.checkout_cart_item'); }
     function forwardByIndex(idx, label) {
+      if (idx < 0) return;
       var item = lowerItems()[idx];
       if (!item) return;
       var btn = item.querySelector('[aria-label="' + label + '"]');
@@ -556,8 +563,15 @@
       return item ? item.querySelector('p.m-0.w-10') : null;
     }
     function indexWithinList(el) {
+      if (!el) return -1;
       var items = Array.prototype.slice.call(upperList.querySelectorAll('.checkout_cart_item'));
       return items.indexOf(el);
+    }
+    /* Resolve the owning cart row from the CLICK TARGET (not a captured node):
+       React re-renders these rows on every cart change, so a node captured at
+       injection time goes stale and its index lookup would return -1. */
+    function idxOfEvent(e) {
+      return indexWithinList(e.currentTarget && e.currentTarget.closest('.checkout_cart_item'));
     }
 
     function sync() {
@@ -576,9 +590,9 @@
               '<button type="button" data-akkad="dec" aria-label="Decrease quantity">&minus;</button>' +
             '</div>' +
             '<button type="button" data-akkad="del" aria-label="Remove item">&times;</button>';
-          row.querySelector('[data-akkad="inc"]').addEventListener('click', function () { forwardByIndex(indexWithinList(uItem), 'Increase quantity'); });
-          row.querySelector('[data-akkad="dec"]').addEventListener('click', function () { forwardByIndex(indexWithinList(uItem), 'Decrease quantity'); });
-          row.querySelector('[data-akkad="del"]').addEventListener('click', function () { forwardByIndex(indexWithinList(uItem), 'Remove item'); });
+          row.querySelector('[data-akkad="inc"]').addEventListener('click', function (e) { forwardByIndex(idxOfEvent(e), 'Increase quantity'); });
+          row.querySelector('[data-akkad="dec"]').addEventListener('click', function (e) { forwardByIndex(idxOfEvent(e), 'Decrease quantity'); });
+          row.querySelector('[data-akkad="del"]').addEventListener('click', function (e) { forwardByIndex(idxOfEvent(e), 'Remove item'); });
           content.appendChild(row);
         }
         var val = row.querySelector('[data-akkad="val"]');
@@ -665,13 +679,18 @@
     summary.prepend(invoice);
 
     function update() {
+      /* Re-query the invoice each tick: React re-renders the summary on every
+         cart change and can detach/re-attach (even re-create) our node, so a
+         captured reference goes stale and the totals freeze. */
+      var inv = document.querySelector('.akkad-invoice');
+      if (!inv) return;
       var nameInput = document.querySelector('[name="full_name"]');
       var phoneInput = document.querySelector('[name="phone"]');
       var items = document.querySelectorAll('#checkout-order-summary-content .checkout_cart_item');
-      var tbody = invoice.querySelector('.inv-tbody');
+      var tbody = inv.querySelector('.inv-tbody');
 
-      invoice.querySelector('.inv-name').textContent = (nameInput && nameInput.value) || '— غير محدد —';
-      invoice.querySelector('.inv-phone').textContent = (phoneInput && phoneInput.value) || '— غير محدد —';
+      inv.querySelector('.inv-name').textContent = (nameInput && nameInput.value) || '— غير محدد —';
+      inv.querySelector('.inv-phone').textContent = (phoneInput && phoneInput.value) || '— غير محدد —';
 
       var totalCount = 0, grandTotal = 0;
       tbody.innerHTML = '';
@@ -682,16 +701,19 @@
         var qtyEl = item.querySelector('p.m-0.w-10');
         var price = parseInt((priceEl ? priceEl.textContent : '0').replace(/[^0-9]/g, '')) || 0;
         var qty = parseInt(qtyEl ? qtyEl.textContent : '1') || 1;
-        var total = price * qty;
+        /* The theme's price span already shows the LINE total (qty x unit), not
+           the unit price. Multiplying it by qty again double-counted. */
+        var total = price;
+        var unit = qty > 0 ? Math.round(total / qty) : total;
         totalCount += qty;
         grandTotal += total;
 
         var tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + (i+1) + '</td><td><div style="font-weight:600;font-size:11px;">' + (name ? name.textContent : '') + '</div></td><td style="font-weight:700;">' + qty + '</td><td>' + price.toLocaleString() + ' ج</td><td class="item-total">' + total.toLocaleString() + ' ج</td>';
+        tr.innerHTML = '<td>' + (i+1) + '</td><td><div style="font-weight:600;font-size:11px;">' + (name ? name.textContent : '') + '</div></td><td style="font-weight:700;">' + qty + '</td><td>' + unit.toLocaleString() + ' ج</td><td class="item-total">' + total.toLocaleString() + ' ج</td>';
         tbody.appendChild(tr);
       });
 
-      invoice.querySelector('.inv-count').textContent = totalCount;
+      inv.querySelector('.inv-count').textContent = totalCount;
 
       // Read shipping from EasyOrders original invoice
       var shippingContainer = document.querySelector('[data-invoice="invoice-shipping"]');
@@ -713,7 +735,7 @@
         }
       }
 
-      var discountBox = invoice.querySelector('.akkad-invoice-discount');
+      var discountBox = inv.querySelector('.akkad-invoice-discount');
       if (discount > 0) {
         discountBox.style.display = 'block';
         discountBox.querySelector('.inv-discount-val').textContent = '-' + discount.toLocaleString() + ' ج';
@@ -721,18 +743,18 @@
         discountBox.style.display = 'none';
       }
 
-      invoice.querySelector('.inv-shipping-val').textContent = shipping > 0 ? shipping.toLocaleString() + ' ج' : 'مجاني';
-      invoice.querySelector('.inv-grand').textContent = (grandTotal - discount + shipping).toLocaleString() + ' ج';
+      inv.querySelector('.inv-shipping-val').textContent = shipping > 0 ? shipping.toLocaleString() + ' ج' : 'مجاني';
+      inv.querySelector('.inv-grand').textContent = (grandTotal - discount + shipping).toLocaleString() + ' ج';
     }
 
     update();
     if (window.__akkadInvoiceTimer) clearInterval(window.__akkadInvoiceTimer);
     window.__akkadInvoiceTimer = setInterval(function() {
-      if (!invoice.isConnected) {
-        clearInterval(window.__akkadInvoiceTimer);
-        window.__akkadInvoiceTimer = null;
-        return;
-      }
+      /* Never clear on a transient disconnect — React briefly detaches the node
+         mid-re-render, and clearing here froze the totals at shipping-only. If
+         the invoice is momentarily gone, skip the tick; the body observer
+         re-injects it when React settles. */
+      if (!document.querySelector('.akkad-invoice')) return;
       update();
     }, 1000);
   }
