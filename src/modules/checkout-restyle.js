@@ -184,7 +184,7 @@
 
     '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }',
     '@media (min-width: 1024px) { .checkout_container { grid-template-columns: 1fr 1fr !important; gap: 40px !important; max-width: 1100px !important; padding: 0 40px !important; } .checkout_form { order: 1 !important; padding-top: 30px !important; } .checkout_order_summary { order: 2 !important; position: sticky !important; top: 90px !important; align-self: start !important; padding: 28px !important; margin-bottom: 0 !important; } .akkad-invoice { padding: 20px !important; } .akkad-invoice-brand h2 { font-size: 22px !important; } .akkad-invoice-table { font-size: 13px !important; } .akkad-invoice-table th { padding: 12px 8px !important; } .akkad-invoice-table td { padding: 12px 10px !important; } .akkad-invoice-customer { font-size: 12px !important; } .akkad-invoice-total-row span:first-child { font-size: 16px !important; } .akkad-invoice-total-row span:last-child { font-size: 20px !important; } }',
-    '@media (max-width: 480px) { .akkad-invoice-table { font-size: 10px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 2px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }',
+    '@media (max-width: 480px) { .akkad-invoice-table { font-size: 11px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 4px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }',
 
     /* ---------- mobile checkout rework ---------- */
     /* Pin the order button to the viewport bottom on mobile. .checkout_button
@@ -215,7 +215,8 @@
       '.checkout_container, .checkout_container > *, .checkout_form, .checkout_order_summary { min-width: 0 !important; } ' +
       '.checkout_order_summary { max-width: 100% !important; box-sizing: border-box !important; } ' +
       '.akkad-invoice { max-width: 100% !important; box-sizing: border-box !important; } ' +
-      '.akkad-invoice-table { table-layout: fixed !important; width: 100% !important; } ' +
+      '.akkad-invoice-table { table-layout: auto !important; width: 100% !important; } ' +
+      '.akkad-invoice-table td:nth-child(2), .akkad-invoice-table th:nth-child(2) { white-space: normal !important; word-break: break-word !important; } ' +
       '.akkad-invoice-table-wrapper { overflow-x: auto !important; } ' +
       '.akkad-wa-reminder { max-width: 100% !important; box-sizing: border-box !important; white-space: normal !important; overflow-wrap: anywhere !important; } ' +
       '.checkout_container { overflow-x: hidden !important; } ' +
@@ -277,6 +278,11 @@
   }
 
   function run() {
+    /* Self-heal the stylesheet too: if React/head ever drops our <style>, the
+       whole restyle silently disappears until a reload. Re-attach it here. */
+    if (!document.getElementById('akkad-checkout-style')) {
+      document.head.appendChild(style);
+    }
     injectReminder();
     fixCheckoutHeader();
     fixPayments();
@@ -816,5 +822,16 @@
     setTimeout(run, 2000);
   }
 
-  new MutationObserver(scheduleRun).observe(document.body, { childList: true, subtree: true });
+  /* Self-healing: re-run the whole pipeline on any DOM change (debounced), so
+     React re-renders and SPA navigations are caught without a manual reload.
+     If this file is parsed from <head>, document.body is still null here and
+     .observe(null) would throw — silently killing the self-heal loop, which is
+     why fixes appeared to need a refresh. Wait for the body before observing. */
+  (function startObserver() {
+    if (!document.body) {
+      document.addEventListener('DOMContentLoaded', startObserver);
+      return;
+    }
+    new MutationObserver(scheduleRun).observe(document.body, { childList: true, subtree: true });
+  })();
 })();
