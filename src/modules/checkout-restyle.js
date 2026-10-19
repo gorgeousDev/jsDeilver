@@ -186,6 +186,25 @@
     '@media (min-width: 1024px) { .checkout_container { grid-template-columns: 1fr 1fr !important; gap: 40px !important; max-width: 1100px !important; padding: 0 40px !important; } .checkout_form { order: 1 !important; padding-top: 30px !important; } .checkout_order_summary { order: 2 !important; position: sticky !important; top: 90px !important; align-self: start !important; padding: 28px !important; margin-bottom: 0 !important; } .akkad-invoice { padding: 20px !important; } .akkad-invoice-brand h2 { font-size: 22px !important; } .akkad-invoice-table { font-size: 13px !important; } .akkad-invoice-table th { padding: 12px 8px !important; } .akkad-invoice-table td { padding: 12px 10px !important; } .akkad-invoice-customer { font-size: 12px !important; } .akkad-invoice-total-row span:first-child { font-size: 16px !important; } .akkad-invoice-total-row span:last-child { font-size: 20px !important; } }',
     '@media (max-width: 480px) { .akkad-invoice-table { font-size: 10px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 2px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }',
 
+    /* ---------- mobile checkout rework ---------- */
+    /* Pin the order button to the viewport bottom on mobile. .checkout_button
+       was position:sticky inside .checkout_form, so it only stayed put while
+       the form was in view and scrolled away the moment the reader passed it. */
+    '@media (max-width: 1024px) { .checkout_button { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 60 !important; width: auto !important; background: var(--co-bar) !important; border-top: 1px solid var(--co-line-strong) !important; box-shadow: var(--co-bar-shadow) !important; padding: 12px 16px !important; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important; } .checkout_container { padding-bottom: 92px !important; } }',
+    /* Lift the WhatsApp float clear of the pinned order bar and shrink it a
+       touch so it no longer sits on top of the checkout button on mobile. */
+    '@media (max-width: 1024px) { html.on-checkout #pky_wa_button { bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; right: 16px !important; width: 54px !important; height: 54px !important; } }',
+    /* The lower order-summary section duplicates the mobile summary that sits
+       right after the client fields. Hide its toggle + body but KEEP them
+       mounted: the injected mobile qty controls forward their clicks to the
+       React-owned (+/-/remove) buttons that live inside this hidden body. */
+    '#checkout-order-summary-toggle, #checkout-order-summary-content { display: none !important; }',
+    /* Styling for the qty controls injected into each mobile cart row. */
+    '.akkad-qty-row { margin-top: 10px !important; }',
+    '.akkad-qty-row button { border: 1px solid var(--co-line-strong) !important; background: var(--co-soft) !important; color: var(--co-ink) !important; border-radius: 8px !important; width: 30px !important; height: 30px !important; font-weight: 700 !important; cursor: pointer !important; line-height: 1 !important; }',
+    '.akkad-qty-row [data-akkad="val"] { color: var(--co-ink) !important; font-weight: 700 !important; }',
+    '.akkad-qty-row [data-akkad="del"] { border: none !important; background: transparent !important; color: #dc2626 !important; width: auto !important; height: auto !important; font-size: 22px !important; padding: 0 4px !important; }',
+
     /* ---------- /thanks professional success page ---------- */
     '.thanks_container .akkad-thanks-card { direction: rtl !important; width: min(640px, 96%) !important; margin: 0 auto 40px auto !important; background: linear-gradient(180deg, #fffdfe, #fdf5f8) !important; border: 2px solid var(--co-line-strong) !important; border-radius: 24px !important; padding: 28px 24px !important; box-shadow: var(--co-shadow) !important; text-align: center !important; font-family: Tajawal, sans-serif !important; color: var(--co-ink) !important; }',
     'html.akkad-dark .thanks_container .akkad-thanks-card { background: linear-gradient(180deg, #3d1747, #291030) !important; border-color: #5C2151 !important; box-shadow: 0 18px 40px rgba(0,0,0,.45) !important; }',
@@ -243,18 +262,27 @@
     injectInvoice();
     fixInputs();
     listenSubmit();
+    makeMobileSummaryFunctional();
   }
 
-  /* the EasyOrders checkout template renders its own 82px logo header BELOW
-     the site nav strip (#akkad-nav), so the top of the page shows the nav
-     first and the checkout header underneath it. Hide that extra theme header
-     so #akkad-nav is the single top bar and the page opens cleanly. */
+  /* On /checkout the theme hides the site header (header.fasty_header lives
+     inside a wrapper that gets the `hidden` class there, but not on home) and
+     renders its own 82px logo header BELOW the site nav strip (#akkad-nav).
+     Result: checkout opened with only the nav strip, no real header. Fix =
+     drop `hidden` from the site-header wrapper so the same header the rest of
+     the site shows appears, and keep hiding the extra theme logo header. */
   function fixCheckoutHeader() {
     if (!window.location.pathname.includes('checkout')) return;
     var headers = document.querySelectorAll('header.sticky.top-0.z-50');
     for (var i = 0; i < headers.length; i++) {
       headers[i].style.display = 'none';
     }
+    var siteHeader = document.querySelector('header.fasty_header');
+    if (siteHeader) {
+      var wrap = siteHeader.closest('div.hidden');
+      if (wrap) wrap.classList.remove('hidden');
+    }
+    document.documentElement.classList.add('on-checkout');
   }
 
   /* ---------- /thanks professional success page ---------- */
@@ -404,6 +432,7 @@
     if (p === lastPath) return;
     lastPath = p;
     if (p.indexOf('thanks') !== -1) runThanksPage();
+    if (p.indexOf('checkout') === -1) document.documentElement.classList.remove('on-checkout');
   }
 
   try {
@@ -503,6 +532,67 @@
   }
 
 
+  /* On mobile the theme renders a second, control-less copy of the cart inside
+     .checkout_mobile_bottom_summary (right after the client fields) and hides
+     the real, React-wired one (with +/-/remove) behind the lower summary
+     toggle. Give the mobile copy working controls by forwarding each click to
+     the matching React button in the hidden lower list — React owns that list,
+     so its handlers keep cart state (and both lists) in sync. The lower list
+     stays mounted (just display:none) so those buttons remain clickable. */
+  function makeMobileSummaryFunctional() {
+    var upperList = document.querySelector('.checkout_mobile_cart_items_container');
+    var lowerList = document.querySelector('#checkout-order-summary-content .checkout_cart_items_container');
+    if (!upperList || !lowerList) return;
+
+    function lowerItems() { return lowerList.querySelectorAll('.checkout_cart_item'); }
+    function forwardByIndex(idx, label) {
+      var item = lowerItems()[idx];
+      if (!item) return;
+      var btn = item.querySelector('[aria-label="' + label + '"]');
+      if (btn) btn.click();
+    }
+    function lowerQtyAt(idx) {
+      var item = lowerItems()[idx];
+      return item ? item.querySelector('p.m-0.w-10') : null;
+    }
+    function indexWithinList(el) {
+      var items = Array.prototype.slice.call(upperList.querySelectorAll('.checkout_cart_item'));
+      return items.indexOf(el);
+    }
+
+    function sync() {
+      var upperItems = upperList.querySelectorAll('.checkout_cart_item');
+      Array.prototype.forEach.call(upperItems, function (uItem) {
+        var content = uItem.querySelector('div.min-w-0.flex-1');
+        if (!content) return;
+        var row = content.querySelector('.akkad-qty-row');
+        if (!row) {
+          row = document.createElement('div');
+          row.className = 'akkad-qty-row flex items-center gap-2';
+          row.innerHTML =
+            '<div class="flex items-center">' +
+              '<button type="button" data-akkad="inc" aria-label="Increase quantity">+</button>' +
+              '<p class="m-0 w-10 text-center text-sm" data-akkad="val">1</p>' +
+              '<button type="button" data-akkad="dec" aria-label="Decrease quantity">&minus;</button>' +
+            '</div>' +
+            '<button type="button" data-akkad="del" aria-label="Remove item">&times;</button>';
+          row.querySelector('[data-akkad="inc"]').addEventListener('click', function () { forwardByIndex(indexWithinList(uItem), 'Increase quantity'); });
+          row.querySelector('[data-akkad="dec"]').addEventListener('click', function () { forwardByIndex(indexWithinList(uItem), 'Decrease quantity'); });
+          row.querySelector('[data-akkad="del"]').addEventListener('click', function () { forwardByIndex(indexWithinList(uItem), 'Remove item'); });
+          content.appendChild(row);
+        }
+        var val = row.querySelector('[data-akkad="val"]');
+        var lq = lowerQtyAt(indexWithinList(uItem));
+        if (val && lq && val.textContent !== lq.textContent) val.textContent = lq.textContent;
+      });
+    }
+
+    sync();
+    if (upperList._akkadQtyObs) return;
+    upperList._akkadQtyObs = true;
+    new MutationObserver(sync).observe(upperList, { childList: true, subtree: true });
+  }
+
   var currentCounter = null;
 
   function getInvoiceNumber() {
@@ -577,7 +667,7 @@
     function update() {
       var nameInput = document.querySelector('[name="full_name"]');
       var phoneInput = document.querySelector('[name="phone"]');
-      var items = document.querySelectorAll('.cart-item');
+      var items = document.querySelectorAll('#checkout-order-summary-content .checkout_cart_item');
       var tbody = invoice.querySelector('.inv-tbody');
 
       invoice.querySelector('.inv-name').textContent = (nameInput && nameInput.value) || '— غير محدد —';
@@ -587,9 +677,9 @@
       tbody.innerHTML = '';
 
       items.forEach(function(item, i) {
-        var name = item.querySelector('[data-cart="item-name"]');
-        var priceEl = item.querySelector('[data-cart="item-price"]');
-        var qtyEl = item.querySelector('[data-cart="item-quantity"]');
+        var name = item.querySelector('p.truncate');
+        var priceEl = item.querySelector('.flex.shrink-0.flex-col.items-end span');
+        var qtyEl = item.querySelector('p.m-0.w-10');
         var price = parseInt((priceEl ? priceEl.textContent : '0').replace(/[^0-9]/g, '')) || 0;
         var qty = parseInt(qtyEl ? qtyEl.textContent : '1') || 1;
         var total = price * qty;
