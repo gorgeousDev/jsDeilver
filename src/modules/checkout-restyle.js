@@ -205,6 +205,21 @@
        injected editable controls were invisible. Force the content open on
        mobile so the products + qty/delete controls show without a tap. */
     '@media (max-width: 1024px) { #checkout-mobile-order-summary-content { display: block !important; max-height: none !important; overflow: visible !important; } }',
+    /* Stop horizontal overflow on mobile. The invoice table + WhatsApp reminder
+       have wide min-content, and grid/flex children default to min-width:auto
+       so they refuse to shrink below it. That pushed the document to 556px on a
+       390px viewport: the in-flow header shifted right and the fixed order bar
+       (left:0/right:0 relative to the expanded layout viewport) shifted left.
+       Make wide children fit, and clip any residual overflow at the container. */
+    '@media (max-width: 1024px) { ' +
+      '.checkout_container, .checkout_container > *, .checkout_form, .checkout_order_summary { min-width: 0 !important; } ' +
+      '.checkout_order_summary { max-width: 100% !important; box-sizing: border-box !important; } ' +
+      '.akkad-invoice { max-width: 100% !important; box-sizing: border-box !important; } ' +
+      '.akkad-invoice-table { table-layout: fixed !important; width: 100% !important; } ' +
+      '.akkad-invoice-table-wrapper { overflow-x: auto !important; } ' +
+      '.akkad-wa-reminder { max-width: 100% !important; box-sizing: border-box !important; white-space: normal !important; overflow-wrap: anywhere !important; } ' +
+      '.checkout_container { overflow-x: hidden !important; } ' +
+    '}',
     /* Styling for the qty controls injected into each mobile cart row. */
     '.akkad-qty-row { margin-top: 10px !important; }',
     '.akkad-qty-row button { border: 1px solid var(--co-line-strong) !important; background: var(--co-soft) !important; color: var(--co-ink) !important; border-radius: 8px !important; width: 30px !important; height: 30px !important; font-weight: 700 !important; cursor: pointer !important; line-height: 1 !important; }',
