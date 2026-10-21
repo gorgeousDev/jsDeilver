@@ -1,0 +1,9 @@
+# The storefront serves these files straight from the GitHub repository through
+# jsDelivr, so the bytes in the repository are the bytes the browser gets.
+# Normalising every text file to LF keeps the working copy identical to what is
+# deployed - with the default core.autocrlf on Windows the working copy was
+# CRLF while jsDelivr served LF, which made every local-to-live comparison
+# report a difference that was not there.
+* text=auto eol=lf
+
+*.webp binary

@@ -371,7 +371,6 @@
       '<div class="akkad-thanks-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div>' +
       '<h1 class="akkad-thanks-title">شكراً لطلبك من <span>أكاد</span></h1>' +
       '<p class="akkad-thanks-sub">تم استلام طلبك بنجاح</p>' +
-      (orderId ? '<div class="akkad-thanks-order">رقم الطلب: ' + orderId + '</div>' : '') +
       '<p class="akkad-thanks-msg">سيتم التواصل معك عبر الهاتف خلال 24 ساعة لتأكيد البيانات قبل الشحن.</p>' +
       '<div class="akkad-thanks-steps">' +
         '<div class="akkad-thanks-step"><span class="akkad-thanks-step-num">1</span><div><b>استلام الطلب</b><br><small>تم تسجيل طلبك بنجاح</small></div></div>' +
@@ -386,6 +385,16 @@
         '<p class="akkad-thanks-wa-after">لتأكيد الطلب سريعاً</p>' +
       '</div>' +
       '<a class="akkad-thanks-home" href="/">متابعة التسوق</a>';
+
+    /* The order id comes straight from the query string, so it is untrusted
+       input. It is written as a text node, never as markup — otherwise
+       /thanks?order_id=<img onerror=...> executes on the live site. */
+    if (orderId) {
+      var orderRow = document.createElement('div');
+      orderRow.className = 'akkad-thanks-order';
+      orderRow.textContent = 'رقم الطلب: ' + orderId;
+      card.insertBefore(orderRow, card.querySelector('.akkad-thanks-msg'));
+    }
 
     container.insertBefore(card, container.firstChild);
     return true;
@@ -730,7 +739,35 @@
         grandTotal += total;
 
         var tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + (i+1) + '</td><td><div style="font-weight:600;font-size:11px;">' + (name ? name.textContent : '') + '</div></td><td style="font-weight:700;">' + qty + '</td><td>' + unit.toLocaleString() + ' ج</td><td class="item-total">' + total.toLocaleString() + ' ج</td>';
+
+        var tdIndex = document.createElement('td');
+        tdIndex.textContent = String(i + 1);
+
+        /* The product title is admin-supplied text, so it is written as a text
+           node instead of being interpolated into markup. */
+        var tdName = document.createElement('td');
+        var nameWrap = document.createElement('div');
+        nameWrap.style.fontWeight = '600';
+        nameWrap.style.fontSize = '11px';
+        nameWrap.textContent = name ? name.textContent : '';
+        tdName.appendChild(nameWrap);
+
+        var tdQty = document.createElement('td');
+        tdQty.style.fontWeight = '700';
+        tdQty.textContent = String(qty);
+
+        var tdUnit = document.createElement('td');
+        tdUnit.textContent = unit.toLocaleString() + ' ج';
+
+        var tdTotal = document.createElement('td');
+        tdTotal.className = 'item-total';
+        tdTotal.textContent = total.toLocaleString() + ' ج';
+
+        tr.appendChild(tdIndex);
+        tr.appendChild(tdName);
+        tr.appendChild(tdQty);
+        tr.appendChild(tdUnit);
+        tr.appendChild(tdTotal);
         tbody.appendChild(tr);
       });
 
@@ -781,25 +818,13 @@
   }
 
   function fixInputs() {
-    var nameInput = document.querySelector('[name="full_name"]');
-    var phoneInput = document.querySelector('[name="phone"]');
-
-    if (nameInput && !nameInput._akkadFixed) {
-      nameInput._akkadFixed = true;
-      nameInput.addEventListener('input', function() {
-        var evt = new Event('input', { bubbles: true });
-        nameInput.dispatchEvent(evt);
-      });
-    }
-
-    if (phoneInput && !phoneInput._akkadFixed) {
-      phoneInput._akkadFixed = true;
-      phoneInput.addEventListener('input', function() {
-        var evt = new Event('input', { bubbles: true });
-        phoneInput.dispatchEvent(evt);
-      });
-    }
-
+    /* The two listeners that used to live here re-dispatched an `input` event
+       on the very field they were attached to, so every keystroke re-entered
+       the handler and blew the stack with a RangeError. They were also
+       pointless: React already receives the native event, and a second event
+       carrying the same value is swallowed by React's value tracker, so it
+       could never change what the form ends up holding. Only the labelling
+       below is still needed. */
     var labels = { full_name: 'الاسم بالكامل', phone: 'رقم الهاتف', address: 'العنوان' };
     Object.keys(labels).forEach(function(name) {
       var el = document.querySelector('[name="' + name + '"]');

@@ -25,15 +25,24 @@ function __akkad_isHomePage() {
     /* Load akkad.js from the same commit this file came from, not a commit that
        was pasted in once and forgotten. When akkad.js carried a stale pinned
        commit of its own, the stylesheets it injects were frozen at that commit
-       and every later CSS change silently never reached the site. */
+       and every later CSS change silently never reached the site.
+       The cache-buster the admin puts on the script tag is carried over as
+       well: without it akkad.js was the one file on the page with no version
+       of its own, so the CDN was free to keep serving it long after every
+       other file had been updated. */
     var base = "";
+    var version = "";
     try {
         var self = document.currentScript && document.currentScript.src;
-        if (self) base = self.replace(/[^\/]*$/, "");
+        if (self) {
+            base = self.replace(/[^\/]*$/, "");
+            var m = /[?&]v=([^&#]+)/.exec(self);
+            if (m) version = "?v=" + m[1];
+        }
     } catch (e) {}
 
     var s = document.createElement("script");
-    s.src = base ? base + "akkad.js"
+    s.src = base ? base + "akkad.js" + version
                  : "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a87d4b2/src/modules/akkad.js";
     s.defer = true;
     document.head.appendChild(s);
@@ -793,9 +802,18 @@ function __akkad_isHomePage() {
    10. Funnel Price Overrides
    ========================================= */
 (function () {
-    if (!location.href.includes("funnels")) return;
+    /* The path used to be checked once, at parse time, so the overrides only
+       appeared when the store was opened directly on a funnel - arriving at one
+       through a soft navigation left the prices untouched. The route is now
+       watched, and the interval only runs while a funnel is actually on
+       screen instead of on every page of the store. */
+    var timer = null;
 
-    setInterval(function () {
+    function isFunnel() {
+        return location.href.includes("funnels");
+    }
+
+    function applyFunnelPrices() {
         var shipping = document.querySelector(".shipping_cost");
         if (shipping) {
             shipping.innerHTML = '\
@@ -846,7 +864,31 @@ function __akkad_isHomePage() {
                     </span>\
                 </span>';
         });
-    }, 200);
+    }
+
+    function syncFunnel() {
+        if (isFunnel()) {
+            if (timer) return;
+            applyFunnelPrices();
+            timer = setInterval(applyFunnelPrices, 200);
+            return;
+        }
+        if (!timer) return;
+        clearInterval(timer);
+        timer = null;
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", syncFunnel);
+    } else {
+        syncFunnel();
+    }
+
+    var funnelPush = history.pushState;
+    var funnelReplace = history.replaceState;
+    history.pushState = function () { var r = funnelPush.apply(this, arguments); setTimeout(syncFunnel, 0); return r; };
+    history.replaceState = function () { var r = funnelReplace.apply(this, arguments); setTimeout(syncFunnel, 0); return r; };
+    window.addEventListener("popstate", syncFunnel);
 })();
 
 /* =========================================
@@ -885,35 +927,6 @@ function __akkad_isHomePage() {
         childList: true,
         subtree: true
     });
-})();
-
-(function () {
-    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
-    var initialized = false;
-
-    var timer = setInterval(function () {
-        var container = document.querySelector(".payments_container");
-        if (!container) return;
-
-        var cards = Array.from(container.children);
-
-        var transfer = cards.find(function (card) {
-            return card.textContent.includes("صورة التحويل");
-        });
-
-        var cod = cards.find(function (card) {
-            return card.textContent.includes("دفع عند الاستلام");
-        });
-
-        if (!transfer || !cod) return;
-
-        if (container.firstElementChild !== cod) {
-            container.insertBefore(cod, transfer);
-        }
-
-        // Auto-click disabled to fix payment toggle bug
-        // Users can now click payment options freely
-    }, 200);
 })();
 
 /* =========================================
@@ -1518,268 +1531,6 @@ function __akkad_isHomePage() {
     });
 })();
 
-var styleId = "akkad-v2-styles";
-
-if (!document.getElementById(styleId)) {
-
-  var css = [
-
-    /* =========================================================
-       AKKAD GALLERY
-       ========================================================= */
-
-    ".akkad-gallery-wrapper {",
-    "  display: flex !important;",
-    "  flex-direction: row !important;",
-    "  align-items: center !important;",
-    "  width: 100% !important;",
-    "  max-width: 100% !important;",
-    "  gap: 6px !important;",
-    "}",
-
-    ".akkad-gallery {",
-    "  display: flex !important;",
-    "  flex-direction: row !important;",
-    "  flex-wrap: nowrap !important;",
-    "  justify-content: flex-start !important;",
-    "  align-items: center !important;",
-    "  gap: 10px !important;",
-    "  margin-top: 15px !important;",
-    "  width: 100% !important;",
-    "  min-width: 0 !important;",
-    "  flex: 1 1 auto !important;",
-    "  overflow-x: auto !important;",
-    "  overflow-y: hidden !important;",
-    "  white-space: nowrap !important;",
-    "  scrollbar-width: none !important;",
-    "  -webkit-overflow-scrolling: touch !important;",
-    "  touch-action: pan-x !important;",
-    "  padding: 4px 2px 8px !important;",
-    "}",
-
-    ".akkad-gallery::-webkit-scrollbar {",
-    "  display: none !important;",
-    "}",
-
-    ".akkad-gallery .akkad-thumb {",
-    "  display: block !important;",
-    "  width: 70px !important;",
-    "  height: 70px !important;",
-    "  min-width: 70px !important;",
-    "  max-width: 70px !important;",
-    "  flex: 0 0 70px !important;",
-    "  object-fit: cover !important;",
-    "  border-radius: 12px !important;",
-    "  cursor: pointer !important;",
-    "}",
-
-    ".akkad-gallery .akkad-thumb.active {",
-    "  border: 2px solid #d4af37 !important;",
-    "  transform: scale(1.05);",
-    "}",
-
-    ".akkad-gallery-arrow {",
-    "  display: flex !important;",
-    "  align-items: center !important;",
-    "  justify-content: center !important;",
-    "  flex: 0 0 34px !important;",
-    "  width: 34px !important;",
-    "  height: 34px !important;",
-    "  padding: 0 !important;",
-    "  border: 1px solid #ddd !important;",
-    "  border-radius: 50% !important;",
-    "  background: #fff !important;",
-    "  color: #1B1931 !important;",
-    "  font-size: 20px !important;",
-    "  line-height: 1 !important;",
-    "  cursor: pointer !important;",
-    "  z-index: 20 !important;",
-    "}",
-
-    ".akkad-gallery-arrow:hover {",
-    "  background: #1B1931 !important;",
-    "  color: #fff !important;",
-    "}",
-
-    ".swiper-pagination {",
-    "  display: none !important;",
-    "}",
-
-    "@media (max-width: 768px) {",
-    "  .akkad-gallery-arrow {",
-    "    display: none !important;",
-    "  }",
-    "}",
-
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
-
-    "header {",
-    "  z-index: 1000 !important;",
-    "  position: sticky !important;",
-    "}",
-
-
-    /* =========================================================
-       SECTION TITLE
-       ========================================================= */
-
-    "div[sectionid='f73b18e7-79ff-457c-9cc5-ad151b4412c9'] > h3 {",
-    "  display: none !important;",
-    "}",
-
-
-    /* =========================================================
-       FOOTER
-       ========================================================= */
-
-    "footer,",
-    ".default_footer,",
-    "footer.bg-gray-50 {",
-    "  background: #1B1931 !important;",
-    "  color: #fff !important;",
-    "}",
-
-    ".default_footer {",
-    "  padding-bottom: 0 !important;",
-    "}",
-
-    ".default_footer > div:nth-child(3) {",
-    "  display: none !important;",
-    "}",
-
-    ".default_footer a,",
-    ".default_footer p {",
-    "  color: #fff !important;",
-    "}",
-
-    ".default_footer_links_container {",
-    "  padding-bottom: 20px;",
-    "  margin-bottom: 20px;",
-    "}",
-
-
-    /* =========================================================
-       PAGE
-       ========================================================= */
-
-    "html, body {",
-    "  overflow-x: hidden !important;",
-    "}",
-
-
-    /* =========================================================
-       FEATURED PRODUCT IMAGE
-       ========================================================= */
-
-    ".fasty_product_featured_container > div:first-child .fasty_product_card_img {",
-    "  height: 100% !important;",
-    "  overflow: hidden !important;",
-    "}",
-
-    ".fasty_product_featured_container > div:first-child .fasty_product_card_img img {",
-    "  width: 100% !important;",
-    "  height: 100% !important;",
-    "  object-fit: contain !important;",
-    "  object-position: top center !important;",
-    "}",
-
-
-    /* =========================================================
-       CATEGORIES NAV
-       ========================================================= */
-
-    ".akkad-categories-nav {",
-    "  position: sticky;",
-    "  top: 72px;",
-    "  z-index: 29;",
-    "  background: #fff;",
-    "  border-top: 1px solid #eee;",
-    "  border-bottom: 1px solid #eee;",
-    "  overflow-x: auto;",
-    "  white-space: nowrap;",
-    "  scrollbar-width: none;",
-    "}",
-
-    ".akkad-categories-nav::-webkit-scrollbar {",
-    "  display: none;",
-    "}",
-
-    ".akkad-categories-inner {",
-    "  display: flex;",
-    "  gap: 20px;",
-    "  padding: 12px 16px;",
-    "  width: max-content;",
-    "}",
-
-    ".akkad-categories-inner a {",
-    "  text-decoration: none;",
-    "  color: #1B1931;",
-    "  font-weight: 700;",
-    "}",
-
-    ".akkad-categories-inner a:hover {",
-    "  color: #A34054;",
-    "}",
-
-
-    /* =========================================================
-       MOBILE PRODUCT GRID
-       ========================================================= */
-
-    "@media (max-width: 639px) {",
-
-    "  .category_products_grid_container {",
-    "    display: grid !important;",
-    "    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;",
-    "    gap: 12px !important;",
-    "    width: 100% !important;",
-    "  }",
-
-    "  .category_products_grid_container > div {",
-    "    width: 100% !important;",
-    "    min-width: 0 !important;",
-    "  }",
-
-    "  .category_products_grid_container .fasty_product_card {",
-    "    width: 100% !important;",
-    "    max-width: 100% !important;",
-    "    min-width: 0 !important;",
-    "  }",
-
-    "}",
-
-
-    /* =========================================================
-       FEATURED PRODUCTS GRID
-       ========================================================= */
-
-    "@media (max-width: 767px) {",
-
-    "  .fasty_product_featured_container {",
-    "    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;",
-    "  }",
-
-    "  .fasty_product_featured_container > .animate-slideIn {",
-    "    grid-column: 1 / -1 !important;",
-    "  }",
-
-    "}"
-
-  ].join("\n");
-
-
-  var style = document.createElement("style");
-
-  style.id = styleId;
-
-  style.textContent = css;
-
-  (document.head || document.documentElement).appendChild(style);
-
-}
 
 /* =========================================
    14. Office Supplies Sections

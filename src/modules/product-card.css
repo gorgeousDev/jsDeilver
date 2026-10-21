@@ -55,3 +55,29 @@
   align-items: center !important;
   justify-content: center !important;
 }
+
+/* ===== Featured products grid =====
+   The featured section keeps the theme's card grid but its images are fitted
+   with contain (a product shot must not be cropped) and it drops to two
+   columns on phones. These rules lived in the dead akkad-v2.js style block. */
+.fasty_product_featured_container > div:first-child .fasty_product_card_img {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.fasty_product_featured_container > div:first-child .fasty_product_card_img img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: top center !important;
+}
+
+@media (max-width: 767px) {
+  .fasty_product_featured_container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .fasty_product_featured_container > .animate-slideIn {
+    grid-column: 1 / -1 !important;
+  }
+}

@@ -378,27 +378,62 @@
     }
   }
 
+  /* Category names and links are read back out of localStorage, so they are
+     treated as untrusted input: the name is written as a text node and the
+     link is only accepted when it resolves to this origin. */
+  function safeCategoryHref(url) {
+    if (!url) return null;
+    try {
+      var parsed = new URL(url, window.location.origin);
+      if (parsed.origin !== window.location.origin) return null;
+      return parsed.pathname + parsed.search + parsed.hash;
+    } catch (e) {
+      return null;
+    }
+  }
+
   function buildNavbar() {
     if (document.querySelector(".akkad-categories-nav")) return;
     var header = document.querySelector("header");
     if (!header) return;
 
-    var data = localStorage.getItem("akkad_categories");
+    var data;
+    try {
+      data = localStorage.getItem("akkad_categories");
+    } catch (e) {
+      return;
+    }
     if (!data) return;
 
-    var categories = JSON.parse(data);
-    if (!categories.length) return;
+    var categories;
+    try {
+      categories = JSON.parse(data);
+    } catch (e) {
+      return;
+    }
+    if (!categories || !categories.length) return;
 
     var nav = document.createElement("div");
     nav.className = "akkad-categories-nav";
 
     var inner = document.createElement("div");
     inner.className = "akkad-categories-inner";
-    inner.innerHTML = '<a href="/">الرئيسية</a>';
+
+    function addCategoryLink(href, text) {
+      var link = document.createElement("a");
+      link.href = href;
+      link.textContent = text;
+      inner.appendChild(link);
+    }
+
+    addCategoryLink("/", "الرئيسية");
 
     for (var i = 0; i < categories.length; i++) {
       var cat = categories[i];
-      inner.innerHTML += '<a href="' + cat.link + '">' + cat.name + '</a>';
+      if (!cat) continue;
+      var href = safeCategoryHref(cat.link);
+      if (!href) continue;
+      addCategoryLink(href, cat.name || "");
     }
 
     nav.appendChild(inner);
@@ -436,16 +471,23 @@
     var selfSrc = "";
     try { selfSrc = (document.currentScript && document.currentScript.src) || ""; } catch (e) {}
     var base = selfSrc.replace(/[^\/]*$/, "");
+
+    /* The cache-buster the admin puts on the script tags, carried over so the
+       stylesheets move in step with the JavaScript that ships with them. */
+    var version = "";
+    var vm = /[?&]v=([^&#]+)/.exec(selfSrc);
+    if (vm) version = "?v=" + vm[1];
+
     /* Fallback only: currentScript is set for every classic script, but if it were
        ever unavailable we would rather load the last known good stylesheets than
        load none at all and leave the page unstyled. */
     var STALE = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/";
     var files = base ? [
-      base + "product-card.css",
-      base + "gallery.css",
-      base + "slider.css",
-      base + "header.css",
-      base + "footer.css",
+      base + "product-card.css" + version,
+      base + "gallery.css" + version,
+      base + "slider.css" + version,
+      base + "header.css" + version,
+      base + "footer.css" + version,
       "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     ] : [
       STALE + "product-card.css",
@@ -456,14 +498,26 @@
       "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     ];
 
+    /* header.css is also linked straight from the admin's header_code, and the
+       two URLs never matched exactly - the admin adds a version, this file did
+       not - so the sheet was downloaded and applied twice. Matching on the path
+       makes the query string irrelevant. */
+    function stylesheetLoaded(href) {
+      var path = href.split("?")[0];
+      var links = document.querySelectorAll('link[rel="stylesheet"]');
+      for (var i = 0; i < links.length; i++) {
+        if (links[i].href.split("?")[0] === path) return true;
+      }
+      return false;
+    }
+
     for (var i = 0; i < files.length; i++) {
       var href = files[i];
-      if (!document.querySelector('link[href="' + href + '"]')) {
-        var link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = href;
-        (document.head || document.documentElement).appendChild(link);
-      }
+      if (stylesheetLoaded(href)) continue;
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      (document.head || document.documentElement).appendChild(link);
     }
 
 

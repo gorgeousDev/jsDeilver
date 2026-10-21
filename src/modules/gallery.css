@@ -53,6 +53,49 @@
   transform: scale(1.08);
 }
 
+/* Gallery shell and arrows.
+   These rules sat in a second <style> block in akkad-v2.js that was gated
+   behind `if (!document.getElementById("akkad-v2-styles"))` - but that id was
+   already taken by the block above it, so the whole block never ran and the
+   prev/next arrows shipped as unstyled <button>s. */
+.akkad-gallery-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: 6px !important;
+}
+
+.akkad-gallery-arrow {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 34px !important;
+  width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  border: 1px solid #ddd !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  color: #1B1931 !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  z-index: 20 !important;
+}
+
+.akkad-gallery-arrow:hover {
+  background: #1B1931 !important;
+  color: #fff !important;
+}
+
+@media (max-width: 768px) {
+  .akkad-gallery-arrow {
+    display: none !important;
+  }
+}
+
 .fasty_product_card_img{
     object-fit: contain !important;
     background:#fff;

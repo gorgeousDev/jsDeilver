@@ -116,3 +116,40 @@ html.akkad-dark input[type="radio"]:checked:not(.peer):not(.absolute):not(.sr-on
 }
 
 html.akkad-dark .color_variation_checked{ box-shadow:0 0 0 2px var(--co-bright,#ED9E59) !important; }
+
+/* ===== Categories strip under the header =====
+   akkad.js builds this nav from the homepage category cards and inserts it
+   right after <header>. Its styles lived in the dead akkad-v2.js style block,
+   so the strip rendered as bare unstyled links. */
+.akkad-categories-nav{
+    position:sticky;
+    top:72px;
+    z-index:29;
+    background:#fff;
+    border-top:1px solid #eee;
+    border-bottom:1px solid #eee;
+    overflow-x:auto;
+    white-space:nowrap;
+    scrollbar-width:none;
+}
+
+.akkad-categories-nav::-webkit-scrollbar{
+    display:none;
+}
+
+.akkad-categories-inner{
+    display:flex;
+    gap:20px;
+    padding:12px 16px;
+    width:max-content;
+}
+
+.akkad-categories-inner a{
+    text-decoration:none;
+    color:#1B1931;
+    font-weight:700;
+}
+
+.akkad-categories-inner a:hover{
+    color:#A34054;
+}
