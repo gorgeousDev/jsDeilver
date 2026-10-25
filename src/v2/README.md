@@ -25,10 +25,14 @@ stylesheets remain untouched under `src/modules`.
   preference until the visitor chooses a mode, remembers that choice, adds a
   hydration-safe header toggle, and applies the storefront palette from
   `styles/dark-mode.css`.
-- The `promo` feature is enabled by default. It caps the checkout's displayed
-  discount at EGP 200 using the amount supplied by EasyOrders, labels capped
-  orders for manual total confirmation, and does not alter backend/payment
-  calculations.
+- The `checkoutRestyle` feature migrates checkout presentation and interactions
+  into v2. It styles EasyOrders' native invoice, mobile cart controls, payment
+  details, and the existing thank-you page. It does not generate a custom
+  checkout invoice.
+- The `promo` feature is enabled by default. It caps displayed checkout
+  savings at EGP 200 across both standard invoice copies and the mobile
+  collapsed summary, and adjusts each displayed total. This is a storefront
+  display change; backend/payment calculations remain authoritative.
 - The runtime injects `styles/header.css` from the entry bundle. The separate
   legacy `header.css` `<link>` is not needed when this entry is deployed.
 - Add a feature module under `features/` and register it from
@@ -43,6 +47,8 @@ stylesheets remain untouched under `src/modules`.
 - Use `context.events.on(type, selector, callback, options)` for delegated
   document events. Matching subscriptions with the same event options share a
   single document listener and receive an unsubscribe function.
+- Use `context.navigation.subscribe(callback)` to respond to SPA route changes
+  without feature-specific history wrappers or polling.
 - The entry logs its resource download duration when browser timing data is
   available, and its synchronous initialization duration. Remove this
   temporary diagnostic after feature testing is complete.
@@ -100,6 +106,8 @@ does not become readable through CSS utility overrides alone. Its calculations
 live in `core/accessibility/contrast.js`; it scans once after a mode change and
 scans only newly added DOM subtrees afterward.
 
-The promo cap is a storefront display policy, not payment enforcement. Remove
-the legacy `promo.js` script tag when testing this feature; its old hard-coded
-10% calculation would otherwise compete with the v2 display.
+The promo cap changes displayed checkout amounts only; it does not enforce a
+payment limit. Remove the legacy `promo.js` and `checkout-restyle.js` script
+tags when deploying the v2 replacements. The legacy checkout restyle script
+also injects a custom invoice; v2 deliberately keeps EasyOrders' native invoice
+as the only invoice surface.

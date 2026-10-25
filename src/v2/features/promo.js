@@ -1,17 +1,10 @@
-import promoCss from "../styles/promo.css";
-
 const MAX_DISCOUNT = 200;
 const INVOICE_SELECTOR = '[data-invoice="invoice"]';
-const CUSTOM_INVOICE_SELECTOR = ".akkad-invoice";
-const TOTAL_SELECTOR = '[data-invoice="invoice-total-value"]';
-const DISCOUNTED_TOTAL_SELECTOR = '[data-invoice="invoice-discounted-total-value"]';
-const DISCOUNT_ROW_SELECTOR = '[data-invoice="invoice-discounted-total"]';
-const ORIGINAL_DISCOUNT_KEY = "akkadPromoOriginalDiscount";
-const CUSTOM_ACTUAL_KEY = "akkadPromoCustomActual";
-const CUSTOM_TOTAL_DISPLAYED_KEY = "akkadPromoCustomDisplayedTotal";
-const NOTICE_CLASS = "akkad-promo-cap-note";
+const MOBILE_SUMMARY_SELECTOR = ".checkout_mobile_total_toggle";
+const PROMO_SURFACE_SELECTOR = `${INVOICE_SELECTOR}, ${MOBILE_SUMMARY_SELECTOR}`;
 const NATIVE_SAVINGS_SELECTOR = '[data-invoice="invoice-total-savings"]';
 const NATIVE_TOTAL_SELECTOR = '[data-invoice="invoice-total-value"]';
+const MOBILE_SAVINGS_SELECTOR = '[data-invoice="checkout-mobile-total-savings"]';
 
 function normalizeDigits(value) {
   return String(value)
@@ -37,33 +30,6 @@ export function getCappedTotal(backendTotal, actualDiscount) {
   const cappedDiscount = getCappedDiscount(actualDiscount);
   if (!Number.isFinite(cappedDiscount)) return NaN;
   return Math.max(0, backendTotal + actualDiscount - cappedDiscount);
-}
-
-function findDiscountElement(invoice) {
-  for (const paragraph of invoice.querySelectorAll("p")) {
-    const text = (paragraph.textContent || "").trim();
-    if (text.startsWith("خصم") || text.startsWith("الخصم")) {
-      return paragraph;
-    }
-  }
-  return null;
-}
-
-function findBackendDiscount(document) {
-  const candidates = document.querySelectorAll(
-    `${INVOICE_SELECTOR} p, .mt-2.flex.items-center.justify-between p`
-  );
-
-  for (const paragraph of candidates) {
-    if (paragraph.closest(CUSTOM_INVOICE_SELECTOR)) continue;
-    const text = (paragraph.textContent || "").trim();
-    if (text.startsWith("خصم") || text.startsWith("الخصم")) {
-      const amount = Math.abs(parsePromoMoney(text));
-      if (Number.isFinite(amount)) return amount;
-    }
-  }
-
-  return NaN;
 }
 
 function updateNativeInvoice(invoice, document) {
@@ -98,57 +64,55 @@ function updateNativeInvoice(invoice, document) {
     savingsRow.dataset.akkadPromoActual = String(actualSavings);
     savingsRow.dataset.akkadPromoDisplayed = String(cappedSavings);
     totalElement.dataset.akkadPromoDisplayed = String(originalTotal + actualSavings - cappedSavings);
-    syncNotice(savingsRow.parentElement, true, document);
   } else {
     if (totalIsOurDisplay) writeMoney(totalElement, originalTotal, document, "");
     delete savingsRow.dataset.akkadPromoActual;
     delete savingsRow.dataset.akkadPromoDisplayed;
     delete totalElement.dataset.akkadPromoDisplayed;
-    syncNotice(savingsRow.parentElement, false, document);
   }
 }
 
-function updateCustomInvoice(invoice, document, backendDiscount) {
-  const discountElement = invoice.querySelector(".inv-discount-val");
-  const totalElement = invoice.querySelector(".inv-grand");
-  if (!discountElement || !totalElement) return;
+function updateMobileSummary(document) {
+  for (const savingsRow of document.querySelectorAll(MOBILE_SAVINGS_SELECTOR)) {
+    const amountElement = savingsRow.querySelector(":scope > span:last-child");
+    const totalLine = savingsRow.parentElement?.querySelector(":scope > span:first-child");
+    const totalElement = totalLine?.querySelector(":scope > span:first-child");
+    if (!amountElement || !totalElement) continue;
 
-  const actualDiscount = Number.isFinite(backendDiscount)
-    ? backendDiscount
-    : Math.abs(parsePromoMoney(discountElement.textContent));
-  const currentTotal = parsePromoMoney(totalElement.textContent);
-  if (!Number.isFinite(actualDiscount) || !Number.isFinite(currentTotal)) return;
+    const displayedSavings = Math.abs(parsePromoMoney(amountElement.textContent));
+    const currentTotal = Math.abs(parsePromoMoney(totalElement.textContent));
+    if (!Number.isFinite(displayedSavings) || !Number.isFinite(currentTotal)) continue;
 
-  const previousActual = Number(invoice.dataset[CUSTOM_ACTUAL_KEY]);
-  const previousDisplayedTotal = Number(invoice.dataset[CUSTOM_TOTAL_DISPLAYED_KEY]);
-  const currentIsOurDisplay =
-    Number.isFinite(previousDisplayedTotal) &&
-    Math.abs(currentTotal - previousDisplayedTotal) < 0.001;
-  const backendTotal = currentIsOurDisplay
-    ? currentTotal - (previousActual - MAX_DISCOUNT)
-    : currentTotal;
-  const cappedDiscount = getCappedDiscount(actualDiscount);
+    const previousSavings = Number(savingsRow.dataset.akkadPromoActual);
+    const previousDisplayedSavings = Number(savingsRow.dataset.akkadPromoDisplayed);
+    const actualSavings =
+      Number.isFinite(previousSavings) &&
+      Math.abs(displayedSavings - previousDisplayedSavings) < 0.001
+        ? previousSavings
+        : displayedSavings;
+    const previousDisplayedTotal = Number(totalElement.dataset.akkadPromoDisplayed);
+    const totalIsOurDisplay =
+      Number.isFinite(previousDisplayedTotal) &&
+      Math.abs(currentTotal - previousDisplayedTotal) < 0.001;
+    const originalTotal = totalIsOurDisplay
+      ? currentTotal -
+        (Number.isFinite(previousSavings) ? previousSavings - MAX_DISCOUNT : 0)
+      : currentTotal;
 
-  if (actualDiscount <= MAX_DISCOUNT) {
-    delete invoice.dataset[CUSTOM_ACTUAL_KEY];
-    delete invoice.dataset[CUSTOM_TOTAL_DISPLAYED_KEY];
-    syncNotice(invoice, false, document);
-    return;
+    if (actualSavings > MAX_DISCOUNT) {
+      const cappedTotal = originalTotal + actualSavings - MAX_DISCOUNT;
+      writeMoney(amountElement, MAX_DISCOUNT, document, "");
+      totalElement.textContent = cappedTotal.toLocaleString("en-US");
+      savingsRow.dataset.akkadPromoActual = String(actualSavings);
+      savingsRow.dataset.akkadPromoDisplayed = String(MAX_DISCOUNT);
+      totalElement.dataset.akkadPromoDisplayed = String(cappedTotal);
+    } else {
+      if (totalIsOurDisplay) totalElement.textContent = originalTotal.toLocaleString("en-US");
+      delete savingsRow.dataset.akkadPromoActual;
+      delete savingsRow.dataset.akkadPromoDisplayed;
+      delete totalElement.dataset.akkadPromoDisplayed;
+    }
   }
-
-  const cappedTotal = getCappedTotal(backendTotal, actualDiscount);
-  const formattedDiscount = `-${cappedDiscount.toLocaleString("en-US")} ج.م`;
-  const formattedTotal = `${cappedTotal.toLocaleString("en-US")} ج.م`;
-  if (discountElement.textContent !== formattedDiscount) {
-    discountElement.textContent = formattedDiscount;
-  }
-  if (totalElement.textContent !== formattedTotal) {
-    totalElement.textContent = formattedTotal;
-  }
-
-  invoice.dataset[CUSTOM_ACTUAL_KEY] = String(actualDiscount);
-  invoice.dataset[CUSTOM_TOTAL_DISPLAYED_KEY] = String(cappedTotal);
-  syncNotice(invoice, true, document);
 }
 
 function writeMoney(element, amount, document, label) {
@@ -166,91 +130,14 @@ function writeMoney(element, amount, document, label) {
   );
 }
 
-function syncNotice(invoice, shouldShow, document) {
-  let notice = invoice.querySelector(`.${NOTICE_CLASS}`);
-
-  if (!shouldShow) {
-    if (notice) notice.remove();
-    return;
-  }
-
-  if (!notice) {
-    notice = document.createElement("p");
-    notice.className = NOTICE_CLASS;
-    notice.setAttribute("role", "note");
-    notice.textContent =
-      "تنبيه: الحد الأقصى للخصم ٢٠٠ جنيه. يتم تأكيد إجمالي الطلب يدويًا قبل التجهيز.";
-    invoice.appendChild(notice);
-  }
-}
-
-function updateInvoice(invoice, document) {
-  const discountElement = findDiscountElement(invoice);
-  if (!discountElement) {
-    syncNotice(invoice, false, document);
-    return;
-  }
-
-  const originalTotalElement = invoice.querySelector(TOTAL_SELECTOR);
-  const discountedTotalElement = invoice.querySelector(DISCOUNTED_TOTAL_SELECTOR);
-  const discountRow = invoice.querySelector(DISCOUNT_ROW_SELECTOR);
-
-  if (!originalTotalElement || !discountedTotalElement || !discountRow) {
-    return;
-  }
-
-  const currentDiscount = Math.abs(parsePromoMoney(discountElement.textContent));
-  if (!Number.isFinite(currentDiscount)) return;
-
-  const previouslyCappedDiscount = Number(invoice.dataset[ORIGINAL_DISCOUNT_KEY]);
-  const hadPreviousCap = Number.isFinite(previouslyCappedDiscount);
-  // Keep the backend amount separately; the visible row is rewritten to 200.
-  const isShowingPreviousCap =
-    hadPreviousCap && Math.abs(currentDiscount - MAX_DISCOUNT) < 0.001;
-  const actualDiscount = isShowingPreviousCap ? previouslyCappedDiscount : currentDiscount;
-  const displayedDiscount = getCappedDiscount(actualDiscount);
-  const originalTotal = parsePromoMoney(originalTotalElement.textContent);
-  if (!Number.isFinite(originalTotal)) return;
-
-  if (actualDiscount === 0) {
-    delete invoice.dataset[ORIGINAL_DISCOUNT_KEY];
-    syncNotice(invoice, false, document);
-    return;
-  }
-
-  if (actualDiscount > MAX_DISCOUNT) {
-    invoice.dataset[ORIGINAL_DISCOUNT_KEY] = String(actualDiscount);
-  } else {
-    delete invoice.dataset[ORIGINAL_DISCOUNT_KEY];
-  }
-
-  if (actualDiscount <= MAX_DISCOUNT && !hadPreviousCap) {
-    syncNotice(invoice, false, document);
-    return;
-  }
-
-  const displayedTotal = Math.max(0, originalTotal - displayedDiscount);
-  writeMoney(discountElement, displayedDiscount, document, "خصم: ");
-  writeMoney(discountedTotalElement, displayedTotal, document, "");
-  syncNotice(invoice, actualDiscount > MAX_DISCOUNT, document);
-
-  invoice.dataset.akkadPromoActualDiscount = String(actualDiscount);
-  invoice.dataset.akkadPromoDisplayedDiscount = String(displayedDiscount);
-}
-
 export function initPromo({ document, dom, styles, window }) {
-  const removeStyles = styles.add("akkad-v2-promo-css", promoCss);
   let scheduledFrame = 0;
   const observedInvoices = new Map();
 
   function updateInvoices() {
-    const backendDiscount = findBackendDiscount(document);
+    updateMobileSummary(document);
     for (const invoice of document.querySelectorAll(INVOICE_SELECTOR)) {
-      updateInvoice(invoice, document);
       updateNativeInvoice(invoice, document);
-    }
-    for (const invoice of document.querySelectorAll(CUSTOM_INVOICE_SELECTOR)) {
-      updateCustomInvoice(invoice, document, backendDiscount);
     }
   }
 
@@ -275,7 +162,7 @@ export function initPromo({ document, dom, styles, window }) {
   }
 
   const unsubscribeInvoice = dom.subscribe(
-    `${INVOICE_SELECTOR}, ${CUSTOM_INVOICE_SELECTOR}`,
+    PROMO_SURFACE_SELECTOR,
     observeInvoice
   );
   const unsubscribeAddedNodes = dom.onNodesAdded(() => {
@@ -294,6 +181,5 @@ export function initPromo({ document, dom, styles, window }) {
     for (const stopObserving of observedInvoices.values()) stopObserving();
     observedInvoices.clear();
     if (scheduledFrame) window.cancelAnimationFrame(scheduledFrame);
-    removeStyles();
   };
 }

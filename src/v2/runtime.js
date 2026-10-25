@@ -1,6 +1,7 @@
 import { getFeatures } from "./features/registry.js";
 import { createDelegatedEvents } from "./core/delegated-events.js";
 import { createDomObserver } from "./core/dom-observer.js";
+import { createNavigation } from "./core/navigation.js";
 import { createStyleManager } from "./core/style-manager.js";
 import { installBaseStyles } from "./styles/index.js";
 
@@ -20,12 +21,14 @@ export function start(config) {
     document,
     dom: createDomObserver(document, window),
     events: createDelegatedEvents(document),
+    navigation: createNavigation(window),
     styles: createStyleManager(document),
     window
   };
 
   runtime.cleanups.push(context.dom.destroy);
   runtime.cleanups.push(context.events.destroy);
+  runtime.cleanups.push(context.navigation.destroy);
   runtime.cleanups.push(context.styles.destroy);
   // Install base CSS before feature initialization so header styling is ready
   // without a second stylesheet request or a separate admin <link> tag.
