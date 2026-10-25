@@ -97,26 +97,7 @@ __akkadLoadV2Feature("v2-image-preview-lightbox");
 /* =========================================
    8. Hide OKKA
    ========================================= */
-(function () {
-    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
-    function hideOKKA() {
-        document.querySelectorAll("h3").forEach(function (h3) {
-            if (h3.textContent.toUpperCase().includes("OKKA")) {
-                h3.style.display = "none";
-            }
-        });
-    }
-
-    hideOKKA();
-    var okkaTimer;
-    new MutationObserver(function () {
-        clearTimeout(okkaTimer);
-        okkaTimer = setTimeout(hideOKKA, 500);
-    }).observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-})();
+__akkadLoadV2Feature("v2-hide-okka-heading");
 
 /* =========================================
    9. Floating Live Counter
