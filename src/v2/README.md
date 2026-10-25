@@ -20,6 +20,10 @@ stylesheets remain untouched under `src/modules`.
   cleanup.
 - Add a feature module under `features/` and register it from
   `features/index.js`. Its `init(context)` can return a cleanup function.
+- Use the shared `context.dom.subscribe(selector, callback)` service for
+  existing and dynamically inserted elements. It owns one MutationObserver,
+  switches from the document root to the body when the body becomes available,
+  and disconnects when there are no active subscriptions.
 - Keep initialization page-aware and inexpensive. Avoid global polling and
   document-wide observers unless a feature demonstrably needs them. Do not
   use client-side changes as a substitute for server-rendered, SEO-critical

@@ -1,4 +1,5 @@
 import { getFeatures } from "./features/registry.js";
+import { createDomObserver } from "./core/dom-observer.js";
 
 const RUNTIME_KEY = "__akkadV2Runtime";
 
@@ -11,8 +12,11 @@ export function start(config) {
   const context = {
     config,
     document,
+    dom: createDomObserver(document, window),
     window
   };
+
+  runtime.cleanups.push(context.dom.destroy);
 
   for (const feature of getFeatures()) {
     const isEnabled = config.features[feature.id] ?? feature.enabledByDefault;
