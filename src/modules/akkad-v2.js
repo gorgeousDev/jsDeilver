@@ -6,17 +6,29 @@ function __akkad_isHomePage() {
     return p === "/";
 }
 
+var __akkadV2ScriptSrc = document.currentScript && document.currentScript.src;
+var __akkadV2Base = __akkadV2ScriptSrc
+    ? __akkadV2ScriptSrc.replace(/[^\/]*$/, "")
+    : "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/";
+var __akkadV2VersionMatch = __akkadV2ScriptSrc
+    ? /[?&]v=([^&#]+)/.exec(__akkadV2ScriptSrc)
+    : null;
+var __akkadV2Version = __akkadV2VersionMatch ? "?v=" + __akkadV2VersionMatch[1] : "";
+
+function __akkadLoadV2Feature(name) {
+    var script = document.createElement("script");
+    script.src = __akkadV2Base + "features/" + name + ".js" + __akkadV2Version;
+    script.async = false;
+    script.onerror = function () {
+        console.error("[Akkad] failed to load feature:", name);
+    };
+    document.head.appendChild(script);
+}
+
 /* =========================================
    Meta tag (Google Site Verification)
    ========================================= */
-(function () {
-    if (!document.querySelector('meta[name="google-site-verification"]')) {
-        var meta = document.createElement("meta");
-        meta.name = "google-site-verification";
-        meta.content = "fiujJPBUim9VxPM1vTiUF3AKYv0jng7fKCoMS0oULME";
-        document.head.appendChild(meta);
-    }
-})();
+__akkadLoadV2Feature("v2-google-site-verification");
 
 /* =========================================
    1. Load akkad.js
