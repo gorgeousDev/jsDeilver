@@ -112,40 +112,7 @@ __akkadLoadV2Feature("v2-funnel-price-overrides");
 /* =========================================
    11. Swap Payment Methods
    ========================================= */
-(function () {
-    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
-    function swapPayments() {
-        var container = document.querySelector(".payments_container");
-        if (!container) return;
-
-        var cards = Array.from(container.children);
-
-        var transfer = cards.find(function (el) {
-            return el.textContent.includes("صورة التحويل");
-        });
-
-        var cod = cards.find(function (el) {
-            return el.textContent.includes("دفع عند الاستلام");
-        });
-
-        if (!transfer || !cod) return;
-
-        if (container.firstElementChild !== cod) {
-            container.insertBefore(cod, transfer);
-        }
-    }
-
-    setTimeout(swapPayments, 1000);
-
-    var swapTimer;
-    new MutationObserver(function () {
-        clearTimeout(swapTimer);
-        swapTimer = setTimeout(swapPayments, 500);
-    }).observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-})();
+__akkadLoadV2Feature("v2-payment-method-order");
 
 /* =========================================
    12. Graduation Gift Slider
