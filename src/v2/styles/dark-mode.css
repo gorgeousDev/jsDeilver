@@ -1,0 +1,271 @@
+html.akkad-dark {
+  color-scheme: dark;
+  background: var(--akkad-page) !important;
+}
+
+html.akkad-dark body,
+html.akkad-dark .app_container {
+  background: var(--akkad-page) !important;
+  color: var(--akkad-text) !important;
+}
+
+/* Theme utility surfaces */
+html.akkad-dark .bg-white,
+html.akkad-dark .bg-gray-50,
+html.akkad-dark .bg-gray-100,
+html.akkad-dark .bg-heading,
+html.akkad-dark .home_section_container,
+html.akkad-dark .akkad-categories-nav {
+  background: var(--akkad-surface) !important;
+}
+
+html.akkad-dark .bg-white\/95 {
+  background: rgb(27 25 49 / 95%) !important;
+}
+
+html.akkad-dark .bg-gray-200,
+html.akkad-dark .bg-gray-300,
+html.akkad-dark .bg-\[\#f3f3f3\],
+html.akkad-dark .bg-\[\#fafafa\],
+html.akkad-dark .fasty_product_card_img,
+html.akkad-dark .akkad-products-section .akkad-arrow,
+html.akkad-dark span.rounded-xl.border.p-2,
+html.akkad-dark img.akkad-thumb,
+html.akkad-dark .akkad-thumb,
+html.akkad-dark [role="tab"].bg-black,
+html.akkad-dark [role="tab"][class*="bg-black"],
+html.akkad-dark .add_to_cart_btn,
+html.akkad-dark button[class*="add_to_cart"] {
+  background: var(--akkad-surface-raised) !important;
+}
+
+html.akkad-dark .bg-\[\#f8fafc\],
+html.akkad-dark .akkad-social-section {
+  background: var(--akkad-page) !important;
+}
+
+html.akkad-dark .fasty_product_card,
+html.akkad-dark .fasty_product_card_name,
+html.akkad-dark .fasty_product_card_price,
+html.akkad-dark .home_section_container,
+html.akkad-dark .akkad-products-section,
+html.akkad-dark .akkad-section-title,
+html.akkad-dark .akkad-categories-inner a,
+html.akkad-dark .akkad-products-section .akkad-arrow,
+html.akkad-dark span.rounded-xl.border.p-2,
+html.akkad-dark [role="tab"].bg-black,
+html.akkad-dark [role="tab"][class*="bg-black"],
+html.akkad-dark .add_to_cart_btn,
+html.akkad-dark button[class*="add_to_cart"],
+html.akkad-dark input,
+html.akkad-dark textarea,
+html.akkad-dark select {
+  color: var(--akkad-text) !important;
+}
+
+/* Utility text colors map to the palette's contrast-tested ink levels. */
+html.akkad-dark .text-heading,
+html.akkad-dark .text-black,
+html.akkad-dark .text-gray-900 {
+  color: var(--akkad-text) !important;
+}
+
+html.akkad-dark .text-gray-800,
+html.akkad-dark .text-gray-700,
+html.akkad-dark .text-gray-600,
+html.akkad-dark #akkad-nav,
+html.akkad-dark #akkad-nav a,
+html.akkad-dark .akkad-social-section {
+  color: var(--akkad-text-secondary) !important;
+}
+
+html.akkad-dark .text-gray-500,
+html.akkad-dark .text-gray-400,
+html.akkad-dark .placeholder-gray-400::placeholder,
+html.akkad-dark .placeholder-gray-500::placeholder,
+html.akkad-dark .fasty_product_card_price del,
+html.akkad-dark input::placeholder,
+html.akkad-dark textarea::placeholder {
+  color: var(--akkad-text-muted) !important;
+}
+
+html.akkad-dark .border-gray-100,
+html.akkad-dark .border-gray-200,
+html.akkad-dark .border-gray-300,
+html.akkad-dark .border-heading,
+html.akkad-dark .akkad-categories-nav,
+html.akkad-dark .akkad-products-section .akkad-arrow,
+html.akkad-dark span.rounded-xl.border.p-2,
+html.akkad-dark img.akkad-thumb,
+html.akkad-dark .akkad-thumb,
+html.akkad-dark [role="tab"].bg-black,
+html.akkad-dark [role="tab"][class*="bg-black"],
+html.akkad-dark header.fasty_header,
+html.akkad-dark header > div[class*="bg-white/95"],
+html.akkad-dark footer,
+html.akkad-dark .default_footer,
+html.akkad-dark input,
+html.akkad-dark textarea,
+html.akkad-dark select {
+  border-color: var(--akkad-border) !important;
+}
+
+html.akkad-dark .border-gray-400,
+html.akkad-dark .fasty_product_card,
+html.akkad-dark .add_to_cart_btn,
+html.akkad-dark button[class*="add_to_cart"] {
+  border-color: var(--akkad-border-strong) !important;
+}
+
+html.akkad-dark .fasty_product_card {
+  background: var(--akkad-surface) !important;
+}
+
+html.akkad-dark .text-red-400,
+html.akkad-dark .text-red-500,
+html.akkad-dark .text-red-600,
+html.akkad-dark a:hover,
+html.akkad-dark .akkad-categories-inner a:hover,
+html.akkad-dark #akkad-nav .star {
+  color: var(--akkad-accent) !important;
+}
+
+html.akkad-dark .fasty_product_card_price del,
+html.akkad-dark .text-heading,
+html.akkad-dark a {
+  transition: color 0.15s ease;
+}
+
+html.akkad-dark .akkad-products-section .akkad-arrow {
+  border: 1px solid var(--akkad-border) !important;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 50%) !important;
+}
+
+html.akkad-dark .akkad-products-section .akkad-arrow:hover,
+html.akkad-dark .add_to_cart_btn:hover,
+html.akkad-dark button[class*="add_to_cart"]:hover {
+  background: var(--akkad-surface-hover) !important;
+}
+
+/* Store-owned sections that do not use theme utility classes. */
+html.akkad-dark #akkad-nav {
+  background: var(--akkad-surface) !important;
+  border-bottom: 1px solid var(--akkad-border) !important;
+}
+
+html.akkad-dark #akkad-nav a.school-link,
+html.akkad-dark .fasty_header_container .bg-skin-primary {
+  color: #fff !important;
+}
+
+html.akkad-dark #akkad-nav span,
+html.akkad-dark .akkad-social-section a[target="_blank"],
+html.akkad-dark .akkad-social-section i.fa-solid {
+  color: var(--akkad-text) !important;
+}
+
+html.akkad-dark .akkad-social-section a[target="_blank"],
+html.akkad-dark .akkad-social-section i.fa-solid {
+  background: var(--akkad-surface-raised) !important;
+}
+
+html.akkad-dark .default_footer_link,
+html.akkad-dark .default_footer_links_container,
+html.akkad-dark .default_footer .animate-slideIn,
+html.akkad-dark .footer_store_info,
+html.akkad-dark .footer_store_info div,
+html.akkad-dark .footer_store_info span,
+html.akkad-dark .default_footer p,
+html.akkad-dark .default_footer a {
+  background: transparent !important;
+}
+
+html.akkad-dark footer,
+html.akkad-dark .default_footer {
+  background: var(--akkad-surface) !important;
+}
+
+html.akkad-dark input,
+html.akkad-dark textarea,
+html.akkad-dark select {
+  background: var(--akkad-surface-raised) !important;
+  color-scheme: dark;
+}
+
+html.akkad-dark .checkout_container,
+html.akkad-dark .checkout_bg {
+  background: var(--akkad-page) !important;
+}
+
+/* Keep transitions limited to the surfaces that actually change. */
+html.akkad-theme-fading body,
+html.akkad-theme-fading .app_container,
+html.akkad-theme-fading .bg-white,
+html.akkad-theme-fading .bg-gray-50,
+html.akkad-theme-fading .bg-gray-300,
+html.akkad-theme-fading .fasty_product_card,
+html.akkad-theme-fading .akkad-arrow,
+html.akkad-theme-fading .text-heading,
+html.akkad-theme-fading .text-gray-800,
+html.akkad-theme-fading .border-gray-300,
+html.akkad-theme-fading .checkout_order_summary {
+  transition: background-color 0.28s ease, color 0.28s ease, border-color 0.28s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.akkad-theme-fading * {
+    transition: none !important;
+  }
+}
+
+#akkad-theme-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 8%);
+  color: #fff !important;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+#akkad-theme-toggle:hover {
+  background: rgb(255 255 255 / 17%);
+}
+
+#akkad-theme-toggle:active {
+  transform: scale(0.94);
+}
+
+#akkad-theme-toggle:focus-visible {
+  outline: 2px solid var(--akkad-border-strong) !important;
+  outline-offset: 2px;
+}
+
+#akkad-theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  fill: none !important;
+  stroke: #fff !important;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 768px) {
+  #akkad-theme-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+  }
+
+  #akkad-theme-toggle svg {
+    width: 16px;
+    height: 16px;
+  }
+}

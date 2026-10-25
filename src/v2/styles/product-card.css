@@ -1,0 +1,121 @@
+.fasty_product_card {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+.home_products_grid_container {
+  gap: 10px !important;
+}
+
+.fasty_product_card span[class*="top-0"] {
+  top: 10px !important;
+  left: 10px !important;
+  padding: 4px 10px !important;
+  border-radius: 10px !important;
+}
+
+/* The store's own sale label is intentionally replaced by the custom badge. */
+.fasty_product_card span.uppercase[class*="bg-"] {
+  display: none !important;
+}
+
+.fasty_product_card > a {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+}
+
+.fasty_product_card_img {
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+}
+
+.fasty_product_card > a > .w-full.text-center {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+}
+
+.fasty_product_card_name {
+  display: -webkit-box !important;
+  max-height: 66px !important;
+  min-height: 66px !important;
+  margin-bottom: 2px !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 3 !important;
+  line-height: 1.45 !important;
+  text-overflow: ellipsis !important;
+}
+
+.fasty_product_card_price {
+  display: flex !important;
+  min-height: 32px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin-top: 0 !important;
+}
+
+.fasty_product_card_btn_container {
+  margin-top: auto !important;
+}
+
+.fasty_product_card_btn {
+  height: 44px !important;
+}
+
+.fasty_product_card_wishlist_btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Featured product photos should fit inside the image area rather than crop. */
+.fasty_product_featured_container > div:first-child .fasty_product_card_img {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.fasty_product_featured_container > div:first-child .fasty_product_card_img img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: top center !important;
+}
+
+@media (max-width: 767px) {
+  .products_grid_container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fasty_product_featured_container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .fasty_product_featured_container > .animate-slideIn {
+    grid-column: 1 / -1 !important;
+  }
+
+  .p_gallery_container .swiper-slide:nth-child(2) {
+    position: relative !important;
+  }
+
+  .p_gallery_container .product_gallery_btns_container {
+    inset: 12px auto auto 12px !important;
+    z-index: 2 !important;
+  }
+
+  .home_products_grid_container > :first-child > div {
+    min-height: 460px !important;
+  }
+
+  .home_products_grid_container > :nth-child(2) > div > a > .w-full.text-center > h2 {
+    min-height: 90px !important;
+  }
+
+  .home_products_grid_container > :first-child > div > div {
+    margin-top: auto !important;
+  }
+}

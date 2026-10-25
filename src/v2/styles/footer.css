@@ -1,0 +1,39 @@
+/* Preserve the store's dark footer while avoiding a background on every
+   descendant, which previously overrode badges, icons, and other child UI. */
+footer,
+footer.bg-gray-50 {
+  background: var(--akkad-page, #1b1931) !important;
+  color: #fff !important;
+}
+
+.default_footer a {
+  color: #fff !important;
+  transition: color 0.3s;
+}
+
+.default_footer a:hover {
+  color: #d1d5db !important;
+}
+
+.default_footer p {
+  color: #fff !important;
+}
+
+.default_footer p:last-child {
+  display: none !important;
+}
+
+.default_footer_links_container {
+  border-bottom: 1px solid rgba(233, 188, 185, 0.16);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.default_footer_link a {
+  color: #f3f4f6 !important;
+  font-weight: 500;
+}
+
+.default_footer_link a:hover {
+  color: #fff !important;
+}

@@ -1,6 +1,8 @@
 import { getFeatures } from "./features/registry.js";
 import { createDelegatedEvents } from "./core/delegated-events.js";
 import { createDomObserver } from "./core/dom-observer.js";
+import { createStyleManager } from "./core/style-manager.js";
+import { installBaseStyles } from "./styles/index.js";
 
 const RUNTIME_KEY = "__akkadV2Runtime";
 
@@ -18,11 +20,16 @@ export function start(config) {
     document,
     dom: createDomObserver(document, window),
     events: createDelegatedEvents(document),
+    styles: createStyleManager(document),
     window
   };
 
   runtime.cleanups.push(context.dom.destroy);
   runtime.cleanups.push(context.events.destroy);
+  runtime.cleanups.push(context.styles.destroy);
+  // Install base CSS before feature initialization so header styling is ready
+  // without a second stylesheet request or a separate admin <link> tag.
+  installBaseStyles(context.styles);
 
   for (const feature of getFeatures()) {
     // Explicit config overrides the feature's default, including `false`.

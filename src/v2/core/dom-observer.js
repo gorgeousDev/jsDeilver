@@ -2,6 +2,7 @@ export function createDomObserver(document, window) {
   // One observer serves every subscriber; each subscription has its own
   // selector and callback, while the core owns the shared observer lifecycle.
   const subscriptions = new Set();
+  const addedNodeListeners = new Set();
   let observer = null;
   let observedRoot = null;
 
@@ -26,6 +27,14 @@ export function createDomObserver(document, window) {
     }
   }
 
+  function stopIfUnused() {
+    // Either API can keep the shared observer alive, so stop only after both
+    // kinds of subscribers are gone.
+    if (subscriptions.size > 0 || addedNodeListeners.size > 0 || !observer) return;
+    observer.disconnect();
+    observedRoot = null;
+  }
+
   function startObserving() {
     // A script in <head> may run before body exists. Observe the document root
     // for that short period, then move the same observer to body.
@@ -44,6 +53,9 @@ export function createDomObserver(document, window) {
         for (const mutation of mutations) {
           for (const node of mutation.addedNodes) {
             notifyTree(node);
+            for (const onAdded of addedNodeListeners) {
+              onAdded(node);
+            }
           }
         }
       });
@@ -54,6 +66,9 @@ export function createDomObserver(document, window) {
     observedRoot = root;
     observer.observe(root, { childList: true, subtree: true });
     notifyTree(root);
+    for (const onAdded of addedNodeListeners) {
+      onAdded(root);
+    }
   }
 
   function subscribe(selector, onElement) {
@@ -78,19 +93,31 @@ export function createDomObserver(document, window) {
     return () => {
       subscriptions.delete(subscription);
       // Stop spending work on DOM mutations when nobody is listening.
-      if (subscriptions.size === 0 && observer) {
-        observer.disconnect();
-        observedRoot = null;
-      }
+      stopIfUnused();
     };
   }
 
   function destroy() {
     subscriptions.clear();
+    addedNodeListeners.clear();
     if (observer) observer.disconnect();
     observer = null;
     observedRoot = null;
   }
 
-  return { subscribe, destroy };
+  function onNodesAdded(callback) {
+    if (typeof callback !== "function") {
+      throw new TypeError("A DOM addition subscription requires a callback.");
+    }
+
+    addedNodeListeners.add(callback);
+    startObserving();
+
+    return () => {
+      addedNodeListeners.delete(callback);
+      stopIfUnused();
+    };
+  }
+
+  return { subscribe, onNodesAdded, destroy };
 }

@@ -1,0 +1,15 @@
+/* The custom thumbnail gallery replaces Swiper's pagination dots. */
+.swiper-pagination {
+  display: none !important;
+}
+
+/* Give the active home-slider product title a real one-line clamp. The
+   previous deeply nested selector depended on generated Tailwind classes and
+   used `line-clamp` without the display/orientation needed by most browsers. */
+.home_slider_container .swiper-slide-active h2 {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+}

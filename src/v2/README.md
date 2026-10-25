@@ -13,14 +13,20 @@ stylesheets remain untouched under `src/modules`.
   replace page elements afterward. Feature modules must therefore support
   targets appearing later instead of assuming they exist at startup.
 - `config.js` reads optional feature flags from `window.AkkadV2Config`, for
-  example `{ features: { darkMode: true } }`. Features are opt-in unless their
-  registration explicitly sets `enabledByDefault: true`.
+  example `{ features: { darkMode: false } }`. Each feature has a default;
+  an explicit boolean setting overrides that default.
 - The `videoLazy` feature is currently enabled by default. It removes autoplay
   from existing and newly inserted videos and disconnects its observer during
   cleanup.
 - The `sliderDrag` feature is currently enabled by default. It adds delegated
   pointer dragging, click suppression after a drag, and momentum to Akkad
   slider viewports.
+- The `darkMode` feature is enabled by default. It follows the operating-system
+  preference until the visitor chooses a mode, remembers that choice, adds a
+  hydration-safe header toggle, and applies the storefront palette from
+  `styles/dark-mode.css`.
+- The runtime injects `styles/header.css` from the entry bundle. The separate
+  legacy `header.css` `<link>` is not needed when this entry is deployed.
 - Add a feature module under `features/` and register it from
   `features/index.js`. Its `init(context)` can return a cleanup function.
 - Use the shared `context.dom.subscribe(selector, callback)` service for
@@ -37,6 +43,19 @@ stylesheets remain untouched under `src/modules`.
   document-wide observers unless a feature demonstrably needs them. Do not
   use client-side changes as a substitute for server-rendered, SEO-critical
   content or store-side business rules.
+
+All v2 stylesheets live in `styles/`. The footer, gallery, header,
+product-card, and slider files are v2-maintained copies of the legacy module
+stylesheets; the originals remain unchanged. `styles/index.js` registers the
+header stylesheet as a base style, while `dark-mode.js` bundles `tokens.css`
+and `dark-mode.css`. Other styles join the entry only when their owning feature
+imports them.
+
+The style refactor groups repeated dark-theme colors into design tokens,
+removes an overly broad footer rule that painted every descendant the same
+background, consolidates conflicting product-image rules, scopes mobile
+product/gallery adjustments to stable project classes, and fixes the home
+slider's one-line title clamp.
 
 ## Entry script contract
 
@@ -61,9 +80,15 @@ From this directory, run `npm install` once and then `npm run build` to create
 3. Each feature owns its behavior and returns cleanup when it registers
    listeners or other resources.
 4. The core services own shared infrastructure: `dom-observer.js` watches for
-   matching elements, while `delegated-events.js` shares document listeners.
+   matching elements and newly added subtrees, while `delegated-events.js`
+   shares document listeners.
 
 For example, `video-lazy.js` subscribes to `video[autoplay]`; it does not know
 how the observer is created or whether the video already existed. The slider
 feature uses delegated pointer events because pointer interactions happen on
 many changing elements, but one document listener can handle them all.
+
+The dark-mode feature also contains a contrast repair pass for theme text that
+does not become readable through CSS utility overrides alone. Its calculations
+live in `core/accessibility/contrast.js`; it scans once after a mode change and
+scans only newly added DOM subtrees afterward.

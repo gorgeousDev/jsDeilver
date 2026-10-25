@@ -1,0 +1,91 @@
+.akkad-gallery {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-top: 15px !important;
+  padding: 4px 2px 8px !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-x !important;
+}
+
+.akkad-gallery::-webkit-scrollbar {
+  display: none !important;
+}
+
+.akkad-thumb {
+  flex: 0 0 70px !important;
+  width: 70px !important;
+  height: 70px !important;
+  min-width: 70px !important;
+  overflow: hidden !important;
+  border: 2px solid #ddd !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  object-fit: cover !important;
+  cursor: pointer !important;
+  transition: transform 0.3s, border-color 0.3s !important;
+}
+
+.akkad-thumb img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.akkad-thumb:hover,
+.akkad-thumb.active {
+  transform: scale(1.08);
+}
+
+.akkad-thumb:hover {
+  border-color: #004956 !important;
+}
+
+.akkad-thumb.active {
+  border-color: #d4af37 !important;
+}
+
+/* Keep the thumbnail strip and its controls in one flexible row. */
+.akkad-gallery-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.akkad-gallery-arrow {
+  display: flex !important;
+  flex: 0 0 34px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  border: 1px solid #ddd !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  color: var(--akkad-page, #1b1931) !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  z-index: 20 !important;
+}
+
+.akkad-gallery-arrow:hover {
+  background: var(--akkad-page, #1b1931) !important;
+  color: #fff !important;
+}
+
+@media (max-width: 768px) {
+  .akkad-gallery-arrow {
+    display: none !important;
+  }
+}
