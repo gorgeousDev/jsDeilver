@@ -53,7 +53,7 @@ if (failures.length) {
   process.exit(1);
 }
 
-function verifyFeatureEntry(entryName, expectedFeatures) {
+function verifyFeatureEntry(entryName, bundleName, expectedFeatures) {
   const entryPath = path.join(MODULES_DIR, entryName);
   const currentScript = {
     src: `https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/${entryName}?v=15`
@@ -79,54 +79,27 @@ function verifyFeatureEntry(entryName, expectedFeatures) {
 
   new vm.Script(source, { filename: entryPath }).runInContext(context);
 
-  const featureScripts = appended.filter((script) => script.src.includes("/features/"));
+  const bundleUrl = `https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/dist/${bundleName}?v=15`;
+  const bundleScripts = appended.filter((script) => script.src.includes("/dist/"));
   assert.deepStrictEqual(
-    featureScripts.map((script) => script.src),
-    expectedFeatures.map((name) => `https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/features/${name}.js?v=15`),
-    `${entryName} should load its feature manifest in order with the entry version`
+    bundleScripts.map((script) => script.src),
+    [bundleUrl],
+    `${entryName} should load one feature bundle with the entry version`
   );
+  assert.strictEqual(bundleScripts[0].async, true, `${entryName} should not block parsing while the bundle loads`);
+  assert(fs.existsSync(path.join(MODULES_DIR, "dist", bundleName)), `${bundleUrl} should exist`);
 
-  for (const script of featureScripts) {
-    assert.strictEqual(script.async, false, `${script.src} must preserve feature execution order`);
-    assert(
-      fs.existsSync(path.join(MODULES_DIR, "features", path.basename(script.src).split("?")[0])),
-      `${script.src} should point to an existing feature`
-    );
+  const bundle = fs.readFileSync(path.join(MODULES_DIR, "dist", bundleName), "utf8");
+  for (const name of expectedFeatures) {
+    assert(bundle.includes(`/* ${name} */`), `${bundleName} should contain ${name} in manifest order`);
   }
 
   return appended;
 }
 
-verifyFeatureEntry("akkad.js", [
-  "akkad-product-gallery",
-  "akkad-stylesheets",
-  "akkad-image-alt",
-  "akkad-gallery-controls",
-  "akkad-copy-link",
-  "akkad-category-navigation"
-]);
+const manifest = JSON.parse(fs.readFileSync(path.join(MODULES_DIR, "features", "manifest.json"), "utf8"));
+verifyFeatureEntry("akkad.js", "akkad-features.js", manifest.akkad);
 
-const v2Scripts = verifyFeatureEntry("akkad-v2.js", [
-  "v2-google-site-verification",
-  "v2-whatsapp-widget",
-  "v2-store-style-overrides",
-  "v2-mobile-product-grid",
-  "v2-disable-cart-image-links",
-  "v2-viewer-badge",
-  "v2-product-details-position",
-  "v2-image-preview-lightbox",
-  "v2-hide-okka-heading",
-  "v2-floating-live-counter",
-  "v2-funnel-price-overrides",
-  "v2-payment-method-order",
-  "v2-graduation-gift-slider",
-  "v2-sale-tags",
-  "v2-office-supplies-sections",
-  "v2-featured-banner-frame"
-]);
-assert(
-  v2Scripts.some((script) => script.src === "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/akkad.js?v=15"),
-  "akkad-v2.js should load akkad.js from the same versioned directory"
-);
+verifyFeatureEntry("akkad-v2.js", "akkad-all-features.js", manifest.akkad.concat(manifest.akkadV2));
 
-console.log(`OK  ${scripts.length} file(s) parse as classic scripts; feature entrypoints load their versioned manifests.`);
+console.log(`OK  ${scripts.length} file(s) parse as classic scripts; both entrypoints load versioned feature bundles.`);

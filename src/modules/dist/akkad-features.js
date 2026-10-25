@@ -1,0 +1,589 @@
+/* akkad-product-gallery */
+try {
+(function () {
+  var ignoreNextScroll = false;
+  /* Which page the gallery was built for. A plain "done" flag meant the gallery
+     was built once on the first product visited and then never again: a soft
+     navigation to a second product left the thumbnails missing until a refresh. */
+  var galleryDone = false;
+  var galleryPath = null;
+
+  function markGalleryDone() {
+    galleryDone = true;
+    galleryPath = window.location.pathname;
+  }
+
+  function initGallery() {
+    if (galleryDone && galleryPath === window.location.pathname) return;
+    var container = document.querySelector(".swiper");
+    if (!container) return;
+
+    var mediaEls = container.querySelectorAll(
+      ".swiper-slide:not(.swiper-slide-duplicate) img, .swiper-slide:not(.swiper-slide-duplicate) video"
+    );
+
+    var galleryHost = container.parentElement || container;
+    var existingGallery = galleryHost.querySelector(".akkad-gallery");
+
+    if (existingGallery) {
+      var hasVideoThumb = existingGallery.querySelector("div.akkad-thumb");
+      if (hasVideoThumb) { markGalleryDone(); return; }
+
+      for (var v = 0; v < mediaEls.length; v++) {
+        if (mediaEls[v].tagName === "VIDEO") {
+          var videoDiv = document.createElement("div");
+          videoDiv.className = "akkad-thumb";
+          videoDiv.style.padding = "0";
+          videoDiv.style.background = "#111";
+          videoDiv.style.display = "flex";
+          videoDiv.style.alignItems = "center";
+          videoDiv.style.justifyContent = "center";
+          var pIcon = document.createElement("span");
+          pIcon.style.cssText = "width:30px;height:30px;background:rgba(255,255,255,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;";
+          pIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="#111" width="16" height="16" style="margin-left:2px;"><path d="M8 5v14l11-7z"/></svg>';
+          videoDiv.appendChild(pIcon);
+          (function (idx) {
+            videoDiv.addEventListener("click", function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              var bullets = container.querySelectorAll(".swiper-pagination-bullet");
+              if (bullets[idx]) {
+                bullets[idx].click();
+                setTimeout(function () { updateActiveThumb(true); }, 100);
+              }
+            });
+          })(v);
+          existingGallery.appendChild(videoDiv);
+        }
+      }
+
+      var existingThumbs = existingGallery.querySelectorAll(".akkad-thumb");
+      for (var t = 0; t < existingThumbs.length; t++) {
+        (function (idx) {
+          if (existingThumbs[idx].tagName === "IMG") {
+            existingThumbs[idx].addEventListener("click", function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              var bullets = container.querySelectorAll(".swiper-pagination-bullet");
+              if (bullets[idx]) {
+                bullets[idx].click();
+                setTimeout(function () { updateActiveThumb(true); }, 100);
+              }
+            });
+          }
+        })(t);
+      }
+
+      markGalleryDone();
+      return;
+    }
+
+    if (!mediaEls.length) return;
+
+    var pagination = container.querySelector(".swiper-pagination");
+    if (!pagination) return;
+
+    /* =========================
+       Gallery Wrapper
+    ========================= */
+
+    var wrapper = document.createElement("div");
+    wrapper.className = "akkad-gallery-wrapper";
+
+    var prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "akkad-gallery-arrow akkad-gallery-prev";
+    prevBtn.innerHTML = "&#10094;";
+    prevBtn.setAttribute("aria-label", "Previous images");
+
+    var gallery = document.createElement("div");
+    gallery.className = "akkad-gallery";
+
+    var nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "akkad-gallery-arrow akkad-gallery-next";
+    nextBtn.innerHTML = "&#10095;";
+    nextBtn.setAttribute("aria-label", "Next images");
+
+    wrapper.appendChild(prevBtn);
+    wrapper.appendChild(gallery);
+    wrapper.appendChild(nextBtn);
+
+    /* =========================
+       Create Thumbnails
+    ========================= */
+
+    for (var i = 0; i < mediaEls.length; i++) {
+      (function (index) {
+        var el = mediaEls[index];
+        var isVideo = el.tagName === "VIDEO";
+
+        var clickHandler = function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var bullets = container.querySelectorAll(".swiper-pagination-bullet");
+          if (bullets[index]) {
+            bullets[index].click();
+            setTimeout(function () { updateActiveThumb(true); }, 100);
+          }
+        };
+
+        if (isVideo) {
+          var thumbDiv = document.createElement("div");
+          thumbDiv.className = "akkad-thumb";
+          thumbDiv.style.padding = "0";
+          thumbDiv.style.background = "#111";
+          thumbDiv.style.display = "flex";
+          thumbDiv.style.alignItems = "center";
+          thumbDiv.style.justifyContent = "center";
+
+          var playIcon = document.createElement("span");
+          playIcon.style.cssText = "width:30px;height:30px;background:rgba(255,255,255,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;";
+          playIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="#111" width="16" height="16" style="margin-left:2px;"><path d="M8 5v14l11-7z"/></svg>';
+          thumbDiv.appendChild(playIcon);
+
+          thumbDiv.addEventListener("click", clickHandler);
+          gallery.appendChild(thumbDiv);
+          return;
+        }
+
+        var thumb = document.createElement("img");
+        thumb.src = el.src;
+        thumb.className = "akkad-thumb";
+        thumb.alt = el.alt || "";
+
+        thumb.addEventListener("click", clickHandler);
+        gallery.appendChild(thumb);
+      })(i);
+    }
+
+    /* =========================
+       Insert Gallery
+    ========================= */
+
+    pagination.insertAdjacentElement("afterend", wrapper);
+    markGalleryDone();
+
+    /* =========================
+       Scroll Arrows
+    ========================= */
+
+    function getScrollAmount() {
+      return Math.max(180, gallery.clientWidth * 0.7);
+    }
+
+    prevBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var swiperInstance = container.swiper;
+      if (swiperInstance) {
+        swiperInstance.slidePrev();
+      } else {
+        gallery.scrollBy({
+          left: -getScrollAmount(),
+          behavior: "smooth"
+        });
+      }
+    });
+
+    nextBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var swiperInstance = container.swiper;
+      if (swiperInstance) {
+        swiperInstance.slideNext();
+      } else {
+        gallery.scrollBy({
+          left: getScrollAmount(),
+          behavior: "smooth"
+        });
+      }
+    });
+
+    /* =========================
+       Active Thumbnail
+    ========================= */
+
+    function updateActiveThumb(shouldScroll) {
+      var bullets = container.querySelectorAll(
+        ".swiper-pagination-bullet"
+      );
+
+      var thumbs = container.querySelectorAll(".akkad-thumb");
+
+      for (var j = 0; j < thumbs.length; j++) {
+        thumbs[j].classList.remove("active");
+      }
+
+      for (var k = 0; k < bullets.length; k++) {
+        if (
+          bullets[k].classList.contains(
+            "swiper-pagination-bullet-active"
+          )
+        ) {
+          var activeThumb = thumbs[k];
+
+          if (!activeThumb) return;
+
+          activeThumb.classList.add("active");
+
+          /* Auto scroll to active thumbnail (horizontal only, no page scroll) */
+          if (shouldScroll) {
+            var target = activeThumb.offsetLeft - (gallery.clientWidth / 2) + (activeThumb.offsetWidth / 2);
+            gallery.scrollTo({
+              left: target,
+              behavior: "smooth"
+            });
+          }
+
+          break;
+        }
+      }
+    }
+
+    /* =========================
+       Watch Swiper
+    ========================= */
+
+    var observer = new MutationObserver(function () {
+      updateActiveThumb(true);
+    });
+
+    var bullets = container.querySelectorAll(
+      ".swiper-pagination-bullet"
+    );
+
+    for (var m = 0; m < bullets.length; m++) {
+      observer.observe(bullets[m], {
+        attributes: true,
+        attributeFilter: ["class"]
+      });
+    }
+
+    updateActiveThumb(true);
+  }
+
+    // 6. initGallery Execution
+    var galleryTimer;
+    var galleryObserver = new MutationObserver(function () {
+      /* Never disconnect. Disconnecting when the gallery was done (or when the
+         home page was seen) meant the observer was gone by the time a soft
+         navigation reached a product, so no gallery was built until a full
+         refresh. The home page simply skips; the observer stays alive so the
+         next route change is still watched. */
+      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
+      clearTimeout(galleryTimer);
+      galleryTimer = setTimeout(initGallery, 300);
+    });
+    galleryObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    if (document.readyState === "complete") {
+      setTimeout(initGallery, 500);
+    } else {
+      window.addEventListener("load", function () {
+        setTimeout(initGallery, 500);
+      });
+    }
+})();
+} catch (error) { console.error("[Akkad] feature failed: akkad-product-gallery", error); }
+;
+/* akkad-stylesheets */
+try {
+(function () {
+  var selfSrc = (document.currentScript && document.currentScript.src) || "";
+  var base = selfSrc.replace(/(?:features|dist)\/[^\/]*$/, "");
+  var versionMatch = /[?&]v=([^&#]+)/.exec(selfSrc);
+  var version = versionMatch ? "?v=" + versionMatch[1] : "";
+
+  var fallback = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/";
+  var files = [
+    "product-card.css",
+    "gallery.css",
+    "slider.css",
+    "header.css",
+    "footer.css"
+  ].map(function (file) {
+    return (base || fallback) + file + version;
+  });
+  files.push("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css");
+
+  function stylesheetLoaded(href) {
+    var path = href.split("?")[0];
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].href.split("?")[0] === path) return true;
+    }
+    return false;
+  }
+
+  for (var i = 0; i < files.length; i++) {
+    var href = files[i];
+    if (stylesheetLoaded(href)) continue;
+
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    (document.head || document.documentElement).appendChild(link);
+  }
+})();
+} catch (error) { console.error("[Akkad] feature failed: akkad-stylesheets", error); }
+;
+/* akkad-image-alt */
+try {
+(function () {
+  function fixAlt() {
+    var titleEl = document.querySelector("h1");
+    var productName = (titleEl && titleEl.textContent) ? titleEl.textContent.trim() : document.title;
+    var imgs = document.querySelectorAll("img");
+    for (var i = 0; i < imgs.length; i++) {
+      var img = imgs[i];
+      if (!img.alt || img.alt.indexOf("http://") === 0 || img.alt.indexOf("https://") === 0) {
+        img.alt = productName;
+      }
+    }
+  }
+
+  fixAlt();
+  new MutationObserver(fixAlt).observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+})();
+} catch (error) { console.error("[Akkad] feature failed: akkad-image-alt", error); }
+;
+/* akkad-gallery-controls */
+try {
+(function () {
+  function moveButtons() {
+    var btns = document.querySelector(".product_gallery_btns_container");
+    if (!btns) return;
+
+    if (window.innerWidth <= 1024) {
+      btns.style.top = "12px";
+      btns.style.left = "12px";
+      btns.style.right = "auto";
+      btns.style.bottom = "auto";
+      btns.style.display = "flex";
+      btns.style.flexDirection = "row";
+      btns.style.alignItems = "center";
+      btns.style.gap = "8px";
+      btns.style.zIndex = "1";
+    } else {
+      btns.style.top = "";
+      btns.style.left = "";
+      btns.style.right = "";
+      btns.style.bottom = "";
+    }
+  }
+
+    // 7. moveButtons Execution
+    var moveBtnsObserver = new MutationObserver(function () {
+      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
+      setTimeout(moveButtons, 100);
+    });
+    moveBtnsObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    if (document.readyState === "complete") {
+      moveButtons();
+    } else {
+      window.addEventListener("load", moveButtons);
+    }
+    window.addEventListener("resize", moveButtons);
+})();
+} catch (error) { console.error("[Akkad] feature failed: akkad-gallery-controls", error); }
+;
+/* akkad-copy-link */
+try {
+(function () {
+  function addCopyButton() {
+    var panel = document.querySelector('div[id^="headlessui-popover-panel"]');
+    if (!panel) return;
+
+    var container = panel.querySelector('.flex.gap-3');
+    if (!container) return;
+    if (container.querySelector('.akkad-copy')) return;
+
+    var copy = document.createElement("a");
+    copy.href = "#";
+    copy.className = "flex items-center gap-3 akkad-copy";
+    copy.innerHTML = '<i class="fa-solid fa-link h-6 w-6"></i>';
+
+    copy.onclick = function (e) {
+      e.preventDefault();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(location.href)
+          .then(function () {
+            copy.style.color = "#16a34a";
+            setTimeout(function () {
+              copy.style.color = "";
+            }, 1500);
+          })
+          .catch(function (err) {
+            console.error("Clipboard copy failed:", err);
+          });
+      } else {
+        // Fallback for older browsers
+        var textarea = document.createElement("textarea");
+        textarea.value = location.href;
+        textarea.style.position = "fixed";
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          copy.style.color = "#16a34a";
+          setTimeout(function () {
+            copy.style.color = "";
+          }, 1500);
+        } catch (err) {
+          console.error("Fallback copy failed:", err);
+        }
+        document.body.removeChild(textarea);
+      }
+    };
+
+    container.appendChild(copy);
+  }
+
+    // 8. addCopyButton Execution
+    var copyBtnObserver = new MutationObserver(function () {
+      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
+      addCopyButton();
+    });
+    copyBtnObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+})();
+} catch (error) { console.error("[Akkad] feature failed: akkad-copy-link", error); }
+;
+/* akkad-category-navigation */
+try {
+(function () {
+  function saveCategories() {
+    var cards = document.querySelectorAll(".default_category_card");
+    if (!cards.length) return;
+
+    var categories = [];
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var nameEl = card.querySelector("h4");
+      var name = (nameEl && nameEl.childNodes[0]) ? nameEl.childNodes[0].textContent.trim() : "";
+      var link = null;
+      var a = card.closest("a");
+      if (a) link = a.href;
+
+      if (!link) {
+        var onclick = card.getAttribute("onclick");
+        if (onclick) {
+          var m = onclick.match(/'(.*?)'/);
+          if (m) link = m[1];
+        }
+      }
+
+      if (name && link) {
+        categories.push({ name: name, link: link });
+      }
+    }
+
+    if (categories.length) {
+      localStorage.setItem("akkad_categories", JSON.stringify(categories));
+    }
+  }
+
+  /* Category names and links are read back out of localStorage, so they are
+     treated as untrusted input: the name is written as a text node and the
+     link is only accepted when it resolves to this origin. */
+  function safeCategoryHref(url) {
+    if (!url) return null;
+    try {
+      var parsed = new URL(url, window.location.origin);
+      if (parsed.origin !== window.location.origin) return null;
+      return parsed.pathname + parsed.search + parsed.hash;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function buildNavbar() {
+    if (document.querySelector(".akkad-categories-nav")) return;
+    var header = document.querySelector("header");
+    if (!header) return;
+
+    var data;
+    try {
+      data = localStorage.getItem("akkad_categories");
+    } catch (e) {
+      return;
+    }
+    if (!data) return;
+
+    var categories;
+    try {
+      categories = JSON.parse(data);
+    } catch (e) {
+      return;
+    }
+    if (!categories || !categories.length) return;
+
+    var nav = document.createElement("div");
+    nav.className = "akkad-categories-nav";
+
+    var inner = document.createElement("div");
+    inner.className = "akkad-categories-inner";
+
+    function addCategoryLink(href, text) {
+      var link = document.createElement("a");
+      link.href = href;
+      link.textContent = text;
+      inner.appendChild(link);
+    }
+
+    addCategoryLink("/", "الرئيسية");
+
+    for (var i = 0; i < categories.length; i++) {
+      var cat = categories[i];
+      if (!cat) continue;
+      var href = safeCategoryHref(cat.link);
+      if (!href) continue;
+      addCategoryLink(href, cat.name || "");
+    }
+
+    nav.appendChild(inner);
+    header.insertAdjacentElement("afterend", nav);
+  }
+
+  function initNavbar() {
+    saveCategories();
+    buildNavbar();
+  }
+
+    // 9. Categories Navbar Execution
+    if (document.readyState === "complete") {
+      initNavbar();
+    } else {
+      window.addEventListener("load", initNavbar);
+    }
+
+    // The header is re-rendered by a soft navigation, which drops the injected
+    // categories bar; re-add it whenever the DOM settles rather than only once at load.
+    if (document.body) {
+      var navTimer;
+      new MutationObserver(function () {
+        if (document.querySelector(".akkad-categories-nav")) return;
+        clearTimeout(navTimer);
+        navTimer = setTimeout(initNavbar, 400);
+      }).observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
+})();
+} catch (error) { console.error("[Akkad] feature failed: akkad-category-navigation", error); }

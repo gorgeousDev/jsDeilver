@@ -1,0 +1,28 @@
+{
+  "akkad": [
+    "akkad-product-gallery",
+    "akkad-stylesheets",
+    "akkad-image-alt",
+    "akkad-gallery-controls",
+    "akkad-copy-link",
+    "akkad-category-navigation"
+  ],
+  "akkadV2": [
+    "v2-google-site-verification",
+    "v2-whatsapp-widget",
+    "v2-store-style-overrides",
+    "v2-mobile-product-grid",
+    "v2-disable-cart-image-links",
+    "v2-viewer-badge",
+    "v2-product-details-position",
+    "v2-image-preview-lightbox",
+    "v2-hide-okka-heading",
+    "v2-floating-live-counter",
+    "v2-funnel-price-overrides",
+    "v2-payment-method-order",
+    "v2-graduation-gift-slider",
+    "v2-sale-tags",
+    "v2-office-supplies-sections",
+    "v2-featured-banner-frame"
+  ]
+}

@@ -1,6 +1,6 @@
 (function () {
   var selfSrc = (document.currentScript && document.currentScript.src) || "";
-  var base = selfSrc.replace(/[^\/]*$/, "");
+  var base = selfSrc.replace(/(?:features|dist)\/[^\/]*$/, "");
   var versionMatch = /[?&]v=([^&#]+)/.exec(selfSrc);
   var version = versionMatch ? "?v=" + versionMatch[1] : "";
 

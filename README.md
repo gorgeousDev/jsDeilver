@@ -4,8 +4,11 @@ Browser scripts and stylesheets injected into the Akkad storefront
 (`https://www.akkad.one`), which runs on the **EasyOrders** platform with the
 **Fasty** theme (Next.js 4 + Tailwind).
 
-There is no build step and no bundler. Everything here is a **classic script**
-or a plain stylesheet, served straight from GitHub through jsDelivr.
+Feature source lives in `src/modules/features`, with one **classic script**
+per feature. `npm run build` assembles that source into bundles. The main
+`akkad-v2.js` entrypoint loads a combined bundle for both feature manifests in
+one request; `akkad.js` can also load the legacy-only bundle independently.
+Generated bundles are checked in and served through jsDelivr.
 
 ## How it reaches the live site
 
@@ -38,15 +41,13 @@ Two things follow from this, and they shape every file in `src/modules`:
    code is built around `MutationObserver` and retries: it is reacting to a
    framework that has not painted yet, not working around carelessness.
 2. **`document.currentScript` is load-bearing.** `akkad-v2.js` reads its own
-   `src` to work out which directory to load `akkad.js` and the feature scripts
-   from, so they all use the same CDN version. Do not convert these files to
-   ES modules - `document.currentScript` is `null` in a module and the loader
-   depends on classic-script execution.
+   `src` to load the combined feature bundle with the same CDN version. Do not
+   convert these files to ES modules - `document.currentScript` is `null` in a
+   module and the loader depends on classic-script execution.
 
-3. **Features live in `src/modules/features`.** The two entry files contain
-   ordered feature-name lists and load each matching classic script. To enable,
-   disable, or add a feature, update the corresponding list in `akkad.js` or
-   `akkad-v2.js`; keep each feature's implementation in its own file.
+3. **Features live in `src/modules/features`.** `manifest.json` lists the
+   ordered feature sources. Keep each implementation in its own file, then run
+   `npm run build` to refresh the two production bundles in `src/modules/dist`.
 
 ## Deploying a change
 
@@ -60,8 +61,8 @@ string is the cache-buster.
    https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/akkad-v2.js?v=16
    ```
 
-   `akkad.js`, its feature scripts, and stylesheets pick the same token up
-   automatically from the entry script URL, so one number covers them all.
+   the feature bundle and stylesheets pick the same token up automatically
+   from the entry script URL, so one number covers them all.
 
    Use one number for everything. When each file carried its own token, a
    deploy could leave `akkad-v2.js` on one version and `checkout-restyle.js` on
@@ -78,18 +79,21 @@ npm run check
 
 Parses every shipped script with `vm.Script`, which is the classic-script
 goal - the same one the browser uses - and checks that both entrypoints load
-their ordered feature manifests using the same cache-buster. `node --check` is
-not enough: it reads a `.js` file as CommonJS and accepts a top-level `return`
-that a browser rejects, which is how `gallery-thumbnails.js` reached the
-repository unparsable.
+their generated feature bundles using the same cache-buster. It also detects
+stale bundles; run `npm run build` after changing a feature or its manifest.
+`node --check` is not enough: it reads a `.js` file as CommonJS and accepts a
+top-level `return` that a browser rejects, which is how `gallery-thumbnails.js`
+reached the repository unparsable.
 
 ## Files
 
 | File | What it does |
 | --- | --- |
-| `src/modules/akkad-v2.js` | Main tag and ordered manifest for the v2 features; also loads `akkad.js`. |
-| `src/modules/akkad.js` | Loaded by `akkad-v2.js`; bootstraps the legacy Akkad feature scripts. |
+| `src/modules/akkad-v2.js` | Main tag; loads the combined Akkad and v2 feature bundle. |
+| `src/modules/akkad.js` | Optional legacy-only entrypoint; loads the Akkad feature bundle. |
 | `src/modules/features/*.js` | One classic script per Akkad/v2 feature, loaded by the corresponding entrypoint manifest. |
+| `src/modules/features/manifest.json` | Ordered source lists used to build the production bundles. |
+| `src/modules/dist/*.js` | Generated classic-script bundles loaded by the entrypoints. |
 | `src/modules/akkad-dark-mode.js` | Dark theme, palette, and the contrast sweep that lifts low-contrast text on dark surfaces. |
 | `src/modules/checkout-restyle.js` | Checkout and thanks presentation, payment details, and input labels. Mobile shows one cart summary with working quantity/remove controls; EasyOrders remains the only invoice renderer. |
 | `src/modules/akkad-slider-drag.js` | Pointer drag and momentum on the home sliders. |
