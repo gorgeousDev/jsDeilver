@@ -2,10 +2,13 @@ import promoCss from "../styles/promo.css";
 
 const MAX_DISCOUNT = 200;
 const INVOICE_SELECTOR = '[data-invoice="invoice"]';
+const CUSTOM_INVOICE_SELECTOR = ".akkad-invoice";
 const TOTAL_SELECTOR = '[data-invoice="invoice-total-value"]';
 const DISCOUNTED_TOTAL_SELECTOR = '[data-invoice="invoice-discounted-total-value"]';
 const DISCOUNT_ROW_SELECTOR = '[data-invoice="invoice-discounted-total"]';
 const ORIGINAL_DISCOUNT_KEY = "akkadPromoOriginalDiscount";
+const CUSTOM_ACTUAL_KEY = "akkadPromoCustomActual";
+const CUSTOM_TOTAL_DISPLAYED_KEY = "akkadPromoCustomDisplayedTotal";
 const NOTICE_CLASS = "akkad-promo-cap-note";
 
 function normalizeDigits(value) {
@@ -27,6 +30,13 @@ export function getCappedDiscount(actualDiscount) {
   return Math.min(actualDiscount, MAX_DISCOUNT);
 }
 
+export function getCappedTotal(backendTotal, actualDiscount) {
+  if (!Number.isFinite(backendTotal)) return NaN;
+  const cappedDiscount = getCappedDiscount(actualDiscount);
+  if (!Number.isFinite(cappedDiscount)) return NaN;
+  return Math.max(0, backendTotal + actualDiscount - cappedDiscount);
+}
+
 function findDiscountElement(invoice) {
   for (const paragraph of invoice.querySelectorAll("p")) {
     const text = (paragraph.textContent || "").trim();
@@ -35,6 +45,66 @@ function findDiscountElement(invoice) {
     }
   }
   return null;
+}
+
+function findBackendDiscount(document) {
+  const candidates = document.querySelectorAll(
+    `${INVOICE_SELECTOR} p, .mt-2.flex.items-center.justify-between p`
+  );
+
+  for (const paragraph of candidates) {
+    if (paragraph.closest(CUSTOM_INVOICE_SELECTOR)) continue;
+    const text = (paragraph.textContent || "").trim();
+    if (text.startsWith("خصم") || text.startsWith("الخصم")) {
+      const amount = Math.abs(parsePromoMoney(text));
+      if (Number.isFinite(amount)) return amount;
+    }
+  }
+
+  return NaN;
+}
+
+function updateCustomInvoice(invoice, document, backendDiscount) {
+  const discountElement = invoice.querySelector(".inv-discount-val");
+  const totalElement = invoice.querySelector(".inv-grand");
+  if (!discountElement || !totalElement) return;
+
+  const actualDiscount = Number.isFinite(backendDiscount)
+    ? backendDiscount
+    : Math.abs(parsePromoMoney(discountElement.textContent));
+  const currentTotal = parsePromoMoney(totalElement.textContent);
+  if (!Number.isFinite(actualDiscount) || !Number.isFinite(currentTotal)) return;
+
+  const previousActual = Number(invoice.dataset[CUSTOM_ACTUAL_KEY]);
+  const previousDisplayedTotal = Number(invoice.dataset[CUSTOM_TOTAL_DISPLAYED_KEY]);
+  const currentIsOurDisplay =
+    Number.isFinite(previousDisplayedTotal) &&
+    Math.abs(currentTotal - previousDisplayedTotal) < 0.001;
+  const backendTotal = currentIsOurDisplay
+    ? currentTotal - (previousActual - MAX_DISCOUNT)
+    : currentTotal;
+  const cappedDiscount = getCappedDiscount(actualDiscount);
+
+  if (actualDiscount <= MAX_DISCOUNT) {
+    delete invoice.dataset[CUSTOM_ACTUAL_KEY];
+    delete invoice.dataset[CUSTOM_TOTAL_DISPLAYED_KEY];
+    syncNotice(invoice, false, document);
+    return;
+  }
+
+  const cappedTotal = getCappedTotal(backendTotal, actualDiscount);
+  const formattedDiscount = `-${cappedDiscount.toLocaleString("en-US")} ج.م`;
+  const formattedTotal = `${cappedTotal.toLocaleString("en-US")} ج.م`;
+  if (discountElement.textContent !== formattedDiscount) {
+    discountElement.textContent = formattedDiscount;
+  }
+  if (totalElement.textContent !== formattedTotal) {
+    totalElement.textContent = formattedTotal;
+  }
+
+  invoice.dataset[CUSTOM_ACTUAL_KEY] = String(actualDiscount);
+  invoice.dataset[CUSTOM_TOTAL_DISPLAYED_KEY] = String(cappedTotal);
+  syncNotice(invoice, true, document);
 }
 
 function writeMoney(element, amount, document, label) {
@@ -127,50 +197,56 @@ function updateInvoice(invoice, document) {
 export function initPromo({ document, dom, styles, window }) {
   const removeStyles = styles.add("akkad-v2-promo-css", promoCss);
   let scheduledFrame = 0;
-  let observedInvoice = null;
-  let stopObservingInvoice = null;
+  const observedInvoices = new Map();
 
-  function scheduleUpdate(invoice) {
+  function updateInvoices() {
+    const backendDiscount = findBackendDiscount(document);
+    for (const invoice of document.querySelectorAll(INVOICE_SELECTOR)) {
+      updateInvoice(invoice, document);
+    }
+    for (const invoice of document.querySelectorAll(CUSTOM_INVOICE_SELECTOR)) {
+      updateCustomInvoice(invoice, document, backendDiscount);
+    }
+  }
+
+  function scheduleUpdate() {
     if (scheduledFrame) return;
     scheduledFrame = window.requestAnimationFrame(() => {
       scheduledFrame = 0;
-      const currentInvoice = invoice && invoice.isConnected
-        ? invoice
-        : document.querySelector(INVOICE_SELECTOR);
-      if (currentInvoice) updateInvoice(currentInvoice, document);
+      updateInvoices();
     });
   }
 
   function observeInvoice(invoice) {
-    if (observedInvoice === invoice) {
-      scheduleUpdate(invoice);
-      return;
-    }
-
-    if (stopObservingInvoice) stopObservingInvoice();
-    observedInvoice = invoice;
-    // Watch only checkout invoice text, not every text update on the storefront.
-    stopObservingInvoice = dom.observe(
-      invoice,
-      () => scheduleUpdate(invoice),
-      { childList: true, subtree: true, characterData: true }
-    );
-    scheduleUpdate(invoice);
+    if (observedInvoices.has(invoice)) return;
+    // Watch invoice surfaces only; unrelated storefront mutations stay unobserved.
+    const stopObserving = dom.observe(invoice, scheduleUpdate, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+    observedInvoices.set(invoice, stopObserving);
+    scheduleUpdate();
   }
 
-  const unsubscribeInvoice = dom.subscribe(INVOICE_SELECTOR, observeInvoice);
+  const unsubscribeInvoice = dom.subscribe(
+    `${INVOICE_SELECTOR}, ${CUSTOM_INVOICE_SELECTOR}`,
+    observeInvoice
+  );
   const unsubscribeAddedNodes = dom.onNodesAdded(() => {
-    if (observedInvoice && !observedInvoice.isConnected) {
-      if (stopObservingInvoice) stopObservingInvoice();
-      observedInvoice = null;
-      stopObservingInvoice = null;
+    for (const [invoice, stopObserving] of observedInvoices) {
+      if (!invoice.isConnected) {
+        stopObserving();
+        observedInvoices.delete(invoice);
+      }
     }
   });
 
   return () => {
     unsubscribeInvoice();
     unsubscribeAddedNodes();
-    if (stopObservingInvoice) stopObservingInvoice();
+    for (const stopObserving of observedInvoices.values()) stopObserving();
+    observedInvoices.clear();
     if (scheduledFrame) window.cancelAnimationFrame(scheduledFrame);
     removeStyles();
   };
