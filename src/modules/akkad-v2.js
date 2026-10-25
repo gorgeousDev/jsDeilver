@@ -26,11 +26,6 @@ function __akkadLoadV2Feature(name) {
 }
 
 /* =========================================
-   Meta tag (Google Site Verification)
-   ========================================= */
-__akkadLoadV2Feature("v2-google-site-verification");
-
-/* =========================================
    1. Load akkad.js
    ========================================= */
 (function () {
@@ -55,91 +50,30 @@ __akkadLoadV2Feature("v2-google-site-verification");
 
     var s = document.createElement("script");
     s.src = base ? base + "akkad.js" + version
-                 : "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a87d4b2/src/modules/akkad.js";
+                 : "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/akkad.js";
     s.defer = true;
     document.head.appendChild(s);
 })();
 
-/* =========================================
-   2. WhatsApp Widget
-   ========================================= */
-__akkadLoadV2Feature("v2-whatsapp-widget");
+var __akkadV2Features = [
+    "v2-google-site-verification",
+    "v2-whatsapp-widget",
+    "v2-store-style-overrides",
+    "v2-mobile-product-grid",
+    "v2-disable-cart-image-links",
+    "v2-viewer-badge",
+    "v2-product-details-position",
+    "v2-image-preview-lightbox",
+    "v2-hide-okka-heading",
+    "v2-floating-live-counter",
+    "v2-funnel-price-overrides",
+    "v2-payment-method-order",
+    "v2-graduation-gift-slider",
+    "v2-sale-tags",
+    "v2-office-supplies-sections",
+    "v2-featured-banner-frame"
+];
 
-/* =========================================
-   3. Styles
-   ========================================= */
-__akkadLoadV2Feature("v2-store-style-overrides");
-/* =========================================
-   3.1 Mobile Product Grid — 2 Columns
-   ========================================= */
-__akkadLoadV2Feature("v2-mobile-product-grid");
-
-/* =========================================
-   4. Disable Cart Image Links
-   ========================================= */
-__akkadLoadV2Feature("v2-disable-cart-image-links");
-
-/* =========================================
-   5. Style Viewer Badge
-   ========================================= */
-__akkadLoadV2Feature("v2-viewer-badge");
-
-/* =========================================
-   6. Move Product Details
-   ========================================= */
-__akkadLoadV2Feature("v2-product-details-position");
-
-/* =========================================
-   7. Image Preview Lightbox
-   ========================================= */
-__akkadLoadV2Feature("v2-image-preview-lightbox");
-
-/* =========================================
-   8. Hide OKKA
-   ========================================= */
-__akkadLoadV2Feature("v2-hide-okka-heading");
-
-/* =========================================
-   9. Floating Live Counter
-   ========================================= */
-__akkadLoadV2Feature("v2-floating-live-counter");
-
-/* =========================================
-   10. Funnel Price Overrides
-   ========================================= */
-__akkadLoadV2Feature("v2-funnel-price-overrides");
-
-/* =========================================
-   11. Swap Payment Methods
-   ========================================= */
-__akkadLoadV2Feature("v2-payment-method-order");
-
-/* =========================================
-   12. Graduation Gift Slider
-   ========================================= */
-__akkadLoadV2Feature("v2-graduation-gift-slider");
-
-/* =========================================
-   13. Small "SALE" tag + remove theme "تخفيضات"
-   ========================================= */
-__akkadLoadV2Feature("v2-sale-tags");
-
-/* =========================================
-   14. Office Supplies Sections
-   ========================================= */
-__akkadLoadV2Feature("v2-office-supplies-sections");
-
-/* =========================================
-   16. Featured banner white frame
-   =========================================
-   The exported webp 1784395371176817130 is 1964x801, but the photograph only
-   occupies rows 185-615: 1964x431, aspect 4.557. The rest is pure white, and
-   the theme sizes .feature-img to the file aspect, so those bars render as a
-   white band above and below the photo in dark mode.
-
-   Giving the box the photo's own aspect makes object-fit:cover crop exactly
-   those two bars away - 185px of padding scales to precisely the 35.2px that
-   a 374x82 box has to trim. Keyed on the asset id, so replacing the banner
-   just drops the rule. The file should still be re-exported without the
-   padding;    this only exists so the live banner is not white. */
-__akkadLoadV2Feature("v2-featured-banner-frame");
+for (var i = 0; i < __akkadV2Features.length; i++) {
+    __akkadLoadV2Feature(__akkadV2Features[i]);
+}
