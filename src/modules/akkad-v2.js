@@ -77,30 +77,7 @@ __akkadLoadV2Feature("v2-mobile-product-grid");
 /* =========================================
    4. Disable Cart Image Links
    ========================================= */
-(function () {
-    if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
-    function disableCartImageLinks() {
-        document.querySelectorAll('[data-cart="item-image-wrapper"]').forEach(function (link) {
-            link.removeAttribute("href");
-            link.style.cursor = "default";
-            link.onclick = function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            };
-        });
-    }
-
-    disableCartImageLinks();
-    var cartTimer;
-    new MutationObserver(function () {
-        clearTimeout(cartTimer);
-        cartTimer = setTimeout(disableCartImageLinks, 500);
-    }).observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-})();
+__akkadLoadV2Feature("v2-disable-cart-image-links");
 
 /* =========================================
    5. Style Viewer Badge
