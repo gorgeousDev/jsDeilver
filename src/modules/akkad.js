@@ -1,4 +1,21 @@
 (function () {
+  var selfSrc = (document.currentScript && document.currentScript.src) || "";
+  var featureBase = selfSrc
+    ? selfSrc.replace(/[^\/]*$/, "")
+    : "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/";
+  var featureVersionMatch = /[?&]v=([^&#]+)/.exec(selfSrc);
+  var featureVersion = featureVersionMatch ? "?v=" + featureVersionMatch[1] : "";
+
+  function loadFeature(name) {
+    var script = document.createElement("script");
+    script.src = featureBase + "features/" + name + ".js" + featureVersion;
+    script.async = false;
+    script.onerror = function () {
+      console.error("[Akkad] failed to load feature:", name);
+    };
+    document.head.appendChild(script);
+  }
+
   var ignoreNextScroll = false;
   /* Which page the gallery was built for. A plain "done" flag meant the gallery
      was built once on the first product visited and then never again: a soft
@@ -460,67 +477,8 @@
       (document.head || document.documentElement).appendChild(meta);
     }
 
-    // 3. CSS Files Loader (CDN).
-    // The stylesheet URLs are derived from wherever this file was served from,
-    // not a commit pinned at write time. Pinning a commit inside the source went
-    // stale on the next publish: the site kept loading an old gallery.css /
-    // footer.css while the newer files sat unused in the repo, so the fixes never
-    // reached the page until someone remembered to bump this constant. Using the
-    // executing script's own directory keeps akkad.js and its stylesheets on the
-    // same commit forever — whichever commit the tag block points at.
-    var selfSrc = "";
-    try { selfSrc = (document.currentScript && document.currentScript.src) || ""; } catch (e) {}
-    var base = selfSrc.replace(/[^\/]*$/, "");
-
-    /* The cache-buster the admin puts on the script tags, carried over so the
-       stylesheets move in step with the JavaScript that ships with them. */
-    var version = "";
-    var vm = /[?&]v=([^&#]+)/.exec(selfSrc);
-    if (vm) version = "?v=" + vm[1];
-
-    /* Fallback only: currentScript is set for every classic script, but if it were
-       ever unavailable we would rather load the last known good stylesheets than
-       load none at all and leave the page unstyled. */
-    var STALE = "https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@a31398856c2e7c74374c46c5ca28006573b6d04d/src/modules/";
-    var files = base ? [
-      base + "product-card.css" + version,
-      base + "gallery.css" + version,
-      base + "slider.css" + version,
-      base + "header.css" + version,
-      base + "footer.css" + version,
-      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    ] : [
-      STALE + "product-card.css",
-      STALE + "gallery.css",
-      STALE + "slider.css",
-      STALE + "header.css",
-      STALE + "footer.css",
-      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    ];
-
-    /* header.css is also linked straight from the admin's header_code, and the
-       two URLs never matched exactly - the admin adds a version, this file did
-       not - so the sheet was downloaded and applied twice. Matching on the path
-       makes the query string irrelevant. */
-    function stylesheetLoaded(href) {
-      var path = href.split("?")[0];
-      var links = document.querySelectorAll('link[rel="stylesheet"]');
-      for (var i = 0; i < links.length; i++) {
-        if (links[i].href.split("?")[0] === path) return true;
-      }
-      return false;
-    }
-
-    for (var i = 0; i < files.length; i++) {
-      var href = files[i];
-      if (stylesheetLoaded(href)) continue;
-      var link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = href;
-      (document.head || document.documentElement).appendChild(link);
-    }
-
-
+    // 3. Stylesheets
+    loadFeature("akkad-stylesheets");
 
     // 5. fixAlt Execution
     fixAlt();
