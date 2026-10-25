@@ -1,7 +1,6 @@
 import { registerFeature } from "./registry.js";
 import { initDarkMode } from "./dark-mode.js";
 import { initCheckoutRestyle } from "./checkout-restyle.js";
-import { initPromo } from "./promo.js";
 import { initSliderDrag } from "./slider-drag.js";
 import { initVideoLazy } from "./video-lazy.js";
 
@@ -17,12 +16,6 @@ registerFeature({
   id: "checkoutRestyle",
   enabledByDefault: true,
   init: initCheckoutRestyle
-});
-
-registerFeature({
-  id: "promo",
-  enabledByDefault: true,
-  init: initPromo
 });
 
 registerFeature({

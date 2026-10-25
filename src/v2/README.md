@@ -26,15 +26,14 @@ stylesheets remain untouched under `src/modules`.
   hydration-safe header toggle, and applies the storefront palette from
   `styles/dark-mode.css`.
 - The `checkoutRestyle` feature migrates checkout presentation and interactions
-  into v2. On mobile it hides the empty desktop summary shell and shows the
-  single mobile cart with working quantity/remove controls, even when the
-  React-owned control list renders later. Desktop layout and summary spacing
-  are preserved. It also styles EasyOrders' native invoice, payment details,
-  and the existing thank-you page without generating a custom checkout invoice.
-- The `promo` feature is enabled by default. It caps displayed checkout
-  savings at EGP 200 across both standard invoice copies and the mobile
-  collapsed summary, and adjusts each displayed total. This is a storefront
-  display change; backend/payment calculations remain authoritative.
+  into v2. On mobile it displays EasyOrders' native cart and its own working
+  quantity/remove controls, while hiding the duplicate, control-less mobile
+  cart. Desktop layout and summary spacing are preserved. It also styles
+  EasyOrders' native invoice, payment details, and the existing thank-you page
+  without generating a custom checkout invoice.
+- Checkout totals, discounts, and cart quantity changes are handled only by
+  EasyOrders. V2 applies presentation styles to its native cart and invoice;
+  it does not cap, rewrite, or calculate any displayed order amounts.
 - The runtime injects `styles/header.css` from the entry bundle. The separate
   legacy `header.css` `<link>` is not needed when this entry is deployed.
 - Add a feature module under `features/` and register it from
@@ -108,8 +107,7 @@ does not become readable through CSS utility overrides alone. Its calculations
 live in `core/accessibility/contrast.js`; it scans once after a mode change and
 scans only newly added DOM subtrees afterward.
 
-The promo cap changes displayed checkout amounts only; it does not enforce a
-payment limit. Remove the legacy `promo.js` and `checkout-restyle.js` script
-tags when deploying the v2 replacements. The legacy checkout restyle script
-also injects a custom invoice; v2 deliberately keeps EasyOrders' native invoice
-as the only invoice surface.
+Remove the legacy `promo.js` and `checkout-restyle.js` script tags when
+deploying the v2 replacements. The legacy checkout restyle script also injects
+a custom invoice; v2 deliberately keeps EasyOrders' native invoice as the only
+invoice surface.

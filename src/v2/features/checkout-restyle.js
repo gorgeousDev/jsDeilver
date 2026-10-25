@@ -4,8 +4,6 @@ const CHECKOUT_PATH = "checkout";
 const THANKS_PATH = "thanks";
 const WA_NUMBER = "01508331823";
 const INVOICE_SELECTOR = '[data-invoice="invoice"]';
-const MOBILE_LIST_SELECTOR = ".checkout_mobile_cart_items_container";
-const LOWER_CART_SELECTOR = "#checkout-order-summary-content .checkout_cart_items_container";
 
 const CHECKOUT_REMINDER_ICON =
   "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.182-.008-.52-.01-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.173-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884";
@@ -82,41 +80,6 @@ function createPaymentInfo(document) {
   return box;
 }
 
-function createMobileControls(document) {
-  const row = document.createElement("div");
-  row.className = "akkad-qty-row flex items-center gap-2";
-  row.innerHTML =
-    '<div class="flex items-center">' +
-    '<button type="button" data-akkad="inc" aria-label="Increase quantity">+</button>' +
-    '<p class="m-0 w-10 text-center text-sm" data-akkad="val">1</p>' +
-    '<button type="button" data-akkad="dec" aria-label="Decrease quantity">−</button>' +
-    "</div>" +
-    '<button type="button" data-akkad="del" aria-label="Remove item">×</button>';
-  return row;
-}
-
-function syncMobileSummary(upperList, lowerList, document) {
-  const upperItems = upperList.querySelectorAll(".checkout_cart_item");
-  const lowerItems = lowerList?.querySelectorAll(".checkout_cart_item") || [];
-
-  upperItems.forEach((upperItem, index) => {
-    const content = upperItem.querySelector(".min-w-0.flex-1") || upperItem;
-    if (!content) return;
-
-    let controls = content.querySelector(".akkad-qty-row");
-    if (!controls) {
-      controls = createMobileControls(document);
-      content.appendChild(controls);
-    }
-
-    const value = controls.querySelector('[data-akkad="val"]');
-    const lowerValue = lowerItems[index]?.querySelector("p.m-0.w-10");
-    if (value && lowerValue && value.textContent !== lowerValue.textContent) {
-      value.textContent = lowerValue.textContent;
-    }
-  });
-}
-
 function createThanksCard(document, orderId) {
   const card = document.createElement("div");
   card.className = "akkad-thanks-card";
@@ -175,7 +138,6 @@ function renderThanksPage(container, document, window) {
 
 export function initCheckoutRestyle({ document, dom, events, navigation, styles, window }) {
   const removeStyles = styles.add("akkad-v2-checkout-css", checkoutCss);
-  const mobileObservers = new Map();
   let thanksTimer = 0;
   let thanksObserverCleanup = null;
 
@@ -196,30 +158,6 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
     const image = content.querySelector(".payment_card_img_container");
     if (image?.nextSibling) content.insertBefore(box, image.nextSibling);
     else content.appendChild(box);
-  }
-
-  function initializeMobileSummary() {
-    const upperList = document.querySelector(MOBILE_LIST_SELECTOR);
-    const lowerList = document.querySelector(LOWER_CART_SELECTOR);
-    if (!upperList) return;
-
-    const existing = mobileObservers.get(upperList);
-    if (existing?.lowerList === lowerList) {
-      syncMobileSummary(upperList, lowerList, document);
-      return;
-    }
-    if (existing) {
-      existing.stopUpper();
-      existing.stopLower();
-    }
-
-    const sync = () => syncMobileSummary(upperList, lowerList, document);
-    const stopUpper = dom.observe(upperList, sync, { childList: true, subtree: true });
-    const stopLower = lowerList
-      ? dom.observe(lowerList, sync, { childList: true, subtree: true })
-      : () => {};
-    mobileObservers.set(upperList, { lowerList, stopUpper, stopLower });
-    sync();
   }
 
   function initializeThanksPage(pathname = window.location.pathname) {
@@ -258,10 +196,6 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
     'input[name="full_name"], input[name="phone"], input[name="address"]',
     (input) => labelInput(input, document)
   );
-  const unsubscribeMobileLists = dom.subscribe(
-    `${MOBILE_LIST_SELECTOR}, ${LOWER_CART_SELECTOR}`,
-    initializeMobileSummary
-  );
   const unsubscribeThanks = dom.subscribe(
     ".thanks_container, main div.mt-20, div.mt-20",
     () => initializeThanksPage()
@@ -295,69 +229,23 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
     });
   });
 
-  const forwardMobileAction = (button, label) => {
-    const upperList = button.closest(MOBILE_LIST_SELECTOR);
-    const lowerList = document.querySelector(LOWER_CART_SELECTOR);
-    const upperItem = button.closest(".checkout_cart_item");
-    if (!upperList || !lowerList || !upperItem) return;
-
-    const index = Array.from(upperList.querySelectorAll(".checkout_cart_item")).indexOf(upperItem);
-    const lowerItem = lowerList.querySelectorAll(".checkout_cart_item")[index];
-    lowerItem?.querySelector(`[aria-label="${label}"]`)?.click();
-  };
-
-  const unsubscribeMobileActions = [
-    events.on("click", '.akkad-qty-row [data-akkad="inc"]', (event, button) => {
-      event.preventDefault();
-      forwardMobileAction(button, "Increase quantity");
-    }),
-    events.on("click", '.akkad-qty-row [data-akkad="dec"]', (event, button) => {
-      event.preventDefault();
-      forwardMobileAction(button, "Decrease quantity");
-    }),
-    events.on("click", '.akkad-qty-row [data-akkad="del"]', (event, button) => {
-      event.preventDefault();
-      forwardMobileAction(button, "Remove item");
-    })
-  ];
-
   const unsubscribeRoutes = navigation.subscribe(({ pathname }) => {
     const isCheckout = pathname.includes(CHECKOUT_PATH);
     document.documentElement.classList.toggle("on-checkout", isCheckout);
     if (isCheckout) {
       fixCheckoutHeader(document, window);
-      initializeMobileSummary();
     }
     initializeThanksPage(pathname);
-  });
-
-  const unsubscribeAddedNodes = dom.onNodesAdded(() => {
-    for (const [upperList, observers] of mobileObservers) {
-      if (upperList.isConnected) continue;
-      observers.stopUpper();
-      observers.stopLower();
-      mobileObservers.delete(upperList);
-    }
-    initializeMobileSummary();
-    initializeThanksPage();
   });
 
   return () => {
     unsubscribeCheckout();
     unsubscribePayments();
     unsubscribeInputs();
-    unsubscribeMobileLists();
     unsubscribeThanks();
     unsubscribePaymentCardClick();
     unsubscribeWalletCopy();
-    for (const unsubscribe of unsubscribeMobileActions) unsubscribe();
     unsubscribeRoutes();
-    unsubscribeAddedNodes();
-    for (const observers of mobileObservers.values()) {
-      observers.stopUpper();
-      observers.stopLower();
-    }
-    mobileObservers.clear();
     if (thanksTimer) window.clearTimeout(thanksTimer);
     if (thanksObserverCleanup) thanksObserverCleanup();
     removeStyles();
