@@ -3,6 +3,7 @@ export function createDomObserver(document, window) {
   // selector and callback, while the core owns the shared observer lifecycle.
   const subscriptions = new Set();
   const addedNodeListeners = new Set();
+  const scopedObservers = new Set();
   let observer = null;
   let observedRoot = null;
 
@@ -103,6 +104,32 @@ export function createDomObserver(document, window) {
     if (observer) observer.disconnect();
     observer = null;
     observedRoot = null;
+    for (const scopedObserver of scopedObservers) {
+      scopedObserver.disconnect();
+    }
+    scopedObservers.clear();
+  }
+
+  function observe(target, callback, options = {}) {
+    if (!target || typeof target.nodeType !== "number") {
+      throw new TypeError("A scoped DOM observer requires a DOM node.");
+    }
+    if (typeof callback !== "function") {
+      throw new TypeError("A scoped DOM observer requires a callback.");
+    }
+
+    const scopedObserver = new window.MutationObserver(callback);
+    scopedObserver.observe(target, {
+      childList: options.childList !== false,
+      subtree: options.subtree !== false,
+      characterData: options.characterData === true
+    });
+    scopedObservers.add(scopedObserver);
+
+    return () => {
+      if (!scopedObservers.delete(scopedObserver)) return;
+      scopedObserver.disconnect();
+    };
   }
 
   function onNodesAdded(callback) {
@@ -119,5 +146,5 @@ export function createDomObserver(document, window) {
     };
   }
 
-  return { subscribe, onNodesAdded, destroy };
+  return { subscribe, onNodesAdded, observe, destroy };
 }

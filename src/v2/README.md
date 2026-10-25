@@ -25,6 +25,10 @@ stylesheets remain untouched under `src/modules`.
   preference until the visitor chooses a mode, remembers that choice, adds a
   hydration-safe header toggle, and applies the storefront palette from
   `styles/dark-mode.css`.
+- The `promo` feature is enabled by default. It caps the checkout's displayed
+  discount at EGP 200 using the amount supplied by EasyOrders, labels capped
+  orders for manual total confirmation, and does not alter backend/payment
+  calculations.
 - The runtime injects `styles/header.css` from the entry bundle. The separate
   legacy `header.css` `<link>` is not needed when this entry is deployed.
 - Add a feature module under `features/` and register it from
@@ -33,6 +37,9 @@ stylesheets remain untouched under `src/modules`.
   existing and dynamically inserted elements. It owns one MutationObserver,
   switches from the document root to the body when the body becomes available,
   and disconnects when there are no active subscriptions.
+- Use `context.dom.observe(node, callback, options)` for narrowly scoped
+  mutations inside a feature-owned target. The core tracks these observers and
+  disconnects them with the shared DOM service.
 - Use `context.events.on(type, selector, callback, options)` for delegated
   document events. Matching subscriptions with the same event options share a
   single document listener and receive an unsubscribe function.
@@ -92,3 +99,7 @@ The dark-mode feature also contains a contrast repair pass for theme text that
 does not become readable through CSS utility overrides alone. Its calculations
 live in `core/accessibility/contrast.js`; it scans once after a mode change and
 scans only newly added DOM subtrees afterward.
+
+The promo cap is a storefront display policy, not payment enforcement. Remove
+the legacy `promo.js` script tag when testing this feature; its old hard-coded
+10% calculation would otherwise compete with the v2 display.

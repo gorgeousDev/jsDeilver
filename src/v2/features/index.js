@@ -1,5 +1,6 @@
 import { registerFeature } from "./registry.js";
 import { initDarkMode } from "./dark-mode.js";
+import { initPromo } from "./promo.js";
 import { initSliderDrag } from "./slider-drag.js";
 import { initVideoLazy } from "./video-lazy.js";
 
@@ -9,6 +10,12 @@ registerFeature({
   id: "darkMode",
   enabledByDefault: true,
   init: initDarkMode
+});
+
+registerFeature({
+  id: "promo",
+  enabledByDefault: true,
+  init: initPromo
 });
 
 registerFeature({
