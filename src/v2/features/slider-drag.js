@@ -9,19 +9,13 @@ const MAX_VELOCITY = 55;
 const FRAME_MS = 16;
 const CLICK_GUARD_MS = 400;
 
-export function initSliderDrag({ document, window }) {
+export function initSliderDrag({ document, events, window }) {
   let drag = null;
   let momentumFrame = 0;
   let momentumViewport = null;
   let suppressClick = false;
   let suppressTimer = 0;
   let ownedStyle = null;
-
-  function closest(target, selector) {
-    return target && typeof target.closest === "function"
-      ? target.closest(selector)
-      : null;
-  }
 
   function stopMomentum() {
     if (momentumFrame) window.cancelAnimationFrame(momentumFrame);
@@ -33,6 +27,8 @@ export function initSliderDrag({ document, window }) {
     stopMomentum();
     if (Math.abs(velocity) < MIN_VELOCITY) return;
 
+    // Clamp unusually fast pointer samples so one event cannot fling the
+    // carousel an unreasonable distance.
     let currentVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocity));
     momentumViewport = viewport;
 
@@ -81,13 +77,13 @@ export function initSliderDrag({ document, window }) {
     (document.head || document.documentElement).appendChild(ownedStyle);
   }
 
-  function onPointerDown(event) {
+  function onPointerDown(event, viewport) {
     if (drag || (event.button !== undefined && event.button !== 0)) return;
-
-    const viewport = closest(event.target, VIEWPORT_SELECTOR);
-    if (!viewport || closest(event.target, ".akkad-arrow")) return;
+    if (!viewport || event.target.closest(".akkad-arrow")) return;
 
     stopMomentum();
+    // Wait for movement before changing scroll behavior: an ordinary click
+    // should still activate the product link.
     drag = {
       viewport,
       pointerId: event.pointerId,
@@ -111,12 +107,15 @@ export function initSliderDrag({ document, window }) {
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
       if (absX < THRESHOLD && absY < THRESHOLD) return;
+      // Leave mostly vertical gestures to the browser so the page can scroll.
       if (absX < absY * ENGAGE_RATIO) return;
 
       drag.active = true;
       drag.viewport.style.setProperty("scroll-behavior", "auto", "important");
       drag.viewport.classList.add(DRAGGING_CLASS);
       try {
+        // Capture after the gesture is confirmed horizontal so pointer events
+        // keep reaching the slider even if the pointer leaves its bounds.
         drag.viewport.setPointerCapture(event.pointerId);
       } catch {}
     }
@@ -127,6 +126,8 @@ export function initSliderDrag({ document, window }) {
     const now = Date.now();
     const elapsed = now - drag.lastTime;
     if (elapsed > 0) {
+      // Smooth the measured velocity to reduce momentum changes from noisy
+      // pointer events.
       const velocity = (drag.lastX - event.clientX) / elapsed;
       drag.velocity = drag.velocity * 0.7 + velocity * 0.3;
     }
@@ -145,6 +146,8 @@ export function initSliderDrag({ document, window }) {
 
     if (!active) return;
 
+    // Browsers dispatch a click after pointerup. Swallow that one click so a
+    // completed drag doesn't accidentally open the product.
     suppressClick = true;
     window.clearTimeout(suppressTimer);
     suppressTimer = window.setTimeout(() => {
@@ -164,18 +167,18 @@ export function initSliderDrag({ document, window }) {
   }
 
   injectStyles();
-  document.addEventListener("pointerdown", onPointerDown, true);
-  document.addEventListener("pointermove", onPointerMove, { passive: false });
-  document.addEventListener("pointerup", finishDrag, true);
-  document.addEventListener("pointercancel", finishDrag, true);
-  document.addEventListener("click", onClickCapture, true);
+  const unsubscribe = [
+    events.on("pointerdown", VIEWPORT_SELECTOR, onPointerDown, { capture: true }),
+    events.on("pointermove", null, onPointerMove, { passive: false }),
+    events.on("pointerup", null, finishDrag, { capture: true }),
+    events.on("pointercancel", null, finishDrag, { capture: true }),
+    events.on("click", null, onClickCapture, { capture: true })
+  ];
 
   return () => {
-    document.removeEventListener("pointerdown", onPointerDown, true);
-    document.removeEventListener("pointermove", onPointerMove, { passive: false });
-    document.removeEventListener("pointerup", finishDrag, true);
-    document.removeEventListener("pointercancel", finishDrag, true);
-    document.removeEventListener("click", onClickCapture, true);
+    for (const stopListening of unsubscribe) {
+      stopListening();
+    }
     window.clearTimeout(suppressTimer);
     stopMomentum();
 

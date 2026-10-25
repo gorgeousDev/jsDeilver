@@ -1,27 +1,36 @@
 import { getFeatures } from "./features/registry.js";
+import { createDelegatedEvents } from "./core/delegated-events.js";
 import { createDomObserver } from "./core/dom-observer.js";
 
 const RUNTIME_KEY = "__akkadV2Runtime";
 
 export function start(config) {
+  // Protect against duplicate script tags or repeated entry initialization.
   if (window[RUNTIME_KEY]) return;
 
   const runtime = { cleanups: [] };
   window[RUNTIME_KEY] = runtime;
 
+  // Features receive services rather than constructing global observers and
+  // listeners themselves. This keeps setup consistent and cleanup centralized.
   const context = {
     config,
     document,
     dom: createDomObserver(document, window),
+    events: createDelegatedEvents(document),
     window
   };
 
   runtime.cleanups.push(context.dom.destroy);
+  runtime.cleanups.push(context.events.destroy);
 
   for (const feature of getFeatures()) {
+    // Explicit config overrides the feature's default, including `false`.
     const isEnabled = config.features[feature.id] ?? feature.enabledByDefault;
     if (!isEnabled) continue;
 
+    // Feature setup stays isolated; its returned function is called during
+    // runtime teardown, if the storefront later adds that lifecycle.
     const cleanup = feature.init(context);
     if (typeof cleanup === "function") {
       runtime.cleanups.push(cleanup);

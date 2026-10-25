@@ -1,11 +1,16 @@
 export function createDomObserver(document, window) {
+  // One observer serves every subscriber; each subscription has its own
+  // selector and callback, while the core owns the shared observer lifecycle.
   const subscriptions = new Set();
   let observer = null;
   let observedRoot = null;
 
   function notify(subscription, node) {
+    // Mutation records include text nodes. Selectors apply only to elements.
     if (node.nodeType !== 1) return;
 
+    // Check the added node itself as well as descendants. A newly inserted
+    // <video> won't be returned by querying inside that video node.
     if (node.matches(subscription.selector)) {
       subscription.onElement(node);
     }
@@ -22,6 +27,8 @@ export function createDomObserver(document, window) {
   }
 
   function startObserving() {
+    // A script in <head> may run before body exists. Observe the document root
+    // for that short period, then move the same observer to body.
     const root = document.body || document.documentElement;
     if (!root || root === observedRoot) return;
 
@@ -61,12 +68,16 @@ export function createDomObserver(document, window) {
     const previousRoot = observedRoot;
     subscriptions.add(subscription);
     startObserving();
+    // startObserving scans all subscriptions when it attaches/re-attaches.
+    // If already attached, scan only this new subscriber to avoid repeating
+    // the work for existing subscribers.
     if (previousRoot === observedRoot && observedRoot) {
       notify(subscription, observedRoot);
     }
 
     return () => {
       subscriptions.delete(subscription);
+      // Stop spending work on DOM mutations when nobody is listening.
       if (subscriptions.size === 0 && observer) {
         observer.disconnect();
         observedRoot = null;
