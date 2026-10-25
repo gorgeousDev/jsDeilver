@@ -141,34 +141,5 @@ __akkadLoadV2Feature("v2-office-supplies-sections");
    those two bars away - 185px of padding scales to precisely the 35.2px that
    a 374x82 box has to trim. Keyed on the asset id, so replacing the banner
    just drops the rule. The file should still be re-exported without the
-   padding; this only exists so the live banner is not white. */
-(function () {
-    "use strict";
-
-    var STYLE_ID = "akkad-feature-frame-css";
-
-    function inject() {
-        if (document.getElementById(STYLE_ID)) return;
-
-        var style = document.createElement("style");
-        style.id = STYLE_ID;
-        style.textContent = [
-            'img.feature-img[src*="1784395371176817130"]{',
-            '    aspect-ratio: 1964 / 431 !important;',
-            '    height: auto !important;',
-            '}',
-            /* the photo is dark, so if it ever fails to load the slot should
-               read as an empty dark panel rather than a white one */
-            '.feature-img{ background:#1B1931; }',
-            'html.akkad-dark .feature-img{ background:#1B1931 !important; }'
-        ].join("\n");
-
-        (document.head || document.documentElement).appendChild(style);
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", inject, { once: true });
-    } else {
-        inject();
-    }
-})();
+   padding;    this only exists so the live banner is not white. */
+__akkadLoadV2Feature("v2-featured-banner-frame");
