@@ -26,9 +26,11 @@ stylesheets remain untouched under `src/modules`.
   hydration-safe header toggle, and applies the storefront palette from
   `styles/dark-mode.css`.
 - The `checkoutRestyle` feature migrates checkout presentation and interactions
-  into v2. It styles EasyOrders' native invoice, mobile cart controls, payment
-  details, and the existing thank-you page. It does not generate a custom
-  checkout invoice.
+  into v2. On mobile it hides the empty desktop summary shell and shows the
+  single mobile cart with working quantity/remove controls, even when the
+  React-owned control list renders later. Desktop layout and summary spacing
+  are preserved. It also styles EasyOrders' native invoice, payment details,
+  and the existing thank-you page without generating a custom checkout invoice.
 - The `promo` feature is enabled by default. It caps displayed checkout
   savings at EGP 200 across both standard invoice copies and the mobile
   collapsed summary, and adjusts each displayed total. This is a storefront

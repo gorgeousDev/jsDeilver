@@ -97,10 +97,10 @@ function createMobileControls(document) {
 
 function syncMobileSummary(upperList, lowerList, document) {
   const upperItems = upperList.querySelectorAll(".checkout_cart_item");
-  const lowerItems = lowerList.querySelectorAll(".checkout_cart_item");
+  const lowerItems = lowerList?.querySelectorAll(".checkout_cart_item") || [];
 
   upperItems.forEach((upperItem, index) => {
-    const content = upperItem.querySelector("div.min-w-0.flex-1");
+    const content = upperItem.querySelector(".min-w-0.flex-1") || upperItem;
     if (!content) return;
 
     let controls = content.querySelector(".akkad-qty-row");
@@ -201,7 +201,7 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
   function initializeMobileSummary() {
     const upperList = document.querySelector(MOBILE_LIST_SELECTOR);
     const lowerList = document.querySelector(LOWER_CART_SELECTOR);
-    if (!upperList || !lowerList) return;
+    if (!upperList) return;
 
     const existing = mobileObservers.get(upperList);
     if (existing?.lowerList === lowerList) {
@@ -215,7 +215,9 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
 
     const sync = () => syncMobileSummary(upperList, lowerList, document);
     const stopUpper = dom.observe(upperList, sync, { childList: true, subtree: true });
-    const stopLower = dom.observe(lowerList, sync, { childList: true, subtree: true });
+    const stopLower = lowerList
+      ? dom.observe(lowerList, sync, { childList: true, subtree: true })
+      : () => {};
     mobileObservers.set(upperList, { lowerList, stopUpper, stopLower });
     sync();
   }
