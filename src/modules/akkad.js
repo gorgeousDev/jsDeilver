@@ -23,19 +23,6 @@
   var galleryDone = false;
   var galleryPath = null;
 
-  // 1. Function declarations at IIFE function scope (Valid ES5)
-  function fixAlt() {
-    var titleEl = document.querySelector("h1");
-    var productName = (titleEl && titleEl.textContent) ? titleEl.textContent.trim() : document.title;
-    var imgs = document.querySelectorAll("img");
-    for (var i = 0; i < imgs.length; i++) {
-      var img = imgs[i];
-      if (!img.alt || img.alt.indexOf("http://") === 0 || img.alt.indexOf("https://") === 0) {
-        img.alt = productName;
-      }
-    }
-  }
-
   function markGalleryDone() {
     galleryDone = true;
     galleryPath = window.location.pathname;
@@ -480,12 +467,7 @@
     // 3. Stylesheets
     loadFeature("akkad-stylesheets");
 
-    // 5. fixAlt Execution
-    fixAlt();
-    new MutationObserver(fixAlt).observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    loadFeature("akkad-image-alt");
 
     // 6. initGallery Execution
     var galleryTimer;
