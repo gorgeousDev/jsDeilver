@@ -63,45 +63,7 @@ __akkadLoadV2Feature("v2-google-site-verification");
 /* =========================================
    2. WhatsApp Widget
    ========================================= */
-(function () {
-    var ws = document.createElement("script");
-    ws.src = "https://cdn.pickyassist.com/WhatsApp/embed.js";
-    ws.async = true;
-    document.head.appendChild(ws);
-
-    var c = {
-        t: "Icon-Only-Black",
-        s: "",
-        i: "WhatsApp Us",
-        a: "animation-Floating",
-        n: "201508331823",
-        m: "مرحبًا، لدي بعض الأسئلة قبل إتمام عملية الشراء.",
-        w: 3,
-        b: "#44174E",
-        c: "#ffffff",
-        mr: "0",
-        ml: "0",
-        mb: "0",
-        z: "9999",
-        p: "position-right"
-    };
-
-    function loadWhatsApp() {
-        if (typeof window._waBtn === "function") {
-            window._waBtn(c);
-        } else {
-            setTimeout(loadWhatsApp, 200);
-        }
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", function () {
-            setTimeout(loadWhatsApp, 500);
-        });
-    } else {
-        setTimeout(loadWhatsApp, 500);
-    }
-})();
+__akkadLoadV2Feature("v2-whatsapp-widget");
 
 /* =========================================
    3. Styles
