@@ -18,12 +18,18 @@ stylesheets remain untouched under `src/modules`.
 - The `videoLazy` feature is currently enabled by default. It removes autoplay
   from existing and newly inserted videos and disconnects its observer during
   cleanup.
+- The `sliderDrag` feature is currently enabled by default. It adds delegated
+  pointer dragging, click suppression after a drag, and momentum to Akkad
+  slider viewports.
 - Add a feature module under `features/` and register it from
   `features/index.js`. Its `init(context)` can return a cleanup function.
 - Use the shared `context.dom.subscribe(selector, callback)` service for
   existing and dynamically inserted elements. It owns one MutationObserver,
   switches from the document root to the body when the body becomes available,
   and disconnects when there are no active subscriptions.
+- The entry logs its resource download duration when browser timing data is
+  available, and its synchronous initialization duration. Remove this
+  temporary diagnostic after feature testing is complete.
 - Keep initialization page-aware and inexpensive. Avoid global polling and
   document-wide observers unless a feature demonstrably needs them. Do not
   use client-side changes as a substitute for server-rendered, SEO-critical
