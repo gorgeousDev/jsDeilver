@@ -72,37 +72,7 @@ __akkadLoadV2Feature("v2-store-style-overrides");
 /* =========================================
    3.1 Mobile Product Grid — 2 Columns
    ========================================= */
-(function () {
-    var style = document.createElement("style");
-
-    style.id = "akkad-mobile-product-grid";
-
-    style.textContent = `
-        @media (max-width: 639px) {
-
-            .category_products_grid_container {
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 12px !important;
-                width: 100% !important;
-            }
-
-            .category_products_grid_container > div {
-                width: 100% !important;
-                min-width: 0 !important;
-            }
-
-            .category_products_grid_container .fasty_product_card {
-                width: 100% !important;
-                max-width: 100% !important;
-                min-width: 0 !important;
-            }
-
-        }
-    `;
-
-    document.head.appendChild(style);
-})();
+__akkadLoadV2Feature("v2-mobile-product-grid");
 
 /* =========================================
    4. Disable Cart Image Links
