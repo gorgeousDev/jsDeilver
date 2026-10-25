@@ -4,10 +4,7 @@ import "./features/index.js";
 
 function boot() {
   start(getConfig());
+  console.log("Akkad v2 entry loaded");
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", boot, { once: true });
-} else {
-  boot();
-}
+boot();

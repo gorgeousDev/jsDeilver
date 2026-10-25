@@ -15,6 +15,9 @@ stylesheets remain untouched under `src/modules`.
 - `config.js` reads optional feature flags from `window.AkkadV2Config`, for
   example `{ features: { darkMode: true } }`. Features are opt-in unless their
   registration explicitly sets `enabledByDefault: true`.
+- The `videoLazy` feature is currently enabled by default. It removes autoplay
+  from existing and newly inserted videos and disconnects its observer during
+  cleanup.
 - Add a feature module under `features/` and register it from
   `features/index.js`. Its `init(context)` can return a cleanup function.
 - Keep initialization page-aware and inexpensive. Avoid global polling and
@@ -32,6 +35,6 @@ that file once in the storefront `<head>`:
 <script src="https://cdn.example.com/akkad-v2.min.js" defer></script>
 ```
 
-The bundler and deployment URL will be wired up when the first feature is
-migrated. Keep this directory independent of the existing `src/modules`
-files.
+From this directory, run `npm install` once and then `npm run build` to create
+`dist/akkad-v2.min.js`. Keep this directory independent of the existing
+`src/modules` files.

@@ -1,0 +1,12 @@
+{
+  "name": "akkad-storefront-v2",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild entry.js --bundle --minify --platform=browser --target=es2018 --outfile=dist/akkad-v2.min.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}
