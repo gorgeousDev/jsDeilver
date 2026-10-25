@@ -84,9 +84,9 @@ unparsable.
 | `src/modules/akkad-v2.js` | The main tag: counters, home sections, gallery, sliders, payment order, funnel prices, office-supplies sections. |
 | `src/modules/akkad.js` | Loaded by `akkad-v2.js`. Product gallery and thumbnails, header, categories nav, stylesheet loading. |
 | `src/modules/akkad-dark-mode.js` | Dark theme, palette, and the contrast sweep that lifts low-contrast text on dark surfaces. |
-| `src/modules/checkout-restyle.js` | Checkout and thanks page: palette, invoice table, coupon, input labels. |
+| `src/modules/checkout-restyle.js` | Checkout and thanks presentation, payment details, and input labels. Mobile shows one cart summary with working quantity/remove controls; EasyOrders remains the only invoice renderer. |
 | `src/modules/akkad-slider-drag.js` | Pointer drag and momentum on the home sliders. |
-| `src/modules/promo.js` | Discount cap and coupon handling. |
+| `src/modules/promo.js` | Caps displayed checkout savings at EGP 200 across the responsive invoices and collapsed mobile summary. Payment totals remain controlled by EasyOrders. |
 | `src/modules/video-lazy.js` | Stops autoplay on videos that are off screen. |
 | `src/modules/*.css` | Header, footer, gallery, slider and product-card styles. Loaded by `akkad.js`; `header.css` is also linked from `header_code`. |
 
