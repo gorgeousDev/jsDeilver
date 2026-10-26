@@ -7,6 +7,7 @@ try {
      navigation to a second product left the thumbnails missing until a refresh. */
   var galleryDone = false;
   var galleryPath = null;
+  var bulletObserver = null;
 
   function markGalleryDone() {
     galleryDone = true;
@@ -247,7 +248,8 @@ try {
        Watch Swiper
     ========================= */
 
-    var observer = new MutationObserver(function () {
+    if (bulletObserver) bulletObserver.disconnect();
+    bulletObserver = new MutationObserver(function () {
       updateActiveThumb(true);
     });
 
@@ -256,7 +258,7 @@ try {
     );
 
     for (var m = 0; m < bullets.length; m++) {
-      observer.observe(bullets[m], {
+      bulletObserver.observe(bullets[m], {
         attributes: true,
         attributeFilter: ["class"]
       });
@@ -265,30 +267,35 @@ try {
     updateActiveThumb(true);
   }
 
-    // 6. initGallery Execution
-    var galleryTimer;
-    var galleryObserver = new MutationObserver(function () {
-      /* Never disconnect. Disconnecting when the gallery was done (or when the
-         home page was seen) meant the observer was gone by the time a soft
-         navigation reached a product, so no gallery was built until a full
-         refresh. The home page simply skips; the observer stays alive so the
-         next route change is still watched. */
-      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
-      clearTimeout(galleryTimer);
-      galleryTimer = setTimeout(initGallery, 300);
-    });
-    galleryObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+  var galleryTimer = null;
+  var galleryObserver = null;
 
-    if (document.readyState === "complete") {
-      setTimeout(initGallery, 500);
-    } else {
-      window.addEventListener("load", function () {
-        setTimeout(initGallery, 500);
-      });
+  function syncGalleryRoute() {
+    if (window.location.pathname.indexOf("/products/") !== 0) {
+      if (galleryObserver) galleryObserver.disconnect();
+      galleryObserver = null;
+      if (bulletObserver) bulletObserver.disconnect();
+      bulletObserver = null;
+      clearTimeout(galleryTimer);
+      galleryTimer = null;
+      galleryDone = false;
+      return;
     }
+
+    if (!galleryObserver && document.body) {
+      galleryObserver = new MutationObserver(function () {
+        clearTimeout(galleryTimer);
+        galleryTimer = setTimeout(initGallery, 300);
+      });
+      galleryObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    clearTimeout(galleryTimer);
+    galleryTimer = setTimeout(initGallery, 300);
+  }
+
+  window.addEventListener("akkad:route-change", syncGalleryRoute);
+  syncGalleryRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: akkad-product-gallery", error); }
 ;
@@ -446,21 +453,33 @@ try {
   }
 
     // 7. moveButtons Execution
-    var moveBtnsObserver = new MutationObserver(function () {
-      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
-      setTimeout(moveButtons, 100);
-    });
-    moveBtnsObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    var moveBtnsObserver = null;
+    var moveTimer = null;
 
-    if (document.readyState === "complete") {
+    function syncGalleryRoute() {
+      if (window.location.pathname.indexOf("/products/") !== 0) {
+        if (moveBtnsObserver) moveBtnsObserver.disconnect();
+        moveBtnsObserver = null;
+        window.removeEventListener("resize", moveButtons);
+        clearTimeout(moveTimer);
+        moveTimer = null;
+        return;
+      }
+
+      if (!moveBtnsObserver && document.body) {
+        moveBtnsObserver = new MutationObserver(function () {
+          clearTimeout(moveTimer);
+          moveTimer = setTimeout(moveButtons, 100);
+        });
+        moveBtnsObserver.observe(document.body, { childList: true, subtree: true });
+        window.addEventListener("resize", moveButtons);
+      }
+
       moveButtons();
-    } else {
-      window.addEventListener("load", moveButtons);
     }
-    window.addEventListener("resize", moveButtons);
+
+    window.addEventListener("akkad:route-change", syncGalleryRoute);
+    syncGalleryRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: akkad-gallery-controls", error); }
 ;
@@ -517,14 +536,30 @@ try {
   }
 
     // 8. addCopyButton Execution
-    var copyBtnObserver = new MutationObserver(function () {
-      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
+    var copyBtnObserver = null;
+    var copyBtnTimer = null;
+
+    function syncCopyLinkRoute() {
+      if (window.location.pathname.indexOf("/products/") !== 0) {
+        if (copyBtnObserver) copyBtnObserver.disconnect();
+        copyBtnObserver = null;
+        clearTimeout(copyBtnTimer);
+        copyBtnTimer = null;
+        return;
+      }
+
       addCopyButton();
-    });
-    copyBtnObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+      if (copyBtnObserver || !document.body) return;
+
+      copyBtnObserver = new MutationObserver(function () {
+        clearTimeout(copyBtnTimer);
+        copyBtnTimer = setTimeout(addCopyButton, 100);
+      });
+      copyBtnObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    window.addEventListener("akkad:route-change", syncCopyLinkRoute);
+    syncCopyLinkRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: akkad-copy-link", error); }
 ;
