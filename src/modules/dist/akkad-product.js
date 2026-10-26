@@ -401,14 +401,30 @@ try {
   }
 
     // 8. addCopyButton Execution
-    var copyBtnObserver = new MutationObserver(function () {
-      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
+    var copyBtnObserver = null;
+    var copyBtnTimer = null;
+
+    function syncCopyLinkRoute() {
+      if (window.location.pathname.indexOf("/products/") !== 0) {
+        if (copyBtnObserver) copyBtnObserver.disconnect();
+        copyBtnObserver = null;
+        clearTimeout(copyBtnTimer);
+        copyBtnTimer = null;
+        return;
+      }
+
       addCopyButton();
-    });
-    copyBtnObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+      if (copyBtnObserver || !document.body) return;
+
+      copyBtnObserver = new MutationObserver(function () {
+        clearTimeout(copyBtnTimer);
+        copyBtnTimer = setTimeout(addCopyButton, 100);
+      });
+      copyBtnObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    window.addEventListener("akkad:route-change", syncCopyLinkRoute);
+    syncCopyLinkRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: akkad-copy-link", error); }
 ;
