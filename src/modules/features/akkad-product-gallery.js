@@ -5,6 +5,7 @@
      navigation to a second product left the thumbnails missing until a refresh. */
   var galleryDone = false;
   var galleryPath = null;
+  var bulletObserver = null;
 
   function markGalleryDone() {
     galleryDone = true;
@@ -245,7 +246,8 @@
        Watch Swiper
     ========================= */
 
-    var observer = new MutationObserver(function () {
+    if (bulletObserver) bulletObserver.disconnect();
+    bulletObserver = new MutationObserver(function () {
       updateActiveThumb(true);
     });
 
@@ -254,7 +256,7 @@
     );
 
     for (var m = 0; m < bullets.length; m++) {
-      observer.observe(bullets[m], {
+      bulletObserver.observe(bullets[m], {
         attributes: true,
         attributeFilter: ["class"]
       });
@@ -263,28 +265,33 @@
     updateActiveThumb(true);
   }
 
-    // 6. initGallery Execution
-    var galleryTimer;
-    var galleryObserver = new MutationObserver(function () {
-      /* Never disconnect. Disconnecting when the gallery was done (or when the
-         home page was seen) meant the observer was gone by the time a soft
-         navigation reached a product, so no gallery was built until a full
-         refresh. The home page simply skips; the observer stays alive so the
-         next route change is still watched. */
-      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
-      clearTimeout(galleryTimer);
-      galleryTimer = setTimeout(initGallery, 300);
-    });
-    galleryObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+  var galleryTimer = null;
+  var galleryObserver = null;
 
-    if (document.readyState === "complete") {
-      setTimeout(initGallery, 500);
-    } else {
-      window.addEventListener("load", function () {
-        setTimeout(initGallery, 500);
-      });
+  function syncGalleryRoute() {
+    if (window.location.pathname.indexOf("/products/") !== 0) {
+      if (galleryObserver) galleryObserver.disconnect();
+      galleryObserver = null;
+      if (bulletObserver) bulletObserver.disconnect();
+      bulletObserver = null;
+      clearTimeout(galleryTimer);
+      galleryTimer = null;
+      galleryDone = false;
+      return;
     }
+
+    if (!galleryObserver && document.body) {
+      galleryObserver = new MutationObserver(function () {
+        clearTimeout(galleryTimer);
+        galleryTimer = setTimeout(initGallery, 300);
+      });
+      galleryObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    clearTimeout(galleryTimer);
+    galleryTimer = setTimeout(initGallery, 300);
+  }
+
+  window.addEventListener("akkad:route-change", syncGalleryRoute);
+  syncGalleryRoute();
 })();
