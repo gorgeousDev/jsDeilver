@@ -544,16 +544,21 @@ try {
     var touchStartX = 0;
     var touchStartY = 0;
     var isSwipe = false;
+    var activeClickHandler = null;
+    var activeKeydownHandler = null;
+    var activePopstateHandler = null;
+    var routeObserver = null;
+    var checkTimer = null;
 
-    document.addEventListener("touchstart", function (e) {
+    function recordTouchStart(e) {
         if (!e.touches || e.touches.length === 0) return;
         var touch = e.touches[0];
         touchStartX = touch.clientX;
         touchStartY = touch.clientY;
         isSwipe = false;
-    }, { passive: true });
+    }
 
-    document.addEventListener("touchmove", function (e) {
+    function recordTouchMove(e) {
         if (!e.touches || e.touches.length === 0) return;
         var touch = e.touches[0];
         var diffX = Math.abs(touch.clientX - touchStartX);
@@ -562,10 +567,10 @@ try {
         if (diffX > 10 || diffY > 10) {
             isSwipe = true;
         }
-    }, { passive: true });
+    }
 
     function init() {
-        if (!location.pathname.startsWith("/products/")) return;
+        if (!window.location.pathname.startsWith("/products/")) return;
         if (document.getElementById("akkad-preview")) return;
 
         var gallery = document.querySelector(".p_gallery_container");
@@ -675,7 +680,7 @@ try {
         function close() {
             if (!box || !box.classList.contains("show")) return;
             box.classList.remove("show");
-            document.body.style.overflow = "";
+            if (document.body) document.body.style.overflow = "";
             isStatePushed = false;
             resetZoom();
         }
@@ -696,7 +701,8 @@ try {
             open(img.currentSrc || img.src);
         }
 
-        document.addEventListener("click", handle, { capture: true });
+        activeClickHandler = handle;
+        document.addEventListener("click", activeClickHandler, { capture: true });
 
         function closePreview(e) {
             if (e.target === box || e.target.classList.contains("close")) {
@@ -710,7 +716,7 @@ try {
 
         box.addEventListener("click", closePreview);
 
-        document.addEventListener("keydown", function (e) {
+        activeKeydownHandler = function (e) {
             if (e.key === "Escape") {
                 if (isStatePushed) {
                     history.back();
@@ -718,15 +724,19 @@ try {
                     close();
                 }
             }
-        });
+        };
+        document.addEventListener("keydown", activeKeydownHandler);
 
-        window.addEventListener("popstate", function (e) {
+        activePopstateHandler = function (e) {
             if (e.state && e.state.akkadPreview) {
                 open(e.state.src, true);
             } else {
                 close();
             }
-        });
+        };
+        window.addEventListener("popstate", activePopstateHandler);
+        document.addEventListener("touchstart", recordTouchStart, { passive: true });
+        document.addEventListener("touchmove", recordTouchMove, { passive: true });
 
         if (history.state && history.state.akkadPreview && history.state.src) {
             open(history.state.src, true);
@@ -803,47 +813,66 @@ try {
         }
     }
 
-    function checkAndInit() {
-        if (location.pathname.startsWith("/products/")) {
-            init();
-        } else {
-            var existingPreview = document.getElementById("akkad-preview");
-            if (existingPreview) existingPreview.remove();
-            var existingStyle = document.getElementById("akkad-preview-style");
-            if (existingStyle) existingStyle.remove();
+    function deactivate() {
+        if (activeClickHandler) {
+            document.removeEventListener("click", activeClickHandler, true);
+            activeClickHandler = null;
         }
+        if (activeKeydownHandler) {
+            document.removeEventListener("keydown", activeKeydownHandler);
+            activeKeydownHandler = null;
+        }
+        if (activePopstateHandler) {
+            window.removeEventListener("popstate", activePopstateHandler);
+            activePopstateHandler = null;
+        }
+        document.removeEventListener("touchstart", recordTouchStart);
+        document.removeEventListener("touchmove", recordTouchMove);
+
+        var preview = document.getElementById("akkad-preview");
+        if (preview) preview.remove();
+        var style = document.getElementById("akkad-preview-style");
+        if (style) style.remove();
+
+        document.body.style.overflow = "";
+        isStatePushed = false;
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", checkAndInit);
-    } else {
-        checkAndInit();
+    function checkAndInit() {
+        if (window.location.pathname.startsWith("/products/")) {
+            init();
+            return;
+        }
+        deactivate();
     }
 
-    var originalPushState = history.pushState;
-    history.pushState = function () {
-        originalPushState.apply(this, arguments);
-        setTimeout(checkAndInit, 100);
-    };
+    function syncProductRoute() {
+        if (!window.location.pathname.startsWith("/products/")) {
+            if (routeObserver) routeObserver.disconnect();
+            routeObserver = null;
+            clearTimeout(checkTimer);
+            checkTimer = null;
+            deactivate();
+            return;
+        }
 
-    var originalReplaceState = history.replaceState;
-    history.replaceState = function () {
-        originalReplaceState.apply(this, arguments);
-        setTimeout(checkAndInit, 100);
-    };
+        if (!routeObserver) {
+            routeObserver = new MutationObserver(function () {
+                clearTimeout(checkTimer);
+                checkTimer = setTimeout(checkAndInit, 300);
+            });
+            routeObserver.observe(document.body || document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+        }
 
-    window.addEventListener("popstate", checkAndInit);
-
-    var checkTimer;
-    var observer = new MutationObserver(function () {
-        if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
         clearTimeout(checkTimer);
-        checkTimer = setTimeout(checkAndInit, 500);
-    });
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-    });
+        checkTimer = setTimeout(checkAndInit, 100);
+    }
+
+    window.addEventListener("akkad:route-change", syncProductRoute);
+    syncProductRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: v2-image-preview-lightbox", error); }
 ;
