@@ -48,6 +48,10 @@ function __akkad_isHomePage() {
         ) {
             loadLayer("graduation");
         }
+
+        var routeEvent = document.createEvent("Event");
+        routeEvent.initEvent("akkad:route-change", false, false);
+        window.dispatchEvent(routeEvent);
     }
 
     function wrapHistoryMethod(method) {

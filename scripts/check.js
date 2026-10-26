@@ -75,10 +75,14 @@ function verifyFeatureEntry(entryName, pathname, expectedLayers, manifest) {
         location.pathname = new URL(location.href).pathname;
       }
     },
-    addEventListener() {}
+    addEventListener() {},
+    dispatchEvent() {}
   };
   const document = {
     currentScript,
+    createEvent() {
+      return { initEvent(type) { this.type = type; } };
+    },
     createElement() {
       return {};
     },
@@ -151,5 +155,11 @@ verifyFeatureEntry(
   ["core", "product", "graduation"],
   manifest
 );
+
+const officeFeature = fs.readFileSync(
+  path.join(MODULES_DIR, "features", "v2-office-supplies-sections.js"),
+  "utf8"
+);
+assert(!officeFeature.includes("setInterval("), "the office feature should not rely on polling intervals");
 
 console.log(`OK  ${scripts.length} file(s) parse as classic scripts; route layers load in order with shared versions.`);

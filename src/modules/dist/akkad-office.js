@@ -643,35 +643,38 @@ var priceBox = card.querySelector(".fasty_product_card_price");
             });
 
         }
-    /* This file is parsed once on whatever page the store opened. If that page
-       was not the office URL, start() bailed above and left no observer and no
-       URL poll behind — so navigating to the office page in-app (soft routing)
-       rendered nothing until the user hard-refreshed. Keep one observer and one
-       poll alive for the whole session; build() and start() re-check
-       isOfficePage(), so the watchers are inert on any other page. */
-    var officeObserverReady = false;
+    /* The entrypoint loads this layer on office-page SPA navigations; the event
+       also reconnects the observer when returning to the route. */
+    var officeObserver = null;
+    var observedOfficeBody = null;
 
     function ensureOfficeWatchers() {
-        if (officeObserverReady) return;
-        officeObserverReady = true;
+        if (!isOfficePage()) {
+            if (officeObserver) officeObserver.disconnect();
+            officeObserver = null;
+            observedOfficeBody = null;
+            return;
+        }
+
+        var body = document.body || document.documentElement;
+        if (officeObserver && observedOfficeBody === body) return;
+        if (officeObserver) officeObserver.disconnect();
+        observedOfficeBody = body;
 
         /* If the theme re-renders its grid (filter, language, pagination) we
            must regroup — the API list is the source of truth either way. */
-        var observer = new MutationObserver(function () {
-            if (!isOfficePage()) return;
+        officeObserver = new MutationObserver(function () {
             if (state.showAll) return;
             window.clearTimeout(window.__akkadOfficeTimer);
             window.__akkadOfficeTimer = setTimeout(build, 250);
         });
-        observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
+        officeObserver.observe(body, { childList: true, subtree: true });
     }
 
-    /* This poll is deliberately UNCONDITIONAL — it runs on every page for the
-       whole session. Soft navigation never reloads this file, so if it only
-       existed once start() had run, an in-app arrival at the office URL would
-       never be noticed (the very bug it is here to fix). */
-    setInterval(function () {
+    function handleRouteChange() {
+        ensureOfficeWatchers();
         if (!isOfficePage()) return;
+
         if (!state.started) {
             start();
             return;
@@ -681,7 +684,9 @@ var priceBox = card.querySelector(".fasty_product_card_price");
             invalidate();
         }
         build();
-    }, 1000);
+    }
+
+    window.addEventListener("akkad:route-change", handleRouteChange);
 
     function injectStyles() {
         if (document.getElementById("akkad-office-css")) return;
