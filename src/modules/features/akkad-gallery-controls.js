@@ -22,19 +22,31 @@
   }
 
     // 7. moveButtons Execution
-    var moveBtnsObserver = new MutationObserver(function () {
-      if (typeof __akkad_isHomePage === "function" && __akkad_isHomePage()) return;
-      setTimeout(moveButtons, 100);
-    });
-    moveBtnsObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    var moveBtnsObserver = null;
+    var moveTimer = null;
 
-    if (document.readyState === "complete") {
+    function syncGalleryRoute() {
+      if (window.location.pathname.indexOf("/products/") !== 0) {
+        if (moveBtnsObserver) moveBtnsObserver.disconnect();
+        moveBtnsObserver = null;
+        window.removeEventListener("resize", moveButtons);
+        clearTimeout(moveTimer);
+        moveTimer = null;
+        return;
+      }
+
+      if (!moveBtnsObserver && document.body) {
+        moveBtnsObserver = new MutationObserver(function () {
+          clearTimeout(moveTimer);
+          moveTimer = setTimeout(moveButtons, 100);
+        });
+        moveBtnsObserver.observe(document.body, { childList: true, subtree: true });
+        window.addEventListener("resize", moveButtons);
+      }
+
       moveButtons();
-    } else {
-      window.addEventListener("load", moveButtons);
     }
-    window.addEventListener("resize", moveButtons);
+
+    window.addEventListener("akkad:route-change", syncGalleryRoute);
+    syncGalleryRoute();
 })();
