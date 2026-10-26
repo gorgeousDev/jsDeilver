@@ -223,6 +223,8 @@
      did) is why the thanks card only appeared after a manual reload/new tab. */
 
   var runScheduled = false;
+  var checkoutDomObserver = null;
+  var observedCheckoutBody = null;
 
   function scheduleRun() {
     if (runScheduled) return;
@@ -234,6 +236,7 @@
   }
 
   function run() {
+    if (!window.location.pathname.includes('checkout')) return;
     /* Self-heal the stylesheet too: if React/head ever drops our <style>, the
        whole restyle silently disappears until a reload. Re-attach it here. */
     if (!document.getElementById('akkad-checkout-style')) {
@@ -244,6 +247,26 @@
     fixPayments();
     fixInputs();
     makeMobileSummaryFunctional();
+  }
+
+  function syncCheckoutObserver() {
+    if (!window.location.pathname.includes('checkout')) {
+      if (checkoutDomObserver) checkoutDomObserver.disconnect();
+      checkoutDomObserver = null;
+      observedCheckoutBody = null;
+      return;
+    }
+
+    if (!document.body) return;
+
+    if (observedCheckoutBody !== document.body) {
+      if (checkoutDomObserver) checkoutDomObserver.disconnect();
+      observedCheckoutBody = document.body;
+      checkoutDomObserver = new MutationObserver(scheduleRun);
+      checkoutDomObserver.observe(observedCheckoutBody, { childList: true, subtree: true });
+    }
+
+    scheduleRun();
   }
 
   /* On /checkout the theme hides the site header (header.fasty_header lives
@@ -270,10 +293,14 @@
   var WA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
   var THANKS_WA_LINK = 'https://wa.me/201508331823?text=' + encodeURIComponent('مرحبا . لقد طلبت من متجركم و اريد التأكيد');
 
+  function findThanksContainer() {
+    return document.querySelector('.thanks_container') ||
+           document.querySelector('main div.mt-20') ||
+           document.querySelector('div.mt-20');
+  }
+
   function buildThanksPage() {
-    var container = document.querySelector('.thanks_container') ||
-                    document.querySelector('main div.mt-20') ||
-                    document.querySelector('div.mt-20');
+    var container = findThanksContainer();
     if (!container) return false;
     var orderId = (new URLSearchParams(window.location.search)).get('order_id') || '';
 
@@ -307,7 +334,7 @@
       });
     }
 
-    if (document.querySelector('.akkad-thanks-card')) return true;
+    if (container.querySelector('.akkad-thanks-card')) return true;
 
     container.style.marginTop = '40px';
     container.style.paddingBottom = '44px';
@@ -356,11 +383,75 @@
 
   /* non-destructive hide — never removes nodes React owns */
   function hideThanksRow(el) {
+    if (el.getAttribute('data-akkad-thanks-hidden') === '1') return;
     el.style.setProperty('display', 'none', 'important');
     el.setAttribute('data-akkad-thanks-hidden', '1');
   }
 
   var thanksRunning = false;
+  var thanksObserver = null;
+  var observedThanksBody = null;
+  var thanksBuildTimer = null;
+
+  function stopThanksPage() {
+    if (thanksObserver) thanksObserver.disconnect();
+    thanksObserver = null;
+    observedThanksBody = null;
+    clearTimeout(thanksBuildTimer);
+    thanksBuildTimer = null;
+    thanksRunning = false;
+  }
+
+  function scheduleThanksBuild() {
+    if (thanksBuildTimer) return;
+    thanksBuildTimer = setTimeout(function() {
+      thanksBuildTimer = null;
+      if (window.location.pathname.indexOf('thanks') !== -1) buildThanksPage();
+    }, 0);
+  }
+
+  function containsThanksContainer(node) {
+    if (node.nodeType !== 1) return false;
+    return node.matches('.thanks_container, main div.mt-20, div.mt-20') ||
+           !!node.querySelector('.thanks_container, main div.mt-20, div.mt-20');
+  }
+
+  function shouldRefreshThanksPage(records) {
+    var container = findThanksContainer();
+    for (var i = 0; i < records.length; i++) {
+      var record = records[i];
+      if (container && (record.target === container || container.contains(record.target))) return true;
+
+      for (var j = 0; j < record.addedNodes.length; j++) {
+        if (containsThanksContainer(record.addedNodes[j])) return true;
+      }
+      for (var k = 0; k < record.removedNodes.length; k++) {
+        if (containsThanksContainer(record.removedNodes[k])) return true;
+      }
+    }
+    return false;
+  }
+
+  function observeThanksPage() {
+    if (window.location.pathname.indexOf('thanks') === -1) {
+      stopThanksPage();
+      return;
+    }
+    if (!document.body) {
+      document.addEventListener('DOMContentLoaded', observeThanksPage, { once: true });
+      return;
+    }
+
+    if (observedThanksBody !== document.body) {
+      if (thanksObserver) thanksObserver.disconnect();
+      observedThanksBody = document.body;
+      thanksObserver = new MutationObserver(function(records) {
+        if (shouldRefreshThanksPage(records)) scheduleThanksBuild();
+      });
+      thanksObserver.observe(observedThanksBody, { childList: true, subtree: true });
+    }
+    scheduleThanksBuild();
+  }
 
   function runThanksPage() {
     if (thanksRunning) return;
@@ -372,31 +463,10 @@
        or swaps the container. */
     whenSettled(function() {
       if (window.location.pathname.indexOf('thanks') === -1) {
-        thanksRunning = false;
+        stopThanksPage();
         return;
       }
-      /* Keep watching while we are on /thanks instead of giving up after a
-         fixed number of tries. On a slow mobile first load the EasyOrders
-         thank-you block renders late — and the app can replace the container
-         it first paints — so a one-shot injection is lost until the next
-         reload. This self-heals and stops only once we leave /thanks. */
-      var iv = setInterval(function() {
-        if (window.location.pathname.indexOf('thanks') === -1) {
-          clearInterval(iv);
-          thanksRunning = false;
-          return;
-        }
-        var container = document.querySelector('.thanks_container') ||
-                        document.querySelector('main div.mt-20') ||
-                        document.querySelector('div.mt-20');
-        if (container && !container._akkadThanksObs) {
-          container._akkadThanksObs = true;
-          /* observe only the container (not the whole body) so we never thrash
-             the app into extra renders while it hydrates */
-          new MutationObserver(function() { buildThanksPage(); }).observe(container, { childList: true });
-        }
-        buildThanksPage();
-      }, 300);
+      observeThanksPage();
     });
   }
 
@@ -422,36 +492,27 @@
     if (p === lastPath) return;
     lastPath = p;
     if (p.indexOf('thanks') !== -1) runThanksPage();
-    if (p.indexOf('checkout') === -1) document.documentElement.classList.remove('on-checkout');
+    else stopThanksPage();
+    if (p.indexOf('checkout') !== -1) {
+      syncCheckoutObserver();
+    } else {
+      document.documentElement.classList.remove('on-checkout');
+      syncCheckoutObserver();
+    }
   }
 
-  try {
-    ["pushState", "replaceState"].forEach(function (m) {
-      var orig = history[m];
-      history[m] = function () { var r = orig.apply(this, arguments); routeTick(); return r; };
-    });
-  } catch (e) {}
+  ["pushState", "replaceState"].forEach(function (method) {
+    var original = history[method];
+    history[method] = function () {
+      var result = original.apply(this, arguments);
+      routeTick();
+      return result;
+    };
+  });
   window.addEventListener("popstate", routeTick);
-  setInterval(routeTick, 400);
+  window.addEventListener("akkad:route-change", routeTick);
 
   routeTick();
-
-  if (!window.location.pathname.includes('checkout')) {
-    /* off-checkout pages (home / product / cart): do nothing heavy. The old
-       code attached a body-wide subtree MutationObserver that ran the whole
-       checkout pipeline on every DOM mutation of every page. SPA navigation
-       into checkout is caught by this lightweight path poll instead — and
-       routeTick() above handles navigation into /thanks. */
-    var checkoutCheck = setInterval(function () {
-      if (window.location.pathname.includes('checkout')) {
-        clearInterval(checkoutCheck);
-        setTimeout(run, 100);
-        setTimeout(run, 500);
-        setTimeout(run, 1500);
-      }
-    }, 500);
-    return;
-  }
 
   function injectReminder() {
     var containers = document.querySelectorAll('.checkout_container');
@@ -608,26 +669,11 @@
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(run, 300);
-      setTimeout(run, 1000);
-      setTimeout(run, 2000);
+      syncCheckoutObserver();
     });
   } else {
-    setTimeout(run, 300);
-    setTimeout(run, 1000);
-    setTimeout(run, 2000);
+    syncCheckoutObserver();
   }
 
-  /* Self-healing: re-run the whole pipeline on any DOM change (debounced), so
-     React re-renders and SPA navigations are caught without a manual reload.
-     If this file is parsed from <head>, document.body is still null here and
-     .observe(null) would throw — silently killing the self-heal loop, which is
-     why fixes appeared to need a refresh. Wait for the body before observing. */
-  (function startObserver() {
-    if (!document.body) {
-      document.addEventListener('DOMContentLoaded', startObserver);
-      return;
-    }
-    new MutationObserver(scheduleRun).observe(document.body, { childList: true, subtree: true });
-  })();
+  /* Watch for late checkout rendering only while that route is active. */
 })();

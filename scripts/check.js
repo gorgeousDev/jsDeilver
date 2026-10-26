@@ -166,5 +166,11 @@ const funnelFeature = fs.readFileSync(
   "utf8"
 );
 assert(!funnelFeature.includes("setInterval("), "the funnel feature should not rely on polling intervals");
+const checkoutRestyle = fs.readFileSync(path.join(MODULES_DIR, "checkout-restyle.js"), "utf8");
+assert(!checkoutRestyle.includes("setInterval("), "checkout restyling should not rely on polling intervals");
+assert(
+  checkoutRestyle.includes('addEventListener("akkad:route-change", routeTick)'),
+  "checkout restyling should respond to shared SPA route changes"
+);
 
 console.log(`OK  ${scripts.length} file(s) parse as classic scripts; route layers load in order with shared versions.`);
