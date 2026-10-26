@@ -15,14 +15,36 @@ try {
         });
     }
 
-    disableCartImageLinks();
-    var cartTimer;
-    new MutationObserver(function () {
-        clearTimeout(cartTimer);
-        cartTimer = setTimeout(disableCartImageLinks, 500);
-    }).observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    var observer = null;
+    var cartTimer = null;
+
+    function isCartRoute() {
+        var pathname = window.location.pathname;
+        return pathname === "/cart" ||
+            pathname.indexOf("/cart/") === 0 ||
+            pathname.indexOf("/checkout") === 0;
+    }
+
+    function syncCartRoute() {
+        if (!isCartRoute()) {
+            if (observer) observer.disconnect();
+            observer = null;
+            clearTimeout(cartTimer);
+            cartTimer = null;
+            return;
+        }
+
+        disableCartImageLinks();
+        if (observer || !document.body) return;
+
+        observer = new MutationObserver(function () {
+            clearTimeout(cartTimer);
+            cartTimer = setTimeout(disableCartImageLinks, 250);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    window.addEventListener("akkad:route-change", syncCartRoute);
+    syncCartRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: v2-disable-cart-image-links", error); }
