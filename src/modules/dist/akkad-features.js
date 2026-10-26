@@ -664,6 +664,43 @@ try {
     buildNavbar();
   }
 
+  function containsElement(node, selector) {
+    return node.nodeType === 1 &&
+      (node.matches(selector) || node.querySelector(selector));
+  }
+
+  var navTimer;
+  var navObserver = null;
+
+  function scheduleNavbarUpdate() {
+    clearTimeout(navTimer);
+    navTimer = setTimeout(initNavbar, 400);
+  }
+
+  function observeNavbarChanges() {
+    if (navObserver) return;
+    if (!document.body) {
+      document.addEventListener("DOMContentLoaded", observeNavbarChanges, { once: true });
+      return;
+    }
+
+    navObserver = new MutationObserver(function (records) {
+      var navExists = !!document.querySelector(".akkad-categories-nav");
+      for (var i = 0; i < records.length; i++) {
+        var changedNodes = navExists ? records[i].removedNodes : records[i].addedNodes;
+        var selector = navExists ? ".akkad-categories-nav" : "header";
+
+        for (var j = 0; j < changedNodes.length; j++) {
+          if (containsElement(changedNodes[j], selector)) {
+            scheduleNavbarUpdate();
+            return;
+          }
+        }
+      }
+    });
+    navObserver.observe(document.body, { childList: true, subtree: true });
+  }
+
     // 9. Categories Navbar Execution
     if (document.readyState === "complete") {
       initNavbar();
@@ -671,18 +708,7 @@ try {
       window.addEventListener("load", initNavbar);
     }
 
-    // The header is re-rendered by a soft navigation, which drops the injected
-    // categories bar; re-add it whenever the DOM settles rather than only once at load.
-    if (document.body) {
-      var navTimer;
-      new MutationObserver(function () {
-        if (document.querySelector(".akkad-categories-nav")) return;
-        clearTimeout(navTimer);
-        navTimer = setTimeout(initNavbar, 400);
-      }).observe(document.body, {
-        childList: true,
-        subtree: true
-      });
-    }
+    observeNavbarChanges();
+    window.addEventListener("akkad:route-change", initNavbar);
 })();
 } catch (error) { console.error("[Akkad] feature failed: akkad-category-navigation", error); }
