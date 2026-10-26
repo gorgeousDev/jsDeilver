@@ -12,13 +12,28 @@
         }
     }
 
-    moveProductDetails();
-    var moveTimer;
-    new MutationObserver(function () {
-        clearTimeout(moveTimer);
-        moveTimer = setTimeout(moveProductDetails, 500);
-    }).observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    var observer = null;
+    var moveTimer = null;
+
+    function syncProductRoute() {
+        if (window.location.pathname.indexOf("/products/") !== 0) {
+            if (observer) observer.disconnect();
+            observer = null;
+            clearTimeout(moveTimer);
+            moveTimer = null;
+            return;
+        }
+
+        moveProductDetails();
+        if (observer || !document.body) return;
+
+        observer = new MutationObserver(function () {
+            clearTimeout(moveTimer);
+            moveTimer = setTimeout(moveProductDetails, 250);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    window.addEventListener("akkad:route-change", syncProductRoute);
+    syncProductRoute();
 })();
