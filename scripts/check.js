@@ -53,12 +53,30 @@ if (failures.length) {
   process.exit(1);
 }
 
-function verifyFeatureEntry(entryName, bundleName, expectedFeatures) {
+function verifyFeatureEntry(entryName, pathname, expectedLayers, manifest) {
   const entryPath = path.join(MODULES_DIR, entryName);
   const currentScript = {
     src: `https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/${entryName}?v=15`
   };
   const appended = [];
+  const location = {
+    pathname,
+    href: `https://www.akkad.one${pathname}`
+  };
+  const window = {
+    location,
+    history: {
+      pushState(state, title, url) {
+        location.href = new URL(url, location.href).href;
+        location.pathname = new URL(location.href).pathname;
+      },
+      replaceState(state, title, url) {
+        location.href = new URL(url, location.href).href;
+        location.pathname = new URL(location.href).pathname;
+      }
+    },
+    addEventListener() {}
+  };
   const document = {
     currentScript,
     createElement() {
@@ -70,36 +88,68 @@ function verifyFeatureEntry(entryName, bundleName, expectedFeatures) {
       }
     }
   };
-  const context = vm.createContext({
-    document,
-    window: { location: { pathname: "/" } },
-    console
-  });
+  const context = vm.createContext({ document, window, console, URL, setTimeout: (callback) => callback() });
   const source = fs.readFileSync(entryPath, "utf8");
 
   new vm.Script(source, { filename: entryPath }).runInContext(context);
 
-  const bundleUrl = `https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/dist/${bundleName}?v=15`;
+  const bundleFile = (layer) => layer === "akkad" ? "akkad-features.js" : `akkad-${layer}.js`;
+  const expectedUrls = expectedLayers.map(
+    (layer) => `https://cdn.jsdelivr.net/gh/gorgeousDev/jsDeilver@main/src/modules/dist/${bundleFile(layer)}?v=15`
+  );
   const bundleScripts = appended.filter((script) => script.src.includes("/dist/"));
   assert.deepStrictEqual(
     bundleScripts.map((script) => script.src),
-    [bundleUrl],
-    `${entryName} should load one feature bundle with the entry version`
+    expectedUrls,
+    `${entryName} should load only the route layers for ${pathname} with the entry version`
   );
-  assert.strictEqual(bundleScripts[0].async, true, `${entryName} should not block parsing while the bundle loads`);
-  assert(fs.existsSync(path.join(MODULES_DIR, "dist", bundleName)), `${bundleUrl} should exist`);
+  for (const script of bundleScripts) {
+    assert.strictEqual(
+      script.async,
+      entryName === "akkad.js",
+      `${script.src} should use the appropriate async strategy`
+    );
+  }
 
-  const bundle = fs.readFileSync(path.join(MODULES_DIR, "dist", bundleName), "utf8");
-  for (const name of expectedFeatures) {
-    assert(bundle.includes(`/* ${name} */`), `${bundleName} should contain ${name} in manifest order`);
+  for (const layer of expectedLayers) {
+    const bundleName = bundleFile(layer);
+    const bundlePath = path.join(MODULES_DIR, "dist", bundleName);
+    assert(fs.existsSync(bundlePath), `${bundleName} should exist`);
+    const bundle = fs.readFileSync(bundlePath, "utf8");
+    for (const name of manifest[layer]) {
+      assert(bundle.includes(`/* ${name} */`), `${bundleName} should contain ${name}`);
+    }
+  }
+
+  if (entryName === "akkad-v2.js") {
+    const beforeNavigation = bundleScripts.length;
+    window.history.pushState({}, "", "/products/example");
+    assert(
+      appended.some((script) => script.src.endsWith("/dist/akkad-product.js?v=15")),
+      "akkad-v2.js should load the product layer on SPA navigation"
+    );
+    assert(
+      appended.filter((script) => script.src.endsWith("/dist/akkad-core.js?v=15")).length === 1,
+      "akkad-v2.js should load the core layer only once"
+    );
+    assert(beforeNavigation <= appended.length, "SPA route dispatch should retain previously loaded layers");
   }
 
   return appended;
 }
 
 const manifest = JSON.parse(fs.readFileSync(path.join(MODULES_DIR, "features", "manifest.json"), "utf8"));
-verifyFeatureEntry("akkad.js", "akkad-features.js", manifest.akkad);
+verifyFeatureEntry("akkad.js", "/", ["akkad"], manifest);
+verifyFeatureEntry("akkad-v2.js", "/", ["core", "home"], manifest);
+verifyFeatureEntry("akkad-v2.js", "/products/example", ["core", "product"], manifest);
+verifyFeatureEntry("akkad-v2.js", "/checkout", ["core", "cart", "checkout"], manifest);
+verifyFeatureEntry("akkad-v2.js", "/funnels/example", ["core", "funnel"], manifest);
+verifyFeatureEntry("akkad-v2.js", "/collections/office-supplies", ["core", "office"], manifest);
+verifyFeatureEntry(
+  "akkad-v2.js",
+  "/products/high-school-graduation-gift-classic-design-2026",
+  ["core", "product", "graduation"],
+  manifest
+);
 
-verifyFeatureEntry("akkad-v2.js", "akkad-all-features.js", manifest.akkad.concat(manifest.akkadV2));
-
-console.log(`OK  ${scripts.length} file(s) parse as classic scripts; both entrypoints load versioned feature bundles.`);
+console.log(`OK  ${scripts.length} file(s) parse as classic scripts; route layers load in order with shared versions.`);

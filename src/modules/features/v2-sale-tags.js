@@ -62,21 +62,51 @@
        Inline style, so a React re-render on that node
        cannot bring it back.
        ========================================= */
-    function removeDiscountLabels() {
-        var spans = document.querySelectorAll("span");
-        for (var i = 0; i < spans.length; i++) {
-            var span = spans[i];
-            if (span.textContent.trim() !== DISCOUNT_WORD) continue;
+    function hideDiscountLabel(span) {
+        if (span.textContent.trim() !== DISCOUNT_WORD) return;
 
-            span.style.cssText = GONE;
-
-            /* also hide the wrapper if the chip is its only child */
-            var parent = span.parentElement;
-            if (parent && parent.children.length === 1 &&
-                parent.textContent.trim() === DISCOUNT_WORD) {
-                parent.style.cssText = GONE;
-            }
+        span.style.cssText = GONE;
+        var parent = span.parentElement;
+        if (parent && parent.children.length === 1 &&
+            parent.textContent.trim() === DISCOUNT_WORD) {
+            parent.style.cssText = GONE;
         }
+    }
+
+    function removeLegacyBadges(root) {
+        var legacy = [];
+        if (root.matches && root.matches(".akkad-sale-badge")) legacy.push(root);
+        var descendants = root.querySelectorAll ? root.querySelectorAll(".akkad-sale-badge") : [];
+        for (var i = 0; i < descendants.length; i++) legacy.push(descendants[i]);
+        for (var l = 0; l < legacy.length; l++) {
+            legacy[l].remove();
+        }
+    }
+
+    function processCard(card) {
+        var priceBox = card.querySelector(".fasty_product_card_price");
+        if (!priceBox || !priceBox.querySelector("del")) return;
+
+        var host = hostFor(card);
+        if (!host || host.querySelector("." + TAG_CLASS)) return;
+
+        host.appendChild(buildTag());
+    }
+
+    function processNode(node) {
+        if (!node || node.nodeType !== 1) return;
+
+        removeLegacyBadges(node);
+        if (node.matches("span")) hideDiscountLabel(node);
+        var spans = node.querySelectorAll("span");
+        for (var i = 0; i < spans.length; i++) hideDiscountLabel(spans[i]);
+
+        if (node.matches(".fasty_product_card")) processCard(node);
+        var cards = node.querySelectorAll(".fasty_product_card");
+        for (var c = 0; c < cards.length; c++) processCard(cards[c]);
+
+        var card = node.closest(".fasty_product_card");
+        if (card) processCard(card);
     }
 
     /* =========================================
@@ -101,34 +131,12 @@
         return link;
     }
 
-    function processCards() {
-        /* clear the old sparkled badge left behind by a previous build */
-        var legacy = document.querySelectorAll(".akkad-sale-badge");
-        for (var l = 0; l < legacy.length; l++) {
-            legacy[l].parentNode.removeChild(legacy[l]);
-        }
-
-        var cards = document.querySelectorAll(".fasty_product_card");
-        for (var c = 0; c < cards.length; c++) {
-            var card = cards[c];
-
-            var priceBox = card.querySelector(".fasty_product_card_price");
-            if (!priceBox || !priceBox.querySelector("del")) continue;
-
-            var host = hostFor(card);
-            if (!host || host.querySelector("." + TAG_CLASS)) continue;
-
-            host.appendChild(buildTag());
-        }
-    }
-
     /* =========================================
        Run
        ========================================= */
     function run() {
         addStyles();
-        removeDiscountLabels();
-        processCards();
+        processNode(document.body);
     }
 
     if (document.readyState === "loading") {
@@ -137,10 +145,13 @@
         run();
     }
 
-    var timer;
-    new MutationObserver(function () {
-        clearTimeout(timer);
-        timer = setTimeout(run, 500);
+    new MutationObserver(function (records) {
+        for (var i = 0; i < records.length; i++) {
+            processNode(records[i].target);
+            for (var j = 0; j < records[i].addedNodes.length; j++) {
+                processNode(records[i].addedNodes[j]);
+            }
+        }
     }).observe(document.body, {
         childList: true,
         subtree: true

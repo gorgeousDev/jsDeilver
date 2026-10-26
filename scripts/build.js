@@ -11,7 +11,14 @@ const MANIFEST_PATH = path.join(FEATURES_DIR, "manifest.json");
 
 const OUTPUTS = {
   akkad: path.join(DIST_DIR, "akkad-features.js"),
-  akkadAll: path.join(DIST_DIR, "akkad-all-features.js")
+  core: path.join(DIST_DIR, "akkad-core.js"),
+  home: path.join(DIST_DIR, "akkad-home.js"),
+  product: path.join(DIST_DIR, "akkad-product.js"),
+  cart: path.join(DIST_DIR, "akkad-cart.js"),
+  checkout: path.join(DIST_DIR, "akkad-checkout.js"),
+  funnel: path.join(DIST_DIR, "akkad-funnel.js"),
+  office: path.join(DIST_DIR, "akkad-office.js"),
+  graduation: path.join(DIST_DIR, "akkad-graduation.js")
 };
 
 function buildBundle(names, outputPath) {
@@ -48,7 +55,14 @@ function buildBundle(names, outputPath) {
 
 function run({ checkOnly = false } = {}) {
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
-  manifest.akkadAll = manifest.akkad.concat(manifest.akkadV2);
+  const listed = new Set(Object.values(manifest).flat());
+  const sourceFeatures = fs.readdirSync(FEATURES_DIR)
+    .filter((file) => file.endsWith(".js"))
+    .map((file) => path.basename(file, ".js"));
+  const unlisted = sourceFeatures.filter((name) => !listed.has(name));
+  if (unlisted.length) {
+    throw new Error(`Feature sources missing from manifest: ${unlisted.join(", ")}`);
+  }
 
   for (const [key, outputPath] of Object.entries(OUTPUTS)) {
     const output = buildBundle(manifest[key], outputPath);
