@@ -4,20 +4,25 @@ try {
    10. Funnel Price Overrides
    ========================================= */
 (function () {
-    /* The path used to be checked once, at parse time, so the overrides only
-       appeared when the store was opened directly on a funnel - arriving at one
-       through a soft navigation left the prices untouched. The route is now
-       watched, and the interval only runs while a funnel is actually on
-       screen instead of on every page of the store. */
-    var timer = null;
+    var observer = null;
+    var applyTimer = null;
 
     function isFunnel() {
-        return location.href.includes("funnels");
+        return window.location.href.includes("funnels");
+    }
+
+    function normalizedText(node) {
+        return node.textContent.replace(/\s/g, "");
     }
 
     function applyFunnelPrices() {
         var shipping = document.querySelector(".shipping_cost");
-        if (shipping) {
+        var shippingChip = shipping && shipping.querySelector("span");
+        if (shipping && (
+            normalizedText(shipping) !== "50ج.م" ||
+            !shippingChip ||
+            shippingChip.style.display !== "inline-block"
+        )) {
             shipping.innerHTML = '\
                 <span style="\
                     display:inline-block;\
@@ -34,13 +39,22 @@ try {
         }
 
         var total = document.querySelector(".total_price");
-        if (total) {
+        if (total && (
+            normalizedText(total) !== "419.99ج.م" ||
+            !total.innerHTML.includes("font-[inherit]")
+        )) {
             total.innerHTML = '\
                 419.99\
                 <span class="font-[inherit]">ج.م</span>';
         }
 
         document.querySelectorAll("#salePrice").forEach(function (salePrice) {
+            var salePriceContent = salePrice.querySelector("span");
+            if (
+                normalizedText(salePrice) === "369.99ج.م" &&
+                salePriceContent &&
+                salePriceContent.style.display === "inline-flex"
+            ) return;
             salePrice.innerHTML = '\
                 <span style="\
                     display:inline-flex;\
@@ -69,27 +83,29 @@ try {
     }
 
     function syncFunnel() {
-        if (isFunnel()) {
-            if (timer) return;
-            applyFunnelPrices();
-            timer = setInterval(applyFunnelPrices, 200);
+        if (!isFunnel()) {
+            if (observer) observer.disconnect();
+            observer = null;
+            clearTimeout(applyTimer);
+            applyTimer = null;
             return;
         }
-        if (!timer) return;
-        clearInterval(timer);
-        timer = null;
+
+        applyFunnelPrices();
+        if (observer || !document.body) return;
+        observer = new MutationObserver(function () {
+            clearTimeout(applyTimer);
+            applyTimer = setTimeout(applyFunnelPrices, 100);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
     }
+
+    window.addEventListener("akkad:route-change", syncFunnel);
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", syncFunnel);
     } else {
         syncFunnel();
     }
-
-    var funnelPush = history.pushState;
-    var funnelReplace = history.replaceState;
-    history.pushState = function () { var r = funnelPush.apply(this, arguments); setTimeout(syncFunnel, 0); return r; };
-    history.replaceState = function () { var r = funnelReplace.apply(this, arguments); setTimeout(syncFunnel, 0); return r; };
-    window.addEventListener("popstate", syncFunnel);
 })();
 } catch (error) { console.error("[Akkad] feature failed: v2-funnel-price-overrides", error); }

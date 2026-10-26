@@ -161,5 +161,10 @@ const officeFeature = fs.readFileSync(
   "utf8"
 );
 assert(!officeFeature.includes("setInterval("), "the office feature should not rely on polling intervals");
+const funnelFeature = fs.readFileSync(
+  path.join(MODULES_DIR, "features", "v2-funnel-price-overrides.js"),
+  "utf8"
+);
+assert(!funnelFeature.includes("setInterval("), "the funnel feature should not rely on polling intervals");
 
 console.log(`OK  ${scripts.length} file(s) parse as classic scripts; route layers load in order with shared versions.`);
