@@ -24,7 +24,13 @@ export function createNavigation(window) {
     }
 
     currentLocation = nextLocation;
-    for (const listener of listeners) listener(nextLocation);
+    for (const listener of listeners) {
+      try {
+        listener(nextLocation);
+      } catch (error) {
+        window.console.error("[Akkad] Navigation feature callback failed.", error);
+      }
+    }
   }
 
   for (const method of ["pushState", "replaceState"]) {
@@ -47,7 +53,11 @@ export function createNavigation(window) {
     }
 
     listeners.add(listener);
-    listener(currentLocation);
+    try {
+      listener(currentLocation);
+    } catch (error) {
+      window.console.error("[Akkad] Navigation feature callback failed.", error);
+    }
     return () => listeners.delete(listener);
   }
 

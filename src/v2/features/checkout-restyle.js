@@ -1,4 +1,5 @@
 import checkoutCss from "../styles/checkout.css";
+import { captureInlineProperties, restoreInlineProperties } from "../core/inline-style.js";
 
 const CHECKOUT_PATH = "checkout";
 const THANKS_PATH = "thanks";
@@ -23,16 +24,32 @@ function addReminder(container, document) {
   container.insertBefore(banner, container.firstChild);
 }
 
-function fixCheckoutHeader(document, window) {
+function fixCheckoutHeader(document, window, headerStyles, wrapperClasses) {
   if (!window.location.pathname.includes(CHECKOUT_PATH)) return;
 
   for (const header of document.querySelectorAll("header.sticky.top-0.z-50")) {
-    header.style.display = "none";
+    if (!headerStyles.has(header)) {
+      headerStyles.set(header, captureInlineProperties(header, ["display"]));
+    }
+    header.style.setProperty("display", "none");
   }
   const siteHeader = document.querySelector("header.fasty_header");
   const wrapper = siteHeader?.closest("div.hidden");
-  if (wrapper) wrapper.classList.remove("hidden");
+  if (wrapper) {
+    if (!wrapperClasses.has(wrapper)) wrapperClasses.set(wrapper, wrapper.classList.contains("hidden"));
+    wrapper.classList.remove("hidden");
+  }
   document.documentElement.classList.add("on-checkout");
+}
+
+function restoreCheckoutHeader(document, headerStyles, wrapperClasses) {
+  for (const [header, style] of headerStyles) restoreInlineProperties(header, style);
+  headerStyles.clear();
+  for (const [wrapper, wasHidden] of wrapperClasses) {
+    wrapper.classList.toggle("hidden", wasHidden);
+  }
+  wrapperClasses.clear();
+  document.documentElement.classList.remove("on-checkout");
 }
 
 function labelInput(input, document) {
@@ -109,8 +126,8 @@ function createThanksCard(document, orderId) {
   return card;
 }
 
-function renderThanksPage(container, document, window) {
-  if (document.querySelector(".akkad-thanks-card")) return;
+function renderThanksPage(container, document, window, originalStyles, hiddenChildren, cards) {
+  if (container.querySelector(".akkad-thanks-card")) return;
 
   const orderId = new URLSearchParams(window.location.search).get("order_id") || "";
   Array.from(container.children).forEach((child) => {
@@ -120,11 +137,19 @@ function renderThanksPage(container, document, window) {
       (typeof child.className === "string" && /(^|\s)thanks_content(\s|$)/.test(child.className));
     const hasHomeLink = child.querySelector('a[href="/"]');
     if (isFiller || (!hasProductOffer && hasHomeLink)) {
+      if (!hiddenChildren.has(child)) {
+        hiddenChildren.set(child, captureInlineProperties(child, ["display"]));
+      }
       child.style.setProperty("display", "none", "important");
       child.dataset.akkadThanksHidden = "1";
     }
   });
 
+  if (!originalStyles.has(container)) {
+    originalStyles.set(container, captureInlineProperties(container, [
+      "margin-top", "padding-bottom", "justify-content", "display", "flex-direction", "align-items"
+    ]));
+  }
   container.style.marginTop = "40px";
   container.style.paddingBottom = "44px";
   container.style.justifyContent = "flex-start";
@@ -133,18 +158,37 @@ function renderThanksPage(container, document, window) {
     container.style.flexDirection = "column";
     container.style.alignItems = "center";
   }
-  container.insertBefore(createThanksCard(document, orderId), container.firstChild);
+  const card = createThanksCard(document, orderId);
+  cards.add(card);
+  container.insertBefore(card, container.firstChild);
 }
 
 export function initCheckoutRestyle({ document, dom, events, navigation, styles, window }) {
   const removeStyles = styles.add("akkad-v2-checkout-css", checkoutCss);
   let thanksTimer = 0;
   let thanksObserverCleanup = null;
+  const headerStyles = new Map();
+  const wrapperClasses = new Map();
+  const thanksStyles = new Map();
+  const hiddenThanksChildren = new Map();
+  const thanksCards = new Set();
+
+  function restoreThanksPage() {
+    for (const card of thanksCards) card.remove();
+    thanksCards.clear();
+    for (const [element, style] of hiddenThanksChildren) {
+      restoreInlineProperties(element, style);
+      delete element.dataset.akkadThanksHidden;
+    }
+    hiddenThanksChildren.clear();
+    for (const [container, style] of thanksStyles) restoreInlineProperties(container, style);
+    thanksStyles.clear();
+  }
 
   function initializeCheckout(container) {
     if (!window.location.pathname.includes(CHECKOUT_PATH)) return;
     addReminder(container, document);
-    fixCheckoutHeader(document, window);
+    fixCheckoutHeader(document, window, headerStyles, wrapperClasses);
   }
 
   function initializePayments() {
@@ -166,6 +210,7 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
       thanksTimer = 0;
       if (thanksObserverCleanup) thanksObserverCleanup();
       thanksObserverCleanup = null;
+      restoreThanksPage();
       return;
     }
 
@@ -178,11 +223,11 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
     thanksTimer = window.setTimeout(() => {
       thanksTimer = 0;
       if (!window.location.pathname.includes(THANKS_PATH)) return;
-      renderThanksPage(container, document, window);
+      renderThanksPage(container, document, window, thanksStyles, hiddenThanksChildren, thanksCards);
       if (!thanksObserverCleanup) {
         const stopObserving = dom.observe(
           container,
-          () => renderThanksPage(container, document, window),
+          () => renderThanksPage(container, document, window, thanksStyles, hiddenThanksChildren, thanksCards),
           { childList: true }
         );
         thanksObserverCleanup = stopObserving;
@@ -203,7 +248,7 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
 
   const unsubscribePaymentCardClick = events.on("click", ".payment_card", (event, card) => {
     const box = document.querySelector(".akkad-elec-box");
-    if (!box || card.contains(box)) return;
+    if (!box) return;
     const cards = Array.from(document.querySelectorAll(".payment_card"));
     if (card === cards[1]) box.classList.add("show");
     else if (card === cards[0]) box.classList.remove("show");
@@ -233,10 +278,17 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
     const isCheckout = pathname.includes(CHECKOUT_PATH);
     document.documentElement.classList.toggle("on-checkout", isCheckout);
     if (isCheckout) {
-      fixCheckoutHeader(document, window);
+      fixCheckoutHeader(document, window, headerStyles, wrapperClasses);
+    } else {
+      restoreCheckoutHeader(document, headerStyles, wrapperClasses);
     }
     initializeThanksPage(pathname);
   });
+
+  const unsubscribeHeaders = dom.subscribe(
+    "header.sticky.top-0.z-50, header.fasty_header",
+    () => fixCheckoutHeader(document, window, headerStyles, wrapperClasses)
+  );
 
   return () => {
     unsubscribeCheckout();
@@ -246,8 +298,11 @@ export function initCheckoutRestyle({ document, dom, events, navigation, styles,
     unsubscribePaymentCardClick();
     unsubscribeWalletCopy();
     unsubscribeRoutes();
+    unsubscribeHeaders();
     if (thanksTimer) window.clearTimeout(thanksTimer);
     if (thanksObserverCleanup) thanksObserverCleanup();
+    restoreCheckoutHeader(document, headerStyles, wrapperClasses);
+    restoreThanksPage();
     removeStyles();
   };
 }

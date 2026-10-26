@@ -41,7 +41,11 @@ export function createDelegatedEvents(document) {
               ? event.target.closest(subscription.selector)
               : null;
           if (subscription.selector === null || matched) {
-            subscription.callback(event, matched);
+            try {
+              subscription.callback(event, matched);
+            } catch (error) {
+              console.error(`[Akkad] Event feature callback failed: ${type}`, error);
+            }
           }
         }
       };

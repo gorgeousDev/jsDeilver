@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "esbuild entry.js --bundle --minify --platform=browser --target=es2018 --loader:.css=text --outfile=dist/akkad-v2.min.js"
+    "build": "esbuild entry.js --bundle --minify --platform=browser --target=es2018 --loader:.css=text --outfile=dist/akkad-v2.min.js",
+    "check": "npm run build && node scripts/check.js",
+    "test": "node scripts/check.js"
   },
   "devDependencies": {
     "esbuild": "^0.28.2"

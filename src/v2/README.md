@@ -15,6 +15,10 @@ stylesheets remain untouched under `src/modules`.
 - `config.js` reads optional feature flags from `window.AkkadV2Config`, for
   example `{ features: { darkMode: false } }`. Each feature has a default;
   an explicit boolean setting overrides that default.
+- The v2 registry contains all 21 distinct feature modules from the legacy
+  `akkad.js` and `akkad-v2.js` feature manifest, plus the four existing v2
+  features. The old stylesheet loader is represented by the base stylesheet
+  imports rather than a separate feature.
 - The `videoLazy` feature is currently enabled by default. It removes autoplay
   from existing and newly inserted videos and disconnects its observer during
   cleanup.
@@ -34,6 +38,14 @@ stylesheets remain untouched under `src/modules`.
 - Checkout totals, discounts, and cart quantity changes are handled only by
   EasyOrders. V2 applies presentation styles to its native cart and invoice;
   it does not cap, rewrite, or calculate any displayed order amounts.
+- The legacy mobile grid, store overrides, featured-banner sizing, sale tags,
+  product image alt fallback, categories bar, product gallery and lightbox,
+  copy-link button, viewer badge, product-details placement, OKKA heading
+  suppression, cart-image navigation prevention, checkout payment ordering,
+  funnel display overrides, office-supplies sections, graduation slider,
+  Google verification tag, WhatsApp widget, and home live counter are also
+  registered as separate feature modules. Product/page-specific behavior is
+  guarded by the active route.
 - The runtime injects `styles/header.css` from the entry bundle. The separate
   legacy `header.css` `<link>` is not needed when this entry is deployed.
 - Add a feature module under `features/` and register it from
@@ -50,9 +62,6 @@ stylesheets remain untouched under `src/modules`.
   single document listener and receive an unsubscribe function.
 - Use `context.navigation.subscribe(callback)` to respond to SPA route changes
   without feature-specific history wrappers or polling.
-- The entry logs its resource download duration when browser timing data is
-  available, and its synchronous initialization duration. Remove this
-  temporary diagnostic after feature testing is complete.
 - Keep initialization page-aware and inexpensive. Avoid global polling and
   document-wide observers unless a feature demonstrably needs them. Do not
   use client-side changes as a substitute for server-rendered, SEO-critical
@@ -61,9 +70,8 @@ stylesheets remain untouched under `src/modules`.
 All v2 stylesheets live in `styles/`. The footer, gallery, header,
 product-card, and slider files are v2-maintained copies of the legacy module
 stylesheets; the originals remain unchanged. `styles/index.js` registers the
-header stylesheet as a base style, while `dark-mode.js` bundles `tokens.css`
-and `dark-mode.css`. Other styles join the entry only when their owning feature
-imports them.
+shared base styles. Feature-specific styles are imported by their owning
+feature and included in the one generated bundle.
 
 The style refactor groups repeated dark-theme colors into design tokens,
 removes an overly broad footer rule that painted every descendant the same
@@ -82,8 +90,11 @@ that file once in the storefront `<head>`:
 ```
 
 From this directory, run `npm install` once and then `npm run build` to create
-`dist/akkad-v2.min.js`. Keep this directory independent of the existing
-`src/modules` files.
+`dist/akkad-v2.min.js`. Run `npm run check` to rebuild the bundle, validate
+classic-script output, assert all 21 legacy feature mappings are registered,
+and test navigation, DOM subscription, delegated-event, and style cleanup
+services. Keep this directory independent of the existing `src/modules`
+runtime.
 
 ## Reading the startup flow
 
@@ -107,7 +118,9 @@ does not become readable through CSS utility overrides alone. Its calculations
 live in `core/accessibility/contrast.js`; it scans once after a mode change and
 scans only newly added DOM subtrees afterward.
 
-Remove the legacy `promo.js` and `checkout-restyle.js` script tags when
-deploying the v2 replacements. The legacy checkout restyle script also injects
-a custom invoice; v2 deliberately keeps EasyOrders' native invoice as the only
-invoice surface.
+Deploy this bundle instead of the legacy Akkad/v2 entry scripts and their
+standalone dark-mode, checkout-restyle, slider-drag, and video-lazy scripts;
+otherwise those behaviors may run twice or conflict. Do not deploy the legacy
+`promo.js`: its discount cap is intentionally not migrated. The checkout
+feature deliberately keeps EasyOrders' native invoice as the only invoice
+surface and never changes business totals.

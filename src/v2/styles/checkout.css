@@ -87,62 +87,14 @@ html.akkad-dark .checkout_container .radio_circle[class*="bg-blue"]{ background:
 .akkad-elec-box .akkad-num button { border: none; background: var(--co-accent); color: var(--co-on-accent); padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
 .akkad-elec-box .akkad-num button:hover { background: var(--co-accent-2); }
 
-.akkad-invoice { direction: rtl; width: 100%; background: var(--co-grad); border: 2px solid var(--co-line-strong); border-radius: 12px; padding: 14px; font-family: Tajawal, sans-serif; color: var(--co-ink); box-shadow: var(--co-shadow); margin-bottom: 16px; }
-.akkad-invoice-header { border-bottom: 2px solid var(--co-accent); padding-bottom: 14px; margin-bottom: 14px; }
-.akkad-invoice-brand { text-align: center; margin-bottom: 10px; }
-.akkad-invoice-brand h2 { font-size: 18px; font-weight: 900; color: var(--co-ink); margin: 0; }
-.akkad-invoice-brand h2 span { color: var(--co-bright); }
-.akkad-invoice-brand p { font-size: 11px; font-weight: 600; color: var(--co-ink-2); margin: 4px 0 0 0; }
-.akkad-invoice-meta { text-align: right !important; font-size: 12px !important; line-height: 1.8 !important; }
-.akkad-invoice-meta p { margin: 0 !important; }
-.akkad-invoice-meta-label { font-weight: 700 !important; font-size: 14px !important; }
-.akkad-invoice-customer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; font-size: 11px; }
-.akkad-invoice-customer-info { display: flex; flex-direction: column; gap: 3px; }
-.akkad-invoice-customer-info span { font-weight: 700; }
-.akkad-invoice-customer-count { text-align: left; }
-.akkad-invoice-table-wrapper { border-radius: 10px; overflow: hidden; border: 1px solid var(--co-line); }
-.akkad-invoice-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.akkad-invoice-table thead tr { background: var(--co-accent-2); color: var(--co-on-accent); }
-.akkad-invoice-table th { border: 1px solid var(--co-accent-2); padding: 10px 4px; text-align: center; font-weight: 700; }
-.akkad-invoice-table td { border: 1px solid var(--co-line); padding: 10px 6px; text-align: center; }
-.akkad-invoice-table td:nth-child(2) { text-align: right; font-weight: 600; font-size: 11px; }
-.akkad-invoice-table tbody tr:nth-child(odd) { background: var(--co-row); }
-.akkad-invoice-table tfoot tr { background: var(--co-accent-2); color: var(--co-on-accent); }
-.akkad-invoice-table tfoot td { border: 1px solid var(--co-accent-2); padding: 10px 6px; font-weight: 900; }
-.akkad-invoice-table tfoot td:last-child { font-size: 13px; color: var(--co-bright-2); }
-.akkad-invoice-table .item-total { font-weight: 700; color: var(--co-ink); }
-.akkad-invoice-footer-msg { margin-top: 14px; border-radius: 10px; overflow: hidden; border: 1px solid var(--co-line); }
-.akkad-invoice-footer-msg-top { background: var(--co-accent-2); color: var(--co-on-accent); text-align: center; padding: 10px 14px; }
-.akkad-invoice-footer-msg-top p { font-weight: 900; font-size: 12px; margin: 0; }
-.akkad-invoice-footer-msg-top span { color: var(--co-bright-2); }
-.akkad-invoice-row { display: flex !important; justify-content: space-between !important; padding: 6px 0 !important; font-size: 12px !important; }
-.akkad-invoice-row span:first-child { font-weight: 700 !important; color: var(--co-ink-2) !important; }
-.akkad-invoice-discount span:last-child { color: var(--co-warn-ink) !important; font-weight: 800 !important; }
-.akkad-invoice-shipping span:last-child { color: var(--co-ink) !important; font-weight: 700 !important; }
-.akkad-invoice-total-row { display: flex !important; justify-content: space-between !important; padding: 10px 0 0 0 !important; margin-top: 6px !important; border-top: 2px solid var(--co-accent) !important; }
-.akkad-invoice-total-row span:first-child { font-weight: 800 !important; font-size: 14px !important; color: var(--co-ink-2) !important; }
-.akkad-invoice-total-row span:last-child { font-weight: 900 !important; font-size: 16px !important; color: var(--co-bright) !important; }
-.mt-2.flex.items-end.justify-between { background: var(--co-sunken) !important; border: 1.5px solid var(--co-line-strong) !important; border-radius: 12px !important; padding: 14px 16px !important; margin-top: 14px !important; display: flex !important; align-items: flex-end !important; gap: 12px !important; color: var(--co-ink) !important; }
-.mt-2.flex.items-end.justify-between label { font-weight: 700 !important; font-size: 14px !important; color: var(--co-ink) !important; margin-bottom: 6px !important; }
-.mt-2.flex.items-end.justify-between .relative { flex: 1 !important; }
-.mt-2.flex.items-end.justify-between .global_input { border: 2px solid var(--co-line-strong) !important; border-radius: 10px !important; padding: 10px 14px !important; font-size: 14px !important; height: 42px !important; background: var(--co-raised) !important; color: var(--co-ink) !important; }
-.mt-2.flex.items-end.justify-between .global_input:focus { border-color: var(--co-bright) !important; box-shadow: 0 0 0 3px var(--co-ring) !important; outline: none !important; }
-.mt-2.flex.items-end.justify-between button { background: var(--co-accent) !important; color: var(--co-on-accent) !important; border: none !important; border-radius: 10px !important; padding: 10px 24px !important; font-weight: 700 !important; font-size: 14px !important; white-space: nowrap !important; height: 42px !important; transition: all 0.2s !important; cursor: pointer !important; }
-.mt-2.flex.items-end.justify-between button:hover { background: var(--co-accent-2) !important; transform: scale(1.02) !important; }
-.mt-2.flex.items-center.justify-between { background: var(--co-warn-bg) !important; border: 1.5px solid var(--co-warn-line) !important; border-radius: 12px !important; padding: 14px 16px !important; margin-top: 14px !important; display: flex !important; align-items: center !important; justify-content: space-between !important; }
-.mt-2.flex.items-center.justify-between p { font-weight: 700 !important; font-size: 15px !important; color: var(--co-ink) !important; margin: 0 !important; display: flex !important; align-items: center !important; gap: 6px !important; }
-.mt-2.flex.items-center.justify-between p::before { content: "🏷" !important; font-size: 14px !important; }
-.mt-2.flex.items-center.justify-between button { background: var(--co-warn-btn) !important; border: 1.5px solid var(--co-warn-line) !important; color: var(--co-warn-ink) !important; border-radius: 8px !important; padding: 8px 16px !important; font-weight: 700 !important; font-size: 13px !important; transition: all 0.2s !important; cursor: pointer !important; }
-.mt-2.flex.items-center.justify-between button:hover { background: var(--co-accent) !important; border-color: var(--co-accent) !important; color: var(--co-on-accent) !important; transform: scale(1.02) !important; }
 .checkout_container button.flex.items-center.justify-center.gap-2:not(.checkout_buy_now):not(.cart-item-quantity-counter button) { border: 1.5px solid var(--co-line-strong) !important; background: var(--co-sunken) !important; color: var(--co-ink) !important; border-radius: 8px !important; padding: 8px 16px !important; font-weight: 700 !important; font-size: 13px !important; cursor: pointer !important; transition: all 0.2s !important; }
 .checkout_container button.flex.items-center.justify-center.gap-2:not(.checkout_buy_now):not(.cart-item-quantity-counter button):hover { background: var(--co-accent) !important; border-color: var(--co-accent) !important; color: var(--co-on-accent) !important; }
 @media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }
-@media (min-width: 1025px) { .checkout_container { grid-template-columns: 1fr 1fr !important; gap: 40px !important; max-width: 1100px !important; padding: 0 40px !important; } .checkout_form { order: 1 !important; padding-top: 30px !important; } #checkout-order-summary { order: 2 !important; position: sticky !important; top: 90px !important; align-self: start !important; padding: 32px !important; margin-bottom: 0 !important; } .akkad-invoice { padding: 20px !important; } .akkad-invoice-brand h2 { font-size: 22px !important; } .akkad-invoice-table { font-size: 13px !important; } .akkad-invoice-table th { padding: 12px 8px !important; } .akkad-invoice-table td { padding: 12px 10px !important; } .akkad-invoice-customer { font-size: 12px !important; } .akkad-invoice-total-row span:first-child { font-size: 16px !important; } .akkad-invoice-total-row span:last-child { font-size: 20px !important; } }
-@media (max-width: 480px) { .akkad-invoice-table { font-size: 11px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 4px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }
+@media (min-width: 1025px) { .checkout_container { grid-template-columns: 1fr 1fr !important; gap: 40px !important; max-width: 1100px !important; padding: 0 40px !important; } .checkout_form { order: 1 !important; padding-top: 30px !important; } #checkout-order-summary { order: 2 !important; position: sticky !important; top: 90px !important; align-self: start !important; padding: 32px !important; margin-bottom: 0 !important; } }
 @media (max-width: 1024px) { .checkout_button { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 60 !important; width: auto !important; background: var(--co-bar) !important; border-top: 1px solid var(--co-line-strong) !important; box-shadow: var(--co-bar-shadow) !important; padding: 12px 16px !important; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important; } .checkout_container { padding-bottom: 92px !important; } }
 @media (max-width: 1024px) { html.on-checkout #pky_wa_button { bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; right: 16px !important; width: 54px !important; height: 54px !important; } }
 @media (max-width: 1024px) { #checkout-order-summary { display: block !important; margin-bottom: 24px !important; padding: 16px !important; } #checkout-order-summary-toggle { display: none !important; } #checkout-order-summary-content { display: block !important; height: auto !important; max-height: none !important; overflow: visible !important; visibility: visible !important; } .checkout_mobile_bottom_summary { display: none !important; } }
-@media (max-width: 1024px) { .checkout_container, .checkout_container > *, .checkout_form, .checkout_order_summary { min-width: 0 !important; } .checkout_order_summary { max-width: 100% !important; box-sizing: border-box !important; } .akkad-invoice { max-width: 100% !important; box-sizing: border-box !important; } .akkad-invoice-table { table-layout: auto !important; width: 100% !important; } .akkad-invoice-table td:nth-child(2), .akkad-invoice-table th:nth-child(2) { white-space: normal !important; word-break: break-word !important; } .akkad-invoice-table-wrapper { overflow-x: auto !important; } .akkad-wa-reminder { max-width: 100% !important; box-sizing: border-box !important; white-space: normal !important; overflow-wrap: anywhere !important; } .checkout_container { overflow-x: hidden !important; } }
+@media (max-width: 1024px) { .checkout_container, .checkout_container > *, .checkout_form, .checkout_order_summary { min-width: 0 !important; } .checkout_order_summary { max-width: 100% !important; box-sizing: border-box !important; } .akkad-wa-reminder { max-width: 100% !important; box-sizing: border-box !important; white-space: normal !important; overflow-wrap: anywhere !important; } .checkout_container { overflow-x: hidden !important; } }
 .thanks_container .akkad-thanks-card { direction: rtl !important; width: min(640px, 96%) !important; margin: 0 auto 40px auto !important; background: linear-gradient(180deg, #fffdfe, #fdf5f8) !important; border: 2px solid var(--co-line-strong) !important; border-radius: 24px !important; padding: 28px 24px !important; box-shadow: var(--co-shadow) !important; text-align: center !important; font-family: Tajawal, sans-serif !important; color: var(--co-ink) !important; }
 html.akkad-dark .thanks_container .akkad-thanks-card { background: linear-gradient(180deg, #3d1747, #291030) !important; border-color: #5C2151 !important; box-shadow: 0 18px 40px rgba(0,0,0,.45) !important; }
 .akkad-thanks-badge { width: 86px !important; height: 86px !important; margin: 0 auto 6px auto !important; border-radius: 50% !important; background: radial-gradient(circle at 30% 25%, #2BD97C, #12a351) !important; box-shadow: 0 10px 24px rgba(18,163,81,.35), inset 0 -6px 12px rgba(0,0,0,.12) !important; display: flex !important; align-items: center !important; justify-content: center !important; position: relative !important; }

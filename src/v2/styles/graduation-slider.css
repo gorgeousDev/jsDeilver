@@ -1,0 +1,11 @@
+#akkad-graduation-slider{width:100%;max-width:100%;position:relative;overflow:hidden;margin:15px 0;padding:0;box-sizing:border-box;direction:ltr;background:transparent}
+#akkad-graduation-slider .akkad-track{display:flex;width:100%;margin:0;padding:0;transition:transform .45s ease;will-change:transform}
+#akkad-graduation-slider .akkad-slide{flex:0 0 100%;width:100%;min-width:100%;max-width:100%;box-sizing:border-box}
+#akkad-graduation-slider .akkad-slide img{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+#akkad-graduation-slider .akkad-arrow{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.65);border-radius:50%;background:rgba(27,25,49,.72);color:#fff;font-size:24px;cursor:pointer;z-index:2}
+#akkad-graduation-slider .akkad-prev{left:12px}
+#akkad-graduation-slider .akkad-next{right:12px}
+#akkad-graduation-slider .akkad-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
+#akkad-graduation-slider .akkad-dot{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.65);cursor:pointer}
+#akkad-graduation-slider .akkad-dot.active{width:20px;border-radius:10px;background:#fff}
+@media(max-width:768px){#akkad-graduation-slider{margin:10px 0}#akkad-graduation-slider .akkad-arrow{width:36px;height:36px}#akkad-graduation-slider .akkad-prev{left:8px}#akkad-graduation-slider .akkad-next{right:8px}#akkad-graduation-slider .akkad-dots{bottom:7px;gap:5px}}

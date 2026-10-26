@@ -14,11 +14,19 @@ export function createDomObserver(document, window) {
     // Check the added node itself as well as descendants. A newly inserted
     // <video> won't be returned by querying inside that video node.
     if (node.matches(subscription.selector)) {
-      subscription.onElement(node);
+      invoke(subscription, node);
     }
 
     for (const element of node.querySelectorAll(subscription.selector)) {
+      invoke(subscription, element);
+    }
+  }
+
+  function invoke(subscription, element) {
+    try {
       subscription.onElement(element);
+    } catch (error) {
+      window.console.error("[Akkad] DOM feature callback failed.", error);
     }
   }
 
@@ -55,7 +63,11 @@ export function createDomObserver(document, window) {
           for (const node of mutation.addedNodes) {
             notifyTree(node);
             for (const onAdded of addedNodeListeners) {
-              onAdded(node);
+              try {
+                onAdded(node);
+              } catch (error) {
+                window.console.error("[Akkad] DOM addition callback failed.", error);
+              }
             }
           }
         }
@@ -68,7 +80,11 @@ export function createDomObserver(document, window) {
     observer.observe(root, { childList: true, subtree: true });
     notifyTree(root);
     for (const onAdded of addedNodeListeners) {
-      onAdded(root);
+      try {
+        onAdded(root);
+      } catch (error) {
+        window.console.error("[Akkad] DOM addition callback failed.", error);
+      }
     }
   }
 
@@ -119,11 +135,14 @@ export function createDomObserver(document, window) {
     }
 
     const scopedObserver = new window.MutationObserver(callback);
-    scopedObserver.observe(target, {
+    const observerOptions = {
       childList: options.childList !== false,
       subtree: options.subtree !== false,
-      characterData: options.characterData === true
-    });
+      characterData: options.characterData === true,
+      attributes: options.attributes === true
+    };
+    if (options.attributeFilter) observerOptions.attributeFilter = options.attributeFilter;
+    scopedObserver.observe(target, observerOptions);
     scopedObservers.add(scopedObserver);
 
     return () => {
