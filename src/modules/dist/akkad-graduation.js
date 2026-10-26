@@ -6,12 +6,7 @@ try {
 (function () {
     var TARGET_1 = "/products/high-school-graduation-gift-classic-design-2026";
     var TARGET_2 = "/products/high-school-graduation-gift-modern-design-2026";
-
-    /* Deciding at parse time whether this page is a target page was what made the
-       slider work only after a full refresh: this file is parsed once on whatever
-       page the store opened on, and a soft navigation to one of these two products
-       never re-runs it, so the early return above left no init, no timer and no
-       observer behind. The path is now checked every time init() runs. */
+    var activeAutoSlide = null;
     function isTarget() {
         var p = window.location.pathname;
         return p === TARGET_1 || p === TARGET_2;
@@ -335,9 +330,11 @@ try {
 
         function startAutoSlide() {
             clearInterval(autoSlide);
+            if (!isTarget()) return;
             autoSlide = setInterval(function () {
                 goTo((current + 1) % SLIDER_IMAGES.length);
             }, 2000);
+            activeAutoSlide = autoSlide;
         }
 
         startAutoSlide();
@@ -423,33 +420,45 @@ try {
         setTimeout(init, 1000);
     }
 
-    /* Soft navigation: the observer below catches the DOM churn a route change
-       makes, but a route hook removes any doubt for the case where the target
-       product is already fully rendered before the observer's debounce lands. */
     var lastHref = window.location.href;
-    function routeTick() {
-        if (!isTarget()) return;
-        if (window.location.href === lastHref) return;
-        lastHref = window.location.href;
-        clearTimeout(timer);
-        timer = setTimeout(init, 300);
-    }
-    var _push = history.pushState;
-    var _replace = history.replaceState;
-    history.pushState = function () { var r = _push.apply(this, arguments); setTimeout(routeTick, 0); return r; };
-    history.replaceState = function () { var r = _replace.apply(this, arguments); setTimeout(routeTick, 0); return r; };
-    window.addEventListener("popstate", routeTick);
-
+    var lastPath = window.location.pathname;
     var timer;
-    var observer = new MutationObserver(function () {
-        if (document.getElementById(ID)) return;
-        clearTimeout(timer);
-        timer = setTimeout(init, 300);
-    });
+    var observer = null;
 
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    function syncTargetRoute() {
+        if (!isTarget()) {
+            if (observer) observer.disconnect();
+            observer = null;
+            clearInterval(activeAutoSlide);
+            activeAutoSlide = null;
+            clearTimeout(timer);
+            var activeSlider = document.getElementById(ID);
+            if (activeSlider) activeSlider.remove();
+            return;
+        }
+
+        if (!observer && document.body) {
+            observer = new MutationObserver(function () {
+                if (document.getElementById(ID)) return;
+                clearTimeout(timer);
+                timer = setTimeout(init, 300);
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+
+        if (window.location.href !== lastHref) {
+            if (window.location.pathname !== lastPath) {
+                clearInterval(activeAutoSlide);
+                activeAutoSlide = null;
+            }
+            lastHref = window.location.href;
+            lastPath = window.location.pathname;
+            clearTimeout(timer);
+            timer = setTimeout(init, 300);
+        }
+    }
+
+    window.addEventListener("akkad:route-change", syncTargetRoute);
+    syncTargetRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: v2-graduation-gift-slider", error); }
