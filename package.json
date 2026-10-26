@@ -4,6 +4,7 @@
   "private": true,
   "description": "Browser scripts and stylesheets injected into the Akkad EasyOrders storefront.",
   "scripts": {
-    "check": "node scripts/check.js"
+    "build": "node scripts/build.js",
+    "check": "node scripts/build.js --check && node scripts/check.js"
   }
 }

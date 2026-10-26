@@ -130,42 +130,6 @@
     '.akkad-elec-box .akkad-num button { border: none; background: var(--co-accent); color: var(--co-on-accent); padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }',
     '.akkad-elec-box .akkad-num button:hover { background: var(--co-accent-2); }',
 
-    '.akkad-invoice { direction: rtl; width: 100%; background: var(--co-grad); border: 2px solid var(--co-line-strong); border-radius: 12px; padding: 14px; font-family: Tajawal, sans-serif; color: var(--co-ink); box-shadow: var(--co-shadow); margin-bottom: 16px; }',
-    '.akkad-invoice-header { border-bottom: 2px solid var(--co-accent); padding-bottom: 14px; margin-bottom: 14px; }',
-    '.akkad-invoice-brand { text-align: center; margin-bottom: 10px; }',
-    '.akkad-invoice-brand h2 { font-size: 18px; font-weight: 900; color: var(--co-ink); margin: 0; }',
-    '.akkad-invoice-brand h2 span { color: var(--co-bright); }',
-    '.akkad-invoice-brand p { font-size: 11px; font-weight: 600; color: var(--co-ink-2); margin: 4px 0 0 0; }',
-    '.akkad-invoice-meta { text-align: right !important; font-size: 12px !important; line-height: 1.8 !important; }',
-    '.akkad-invoice-meta p { margin: 0 !important; }',
-    '.akkad-invoice-meta-label { font-weight: 700 !important; font-size: 14px !important; }',
-    '.akkad-invoice-customer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; font-size: 11px; }',
-    '.akkad-invoice-customer-info { display: flex; flex-direction: column; gap: 3px; }',
-    '.akkad-invoice-customer-info span { font-weight: 700; }',
-    '.akkad-invoice-customer-count { text-align: left; }',
-    '.akkad-invoice-table-wrapper { border-radius: 10px; overflow: hidden; border: 1px solid var(--co-line); }',
-    '.akkad-invoice-table { width: 100%; border-collapse: collapse; font-size: 12px; }',
-    '.akkad-invoice-table thead tr { background: var(--co-accent-2); color: var(--co-on-accent); }',
-    '.akkad-invoice-table th { border: 1px solid var(--co-accent-2); padding: 10px 4px; text-align: center; font-weight: 700; }',
-    '.akkad-invoice-table td { border: 1px solid var(--co-line); padding: 10px 6px; text-align: center; }',
-    '.akkad-invoice-table td:nth-child(2) { text-align: right; font-weight: 600; font-size: 11px; }',
-    '.akkad-invoice-table tbody tr:nth-child(odd) { background: var(--co-row); }',
-    '.akkad-invoice-table tfoot tr { background: var(--co-accent-2); color: var(--co-on-accent); }',
-    '.akkad-invoice-table tfoot td { border: 1px solid var(--co-accent-2); padding: 10px 6px; font-weight: 900; }',
-    '.akkad-invoice-table tfoot td:last-child { font-size: 13px; color: var(--co-bright-2); }',
-    '.akkad-invoice-table .item-total { font-weight: 700; color: var(--co-ink); }',
-    '.akkad-invoice-footer-msg { margin-top: 14px; border-radius: 10px; overflow: hidden; border: 1px solid var(--co-line); }',
-    '.akkad-invoice-footer-msg-top { background: var(--co-accent-2); color: var(--co-on-accent); text-align: center; padding: 10px 14px; }',
-    '.akkad-invoice-footer-msg-top p { font-weight: 900; font-size: 12px; margin: 0; }',
-    '.akkad-invoice-footer-msg-top span { color: var(--co-bright-2); }',
-    '.akkad-invoice-row { display: flex !important; justify-content: space-between !important; padding: 6px 0 !important; font-size: 12px !important; }',
-    '.akkad-invoice-row span:first-child { font-weight: 700 !important; color: var(--co-ink-2) !important; }',
-    '.akkad-invoice-discount span:last-child { color: var(--co-warn-ink) !important; font-weight: 800 !important; }',
-    '.akkad-invoice-shipping span:last-child { color: var(--co-ink) !important; font-weight: 700 !important; }',
-    '.akkad-invoice-total-row { display: flex !important; justify-content: space-between !important; padding: 10px 0 0 0 !important; margin-top: 6px !important; border-top: 2px solid var(--co-accent) !important; }',
-    '.akkad-invoice-total-row span:first-child { font-weight: 800 !important; font-size: 14px !important; color: var(--co-ink-2) !important; }',
-    '.akkad-invoice-total-row span:last-child { font-weight: 900 !important; font-size: 16px !important; color: var(--co-bright) !important; }',
-
     '.mt-2.flex.items-end.justify-between { background: var(--co-sunken) !important; border: 1.5px solid var(--co-line-strong) !important; border-radius: 12px !important; padding: 14px 16px !important; margin-top: 14px !important; display: flex !important; align-items: flex-end !important; gap: 12px !important; color: var(--co-ink) !important; }',
     '.mt-2.flex.items-end.justify-between label { font-weight: 700 !important; font-size: 14px !important; color: var(--co-ink) !important; margin-bottom: 6px !important; }',
     '.mt-2.flex.items-end.justify-between .relative { flex: 1 !important; }',
@@ -183,8 +147,7 @@
     '.checkout_container button.flex.items-center.justify-center.gap-2:not(.checkout_buy_now):not(.cart-item-quantity-counter button):hover { background: var(--co-accent) !important; border-color: var(--co-accent) !important; color: var(--co-on-accent) !important; }',
 
     '@media (max-width: 1024px) { .checkout_order_summary { margin-bottom: 140px; } }',
-    '@media (min-width: 1024px) { .checkout_container { grid-template-columns: 1fr 1fr !important; gap: 40px !important; max-width: 1100px !important; padding: 0 40px !important; } .checkout_form { order: 1 !important; padding-top: 30px !important; } .checkout_order_summary { order: 2 !important; position: sticky !important; top: 90px !important; align-self: start !important; padding: 28px !important; margin-bottom: 0 !important; } .akkad-invoice { padding: 20px !important; } .akkad-invoice-brand h2 { font-size: 22px !important; } .akkad-invoice-table { font-size: 13px !important; } .akkad-invoice-table th { padding: 12px 8px !important; } .akkad-invoice-table td { padding: 12px 10px !important; } .akkad-invoice-customer { font-size: 12px !important; } .akkad-invoice-total-row span:first-child { font-size: 16px !important; } .akkad-invoice-total-row span:last-child { font-size: 20px !important; } }',
-    '@media (max-width: 480px) { .akkad-invoice-table { font-size: 11px; } .akkad-invoice-table th, .akkad-invoice-table td { padding: 8px 4px; } .akkad-invoice-table td:nth-child(4), .akkad-invoice-table th:nth-child(4) { display: none; } .akkad-invoice-table td:nth-child(5), .akkad-invoice-table th:nth-child(5) { display: none; } }',
+    '@media (min-width: 1025px) { .checkout_container { grid-template-columns: 1fr 1fr !important; gap: 40px !important; max-width: 1100px !important; padding: 0 40px !important; } .checkout_form { order: 1 !important; padding-top: 30px !important; } #checkout-order-summary { order: 2 !important; position: sticky !important; top: 90px !important; align-self: start !important; padding: 32px !important; margin-bottom: 0 !important; } }',
 
     /* ---------- mobile checkout rework ---------- */
     /* Pin the order button to the viewport bottom on mobile. .checkout_button
@@ -194,36 +157,29 @@
     /* Lift the WhatsApp float clear of the pinned order bar and shrink it a
        touch so it no longer sits on top of the checkout button on mobile. */
     '@media (max-width: 1024px) { html.on-checkout #pky_wa_button { bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; right: 16px !important; width: 54px !important; height: 54px !important; } }',
-    /* The lower order-summary section duplicates the mobile summary that sits
-       right after the client fields. On MOBILE only, hide its toggle + body but
-       KEEP them mounted: the injected mobile qty controls forward their clicks
-       to the React-owned (+/-/remove) buttons that live inside this hidden
-       body. On desktop this lower summary IS the primary one, so it stays. */
-    '@media (max-width: 1024px) { #checkout-order-summary-toggle, #checkout-order-summary-content { display: none !important; } }',
-    /* Unfold the upper mobile summary by default. React renders it collapsed
-       (product list hidden behind the "الاجمالي" total row), which is why the
-       injected editable controls were invisible. Force the content open on
-       mobile so the products + qty/delete controls show without a tap. */
+    /* EasyOrders renders a desktop summary above the form and a separate,
+       mobile-friendly copy after the fields. Hide the whole desktop summary
+       on small screens so products and totals are not shown twice. Keep its
+       React-owned cart rows mounted: the visible mobile controls forward
+       actions to those rows. */
+    '@media (max-width: 1024px) { #checkout-order-summary { display: none !important; } #checkout-order-summary-toggle, #checkout-order-summary-content { display: none !important; } }',
+    /* Keep the mobile product list open so customers can see the items and
+       their quantity/remove controls without an extra disclosure tap. */
     '@media (max-width: 1024px) { #checkout-mobile-order-summary-content { display: block !important; max-height: none !important; overflow: visible !important; } }',
-    /* Stop horizontal overflow on mobile. The invoice table + WhatsApp reminder
-       have wide min-content, and grid/flex children default to min-width:auto
-       so they refuse to shrink below it. That pushed the document to 556px on a
-       390px viewport: the in-flow header shifted right and the fixed order bar
-       (left:0/right:0 relative to the expanded layout viewport) shifted left.
+    /* Stop horizontal overflow on mobile. Grid/flex children default to
+       min-width:auto, so they can refuse to shrink below their content. That
+       pushed the document wider than the viewport and shifted the fixed order
+       bar. The native invoice and reminder must both remain within the layout.
        Make wide children fit, and clip any residual overflow at the container. */
     '@media (max-width: 1024px) { ' +
       '.checkout_container, .checkout_container > *, .checkout_form, .checkout_order_summary { min-width: 0 !important; } ' +
       '.checkout_order_summary { max-width: 100% !important; box-sizing: border-box !important; } ' +
-      '.akkad-invoice { max-width: 100% !important; box-sizing: border-box !important; } ' +
-      '.akkad-invoice-table { table-layout: auto !important; width: 100% !important; } ' +
-      '.akkad-invoice-table td:nth-child(2), .akkad-invoice-table th:nth-child(2) { white-space: normal !important; word-break: break-word !important; } ' +
-      '.akkad-invoice-table-wrapper { overflow-x: auto !important; } ' +
       '.akkad-wa-reminder { max-width: 100% !important; box-sizing: border-box !important; white-space: normal !important; overflow-wrap: anywhere !important; } ' +
       '.checkout_container { overflow-x: hidden !important; } ' +
     '}',
     /* Styling for the qty controls injected into each mobile cart row. */
-    '.akkad-qty-row { margin-top: 10px !important; }',
-    '.akkad-qty-row button { border: 1px solid var(--co-line-strong) !important; background: var(--co-soft) !important; color: var(--co-ink) !important; border-radius: 8px !important; width: 30px !important; height: 30px !important; font-weight: 700 !important; cursor: pointer !important; line-height: 1 !important; }',
+    '.akkad-qty-row { display: flex !important; align-items: center !important; justify-content: space-between !important; margin-top: 10px !important; }',
+    '.akkad-qty-row button { display: inline-flex !important; align-items: center !important; justify-content: center !important; border: 1px solid var(--co-line-strong) !important; background: var(--co-soft) !important; color: var(--co-ink) !important; border-radius: 8px !important; width: 36px !important; height: 36px !important; font-weight: 700 !important; font-size: 18px !important; cursor: pointer !important; line-height: 1 !important; }',
     '.akkad-qty-row [data-akkad="val"] { color: var(--co-ink) !important; font-weight: 700 !important; }',
     '.akkad-qty-row [data-akkad="del"] { border: none !important; background: transparent !important; color: #dc2626 !important; width: auto !important; height: auto !important; font-size: 22px !important; padding: 0 4px !important; }',
 
@@ -267,6 +223,8 @@
      did) is why the thanks card only appeared after a manual reload/new tab. */
 
   var runScheduled = false;
+  var checkoutDomObserver = null;
+  var observedCheckoutBody = null;
 
   function scheduleRun() {
     if (runScheduled) return;
@@ -278,6 +236,7 @@
   }
 
   function run() {
+    if (!window.location.pathname.includes('checkout')) return;
     /* Self-heal the stylesheet too: if React/head ever drops our <style>, the
        whole restyle silently disappears until a reload. Re-attach it here. */
     if (!document.getElementById('akkad-checkout-style')) {
@@ -286,10 +245,28 @@
     injectReminder();
     fixCheckoutHeader();
     fixPayments();
-    injectInvoice();
     fixInputs();
-    listenSubmit();
     makeMobileSummaryFunctional();
+  }
+
+  function syncCheckoutObserver() {
+    if (!window.location.pathname.includes('checkout')) {
+      if (checkoutDomObserver) checkoutDomObserver.disconnect();
+      checkoutDomObserver = null;
+      observedCheckoutBody = null;
+      return;
+    }
+
+    if (!document.body) return;
+
+    if (observedCheckoutBody !== document.body) {
+      if (checkoutDomObserver) checkoutDomObserver.disconnect();
+      observedCheckoutBody = document.body;
+      checkoutDomObserver = new MutationObserver(scheduleRun);
+      checkoutDomObserver.observe(observedCheckoutBody, { childList: true, subtree: true });
+    }
+
+    scheduleRun();
   }
 
   /* On /checkout the theme hides the site header (header.fasty_header lives
@@ -316,10 +293,14 @@
   var WA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
   var THANKS_WA_LINK = 'https://wa.me/201508331823?text=' + encodeURIComponent('مرحبا . لقد طلبت من متجركم و اريد التأكيد');
 
+  function findThanksContainer() {
+    return document.querySelector('.thanks_container') ||
+           document.querySelector('main div.mt-20') ||
+           document.querySelector('div.mt-20');
+  }
+
   function buildThanksPage() {
-    var container = document.querySelector('.thanks_container') ||
-                    document.querySelector('main div.mt-20') ||
-                    document.querySelector('div.mt-20');
+    var container = findThanksContainer();
     if (!container) return false;
     var orderId = (new URLSearchParams(window.location.search)).get('order_id') || '';
 
@@ -353,7 +334,7 @@
       });
     }
 
-    if (document.querySelector('.akkad-thanks-card')) return true;
+    if (container.querySelector('.akkad-thanks-card')) return true;
 
     container.style.marginTop = '40px';
     container.style.paddingBottom = '44px';
@@ -402,11 +383,75 @@
 
   /* non-destructive hide — never removes nodes React owns */
   function hideThanksRow(el) {
+    if (el.getAttribute('data-akkad-thanks-hidden') === '1') return;
     el.style.setProperty('display', 'none', 'important');
     el.setAttribute('data-akkad-thanks-hidden', '1');
   }
 
   var thanksRunning = false;
+  var thanksObserver = null;
+  var observedThanksBody = null;
+  var thanksBuildTimer = null;
+
+  function stopThanksPage() {
+    if (thanksObserver) thanksObserver.disconnect();
+    thanksObserver = null;
+    observedThanksBody = null;
+    clearTimeout(thanksBuildTimer);
+    thanksBuildTimer = null;
+    thanksRunning = false;
+  }
+
+  function scheduleThanksBuild() {
+    if (thanksBuildTimer) return;
+    thanksBuildTimer = setTimeout(function() {
+      thanksBuildTimer = null;
+      if (window.location.pathname.indexOf('thanks') !== -1) buildThanksPage();
+    }, 0);
+  }
+
+  function containsThanksContainer(node) {
+    if (node.nodeType !== 1) return false;
+    return node.matches('.thanks_container, main div.mt-20, div.mt-20') ||
+           !!node.querySelector('.thanks_container, main div.mt-20, div.mt-20');
+  }
+
+  function shouldRefreshThanksPage(records) {
+    var container = findThanksContainer();
+    for (var i = 0; i < records.length; i++) {
+      var record = records[i];
+      if (container && (record.target === container || container.contains(record.target))) return true;
+
+      for (var j = 0; j < record.addedNodes.length; j++) {
+        if (containsThanksContainer(record.addedNodes[j])) return true;
+      }
+      for (var k = 0; k < record.removedNodes.length; k++) {
+        if (containsThanksContainer(record.removedNodes[k])) return true;
+      }
+    }
+    return false;
+  }
+
+  function observeThanksPage() {
+    if (window.location.pathname.indexOf('thanks') === -1) {
+      stopThanksPage();
+      return;
+    }
+    if (!document.body) {
+      document.addEventListener('DOMContentLoaded', observeThanksPage, { once: true });
+      return;
+    }
+
+    if (observedThanksBody !== document.body) {
+      if (thanksObserver) thanksObserver.disconnect();
+      observedThanksBody = document.body;
+      thanksObserver = new MutationObserver(function(records) {
+        if (shouldRefreshThanksPage(records)) scheduleThanksBuild();
+      });
+      thanksObserver.observe(observedThanksBody, { childList: true, subtree: true });
+    }
+    scheduleThanksBuild();
+  }
 
   function runThanksPage() {
     if (thanksRunning) return;
@@ -418,31 +463,10 @@
        or swaps the container. */
     whenSettled(function() {
       if (window.location.pathname.indexOf('thanks') === -1) {
-        thanksRunning = false;
+        stopThanksPage();
         return;
       }
-      /* Keep watching while we are on /thanks instead of giving up after a
-         fixed number of tries. On a slow mobile first load the EasyOrders
-         thank-you block renders late — and the app can replace the container
-         it first paints — so a one-shot injection is lost until the next
-         reload. This self-heals and stops only once we leave /thanks. */
-      var iv = setInterval(function() {
-        if (window.location.pathname.indexOf('thanks') === -1) {
-          clearInterval(iv);
-          thanksRunning = false;
-          return;
-        }
-        var container = document.querySelector('.thanks_container') ||
-                        document.querySelector('main div.mt-20') ||
-                        document.querySelector('div.mt-20');
-        if (container && !container._akkadThanksObs) {
-          container._akkadThanksObs = true;
-          /* observe only the container (not the whole body) so we never thrash
-             the app into extra renders while it hydrates */
-          new MutationObserver(function() { buildThanksPage(); }).observe(container, { childList: true });
-        }
-        buildThanksPage();
-      }, 300);
+      observeThanksPage();
     });
   }
 
@@ -468,36 +492,27 @@
     if (p === lastPath) return;
     lastPath = p;
     if (p.indexOf('thanks') !== -1) runThanksPage();
-    if (p.indexOf('checkout') === -1) document.documentElement.classList.remove('on-checkout');
+    else stopThanksPage();
+    if (p.indexOf('checkout') !== -1) {
+      syncCheckoutObserver();
+    } else {
+      document.documentElement.classList.remove('on-checkout');
+      syncCheckoutObserver();
+    }
   }
 
-  try {
-    ["pushState", "replaceState"].forEach(function (m) {
-      var orig = history[m];
-      history[m] = function () { var r = orig.apply(this, arguments); routeTick(); return r; };
-    });
-  } catch (e) {}
+  ["pushState", "replaceState"].forEach(function (method) {
+    var original = history[method];
+    history[method] = function () {
+      var result = original.apply(this, arguments);
+      routeTick();
+      return result;
+    };
+  });
   window.addEventListener("popstate", routeTick);
-  setInterval(routeTick, 400);
+  window.addEventListener("akkad:route-change", routeTick);
 
   routeTick();
-
-  if (!window.location.pathname.includes('checkout')) {
-    /* off-checkout pages (home / product / cart): do nothing heavy. The old
-       code attached a body-wide subtree MutationObserver that ran the whole
-       checkout pipeline on every DOM mutation of every page. SPA navigation
-       into checkout is caught by this lightweight path poll instead — and
-       routeTick() above handles navigation into /thanks. */
-    var checkoutCheck = setInterval(function () {
-      if (window.location.pathname.includes('checkout')) {
-        clearInterval(checkoutCheck);
-        setTimeout(run, 100);
-        setTimeout(run, 500);
-        setTimeout(run, 1500);
-      }
-    }, 500);
-    return;
-  }
 
   function injectReminder() {
     var containers = document.querySelectorAll('.checkout_container');
@@ -512,20 +527,6 @@
         '<span role="note">سيتم التواصل معك عبر الواتساب لتأكيد الأوردر خلال 24 ساعة</span>';
       c.insertBefore(banner, c.firstChild);
     }
-  }
-
-  function listenSubmit() {
-    var btn = document.querySelector('.checkout_buy_now');
-    if (!btn || btn._akkadListen) return;
-    btn._akkadListen = true;
-    btn.addEventListener('click', function() {
-      if (btn.disabled || btn.getAttribute('aria-disabled') === 'true') return;
-      var name = document.querySelector('[name="full_name"]');
-      var phone = document.querySelector('[name="phone"]');
-      if (name && !name.value.trim()) return;
-      if (phone && !phone.value.trim()) return;
-      saveInvoiceCounter();
-    });
   }
 
   function fixPayments() {
@@ -567,20 +568,25 @@
     }, true);
   }
 
+  var mobileSummaryObserver = null;
+  var observedMobileList = null;
 
-  /* On mobile the theme renders a second, control-less copy of the cart inside
-     .checkout_mobile_bottom_summary (right after the client fields) and hides
-     the real, React-wired one (with +/-/remove) behind the lower summary
-     toggle. Give the mobile copy working controls by forwarding each click to
-     the matching React button in the hidden lower list — React owns that list,
-     so its handlers keep cart state (and both lists) in sync. The lower list
-     stays mounted (just display:none) so those buttons remain clickable. */
+  /* The mobile summary is a visual copy without React's cart handlers. Add
+     visible controls there, but forward actions to the live React-owned row so
+     EasyOrders remains responsible for cart state and totals. */
   function makeMobileSummaryFunctional() {
     var upperList = document.querySelector('.checkout_mobile_cart_items_container');
-    var lowerList = document.querySelector('#checkout-order-summary-content .checkout_cart_items_container');
-    if (!upperList || !lowerList) return;
+    if (!upperList) {
+      if (mobileSummaryObserver) mobileSummaryObserver.disconnect();
+      mobileSummaryObserver = null;
+      observedMobileList = null;
+      return;
+    }
 
-    function lowerItems() { return lowerList.querySelectorAll('.checkout_cart_item'); }
+    function lowerItems() {
+      var lowerList = document.querySelector('#checkout-order-summary-content .checkout_cart_items_container');
+      return lowerList ? lowerList.querySelectorAll('.checkout_cart_item') : [];
+    }
     function forwardByIndex(idx, label) {
       if (idx < 0) return;
       var item = lowerItems()[idx];
@@ -594,7 +600,9 @@
     }
     function indexWithinList(el) {
       if (!el) return -1;
-      var items = Array.prototype.slice.call(upperList.querySelectorAll('.checkout_cart_item'));
+      var currentUpperList = document.querySelector('.checkout_mobile_cart_items_container');
+      if (!currentUpperList) return -1;
+      var items = Array.prototype.slice.call(currentUpperList.querySelectorAll('.checkout_cart_item'));
       return items.indexOf(el);
     }
     /* Resolve the owning cart row from the CLICK TARGET (not a captured node):
@@ -605,9 +613,11 @@
     }
 
     function sync() {
-      var upperItems = upperList.querySelectorAll('.checkout_cart_item');
+      var currentUpperList = document.querySelector('.checkout_mobile_cart_items_container');
+      if (!currentUpperList || !document.querySelector('#checkout-order-summary-content .checkout_cart_items_container')) return;
+      var upperItems = currentUpperList.querySelectorAll('.checkout_cart_item');
       Array.prototype.forEach.call(upperItems, function (uItem) {
-        var content = uItem.querySelector('div.min-w-0.flex-1');
+        var content = uItem.querySelector('.min-w-0.flex-1');
         if (!content) return;
         var row = content.querySelector('.akkad-qty-row');
         if (!row) {
@@ -632,189 +642,11 @@
     }
 
     sync();
-    if (upperList._akkadQtyObs) return;
-    upperList._akkadQtyObs = true;
-    new MutationObserver(sync).observe(upperList, { childList: true, subtree: true });
-  }
-
-  var currentCounter = null;
-
-  function getInvoiceNumber() {
-    var now = new Date();
-    var yy = String(now.getFullYear()).slice(-2);
-    var mm = String(now.getMonth() + 1).padStart(2, '0');
-    var dd = String(now.getDate()).padStart(2, '0');
-    var dateKey = yy + mm + dd;
-
-    var counter = parseInt(localStorage.getItem('akkad_invoice_counter')) || 1198;
-    currentCounter = counter;
-
-    return 'akd-' + dateKey + '-' + String(counter).padStart(4, '0');
-  }
-
-  function saveInvoiceCounter() {
-    if (currentCounter !== null) {
-      localStorage.setItem('akkad_invoice_counter', currentCounter + 1);
-    }
-  }
-
-  function injectInvoice() {
-    var summary = document.querySelector('.checkout_order_summary');
-    if (!summary || document.querySelector('.akkad-invoice')) return;
-
-    var invoice = document.createElement('div');
-    invoice.className = 'akkad-invoice';
-    invoice.innerHTML =
-      '<div class="akkad-invoice-header">' +
-        '<div class="akkad-invoice-brand">' +
-          '<h2><span>أكاد</span></h2>' +
-          '<p>أفضل عروض الأدوات المنزلية والعطور والأجهزة</p>' +
-        '</div>' +
-        '<div class="akkad-invoice-meta">' +
-          '<p class="akkad-invoice-meta-label">رقم الطلب: ' + getInvoiceNumber() + '</p>' +
-          '<p class="akkad-invoice-meta-label">التاريخ: ' + new Date().toLocaleDateString('ar-EG', {day:'2-digit',month:'2-digit',year:'numeric'}) + '</p>' +
-        '</div>' +
-      '</div>' +
-      '<div class="akkad-invoice-customer">' +
-        '<div class="akkad-invoice-customer-info">' +
-          '<div><span>العميل: </span><span class="inv-name">— غير محدد —</span></div>' +
-          '<div><span>رقم العميل: </span><span class="inv-phone" dir="ltr">— غير محدد —</span></div>' +
-        '</div>' +
-        '<div class="akkad-invoice-customer-count">' +
-          '<span>إجمالي القطع: </span><span class="inv-count">0</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="akkad-invoice-table-wrapper">' +
-        '<table class="akkad-invoice-table">' +
-          '<thead><tr><th>م</th><th>الصنف</th><th>العدد</th><th>السعر</th><th>الإجمالي</th></tr></thead>' +
-          '<tbody class="inv-tbody"></tbody>' +
-          '<tfoot><tr><td colspan="5">الإجمالي الكلي</td></tr></tfoot>' +
-        '</table>' +
-      '</div>' +
-      '<div class="akkad-invoice-discount" style="display:none">' +
-        '<div class="akkad-invoice-row"><span>خصم الكوبون</span><span class="inv-discount-val">0 ج</span></div>' +
-      '</div>' +
-      '<div class="akkad-invoice-shipping">' +
-        '<div class="akkad-invoice-row"><span>الشحن</span><span class="inv-shipping-val">0 ج</span></div>' +
-      '</div>' +
-      '<div class="akkad-invoice-total-row">' +
-        '<span>الإجمالي النهائي</span><span class="inv-grand">0 ج</span>' +
-      '</div>' +
-      '<div class="akkad-invoice-footer-msg">' +
-        '<div class="akkad-invoice-footer-msg-top">' +
-          '<p>شكرًا لثقتكم في <span>أكاد</span> — نتشرف بخدمتكم دائمًا</p>' +
-        '</div>' +
-      '</div>';
-
-    summary.prepend(invoice);
-
-    function update() {
-      /* Re-query the invoice each tick: React re-renders the summary on every
-         cart change and can detach/re-attach (even re-create) our node, so a
-         captured reference goes stale and the totals freeze. */
-      var inv = document.querySelector('.akkad-invoice');
-      if (!inv) return;
-      var nameInput = document.querySelector('[name="full_name"]');
-      var phoneInput = document.querySelector('[name="phone"]');
-      var items = document.querySelectorAll('#checkout-order-summary-content .checkout_cart_item');
-      var tbody = inv.querySelector('.inv-tbody');
-
-      inv.querySelector('.inv-name').textContent = (nameInput && nameInput.value) || '— غير محدد —';
-      inv.querySelector('.inv-phone').textContent = (phoneInput && phoneInput.value) || '— غير محدد —';
-
-      var totalCount = 0, grandTotal = 0;
-      tbody.innerHTML = '';
-
-      items.forEach(function(item, i) {
-        var name = item.querySelector('p.truncate');
-        var priceEl = item.querySelector('.flex.shrink-0.flex-col.items-end span');
-        var qtyEl = item.querySelector('p.m-0.w-10');
-        var price = parseInt((priceEl ? priceEl.textContent : '0').replace(/[^0-9]/g, '')) || 0;
-        var qty = parseInt(qtyEl ? qtyEl.textContent : '1') || 1;
-        /* The theme's price span already shows the LINE total (qty x unit), not
-           the unit price. Multiplying it by qty again double-counted. */
-        var total = price;
-        var unit = qty > 0 ? Math.round(total / qty) : total;
-        totalCount += qty;
-        grandTotal += total;
-
-        var tr = document.createElement('tr');
-
-        var tdIndex = document.createElement('td');
-        tdIndex.textContent = String(i + 1);
-
-        /* The product title is admin-supplied text, so it is written as a text
-           node instead of being interpolated into markup. */
-        var tdName = document.createElement('td');
-        var nameWrap = document.createElement('div');
-        nameWrap.style.fontWeight = '600';
-        nameWrap.style.fontSize = '11px';
-        nameWrap.textContent = name ? name.textContent : '';
-        tdName.appendChild(nameWrap);
-
-        var tdQty = document.createElement('td');
-        tdQty.style.fontWeight = '700';
-        tdQty.textContent = String(qty);
-
-        var tdUnit = document.createElement('td');
-        tdUnit.textContent = unit.toLocaleString() + ' ج';
-
-        var tdTotal = document.createElement('td');
-        tdTotal.className = 'item-total';
-        tdTotal.textContent = total.toLocaleString() + ' ج';
-
-        tr.appendChild(tdIndex);
-        tr.appendChild(tdName);
-        tr.appendChild(tdQty);
-        tr.appendChild(tdUnit);
-        tr.appendChild(tdTotal);
-        tbody.appendChild(tr);
-      });
-
-      inv.querySelector('.inv-count').textContent = totalCount;
-
-      // Read shipping from EasyOrders original invoice
-      var shippingContainer = document.querySelector('[data-invoice="invoice-shipping"]');
-      var shipping = 0;
-      if (shippingContainer) {
-        var shippingDd = shippingContainer.querySelector('dd');
-        if (shippingDd) {
-          shipping = parseInt(shippingDd.textContent.replace(/[^0-9]/g, '')) || 0;
-        }
-      }
-
-      // Read discount from coupon container
-      var discount = 0;
-      var discountContainer = document.querySelector('.mt-2.flex.items-center.justify-between');
-      if (discountContainer) {
-        var discountP = discountContainer.querySelector('p');
-        if (discountP && discountP.textContent.includes('خصم')) {
-          discount = parseInt(discountP.textContent.replace(/[^0-9]/g, '')) || 0;
-        }
-      }
-
-      var discountBox = inv.querySelector('.akkad-invoice-discount');
-      if (discount > 0) {
-        discountBox.style.display = 'block';
-        discountBox.querySelector('.inv-discount-val').textContent = '-' + discount.toLocaleString() + ' ج';
-      } else {
-        discountBox.style.display = 'none';
-      }
-
-      inv.querySelector('.inv-shipping-val').textContent = shipping > 0 ? shipping.toLocaleString() + ' ج' : 'مجاني';
-      inv.querySelector('.inv-grand').textContent = (grandTotal - discount + shipping).toLocaleString() + ' ج';
-    }
-
-    update();
-    if (window.__akkadInvoiceTimer) clearInterval(window.__akkadInvoiceTimer);
-    window.__akkadInvoiceTimer = setInterval(function() {
-      /* Never clear on a transient disconnect — React briefly detaches the node
-         mid-re-render, and clearing here froze the totals at shipping-only. If
-         the invoice is momentarily gone, skip the tick; the body observer
-         re-injects it when React settles. */
-      if (!document.querySelector('.akkad-invoice')) return;
-      update();
-    }, 1000);
+    if (observedMobileList === upperList) return;
+    if (mobileSummaryObserver) mobileSummaryObserver.disconnect();
+    observedMobileList = upperList;
+    mobileSummaryObserver = new MutationObserver(sync);
+    mobileSummaryObserver.observe(upperList, { childList: true, subtree: true });
   }
 
   function fixInputs() {
@@ -837,26 +669,11 @@
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(run, 300);
-      setTimeout(run, 1000);
-      setTimeout(run, 2000);
+      syncCheckoutObserver();
     });
   } else {
-    setTimeout(run, 300);
-    setTimeout(run, 1000);
-    setTimeout(run, 2000);
+    syncCheckoutObserver();
   }
 
-  /* Self-healing: re-run the whole pipeline on any DOM change (debounced), so
-     React re-renders and SPA navigations are caught without a manual reload.
-     If this file is parsed from <head>, document.body is still null here and
-     .observe(null) would throw — silently killing the self-heal loop, which is
-     why fixes appeared to need a refresh. Wait for the body before observing. */
-  (function startObserver() {
-    if (!document.body) {
-      document.addEventListener('DOMContentLoaded', startObserver);
-      return;
-    }
-    new MutationObserver(scheduleRun).observe(document.body, { childList: true, subtree: true });
-  })();
+  /* Watch for late checkout rendering only while that route is active. */
 })();
