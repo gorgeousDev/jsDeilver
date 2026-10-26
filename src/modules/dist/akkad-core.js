@@ -16,6 +16,9 @@ try {
     var script = document.createElement("script");
     script.src = "https://cdn.pickyassist.com/WhatsApp/embed.js";
     script.async = true;
+    script.onerror = function () {
+        console.error("[Akkad] failed to load the WhatsApp widget script.");
+    };
     document.head.appendChild(script);
 
     var config = {
@@ -35,11 +38,17 @@ try {
         p: "position-right"
     };
 
+    var attempts = 0;
+    var maxAttempts = 20;
+
     function loadWhatsApp() {
         if (typeof window._waBtn === "function") {
             window._waBtn(config);
-        } else {
+        } else if (attempts < maxAttempts) {
+            attempts++;
             setTimeout(loadWhatsApp, 200);
+        } else {
+            console.error("[Akkad] WhatsApp widget API was unavailable after loading its script.");
         }
     }
 
