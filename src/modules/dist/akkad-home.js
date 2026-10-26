@@ -4,6 +4,10 @@ try {
    9. Floating Live Counter
    ========================================= */
 (function () {
+    var counterObserver = null;
+    var counterTimer = null;
+    var updateTimer = null;
+
     function isHomePage() {
         var path = window.location.pathname.replace(/\/+$/, "") || "/";
         return path === "/";
@@ -132,7 +136,7 @@ try {
         function loop() {
             if (!document.getElementById("akkad-floating-counter")) return;
             updateNumber();
-            setTimeout(loop, Math.random() * 5000 + 3000);
+            updateTimer = setTimeout(loop, Math.random() * 5000 + 3000);
         }
 
         loop();
@@ -142,6 +146,8 @@ try {
         if (!isHomePage()) {
             var el = document.getElementById("akkad-floating-counter");
             if (el) el.remove();
+            clearTimeout(updateTimer);
+            updateTimer = null;
             return;
         }
 
@@ -149,17 +155,29 @@ try {
         createFloatingCounter();
     }
 
-    window.addEventListener("load", function () {
-        setTimeout(initCounter, 500);
-    });
+    function syncCounterRoute() {
+        if (!isHomePage()) {
+            if (counterObserver) counterObserver.disconnect();
+            counterObserver = null;
+            clearTimeout(counterTimer);
+            counterTimer = null;
+            initCounter();
+            return;
+        }
 
-    var counterTimer;
-    new MutationObserver(function () {
+        if (!counterObserver && document.body) {
+            counterObserver = new MutationObserver(function () {
+                clearTimeout(counterTimer);
+                counterTimer = setTimeout(initCounter, 500);
+            });
+            counterObserver.observe(document.body, { childList: true, subtree: true });
+        }
+
         clearTimeout(counterTimer);
         counterTimer = setTimeout(initCounter, 500);
-    }).observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    }
+
+    window.addEventListener("akkad:route-change", syncCounterRoute);
+    syncCounterRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: v2-floating-live-counter", error); }
