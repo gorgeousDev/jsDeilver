@@ -473,21 +473,38 @@ try {
         for (var i = 0; i < badges.length; i++) styleBadge(badges[i]);
     }
 
-    styleNode(document.body);
+    var observer = null;
 
-    new MutationObserver(function (records) {
-        for (var i = 0; i < records.length; i++) {
-            if (records[i].target.nodeType === 1 && records[i].target.matches("span")) {
-                styleBadge(records[i].target);
-            }
-            for (var j = 0; j < records[i].addedNodes.length; j++) {
-                styleNode(records[i].addedNodes[j]);
-            }
+    function syncProductRoute() {
+        if (window.location.pathname.indexOf("/products/") !== 0) {
+            if (observer) observer.disconnect();
+            observer = null;
+            return;
         }
-    }).observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+
+        if (!document.body) {
+            document.addEventListener("DOMContentLoaded", syncProductRoute, { once: true });
+            return;
+        }
+
+        styleNode(document.body);
+        if (observer) return;
+
+        observer = new MutationObserver(function (records) {
+            for (var i = 0; i < records.length; i++) {
+                if (records[i].target.nodeType === 1 && records[i].target.matches("span")) {
+                    styleBadge(records[i].target);
+                }
+                for (var j = 0; j < records[i].addedNodes.length; j++) {
+                    styleNode(records[i].addedNodes[j]);
+                }
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    window.addEventListener("akkad:route-change", syncProductRoute);
+    syncProductRoute();
 })();
 } catch (error) { console.error("[Akkad] feature failed: v2-viewer-badge", error); }
 ;
